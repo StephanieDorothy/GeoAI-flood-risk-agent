@@ -1,0 +1,20 @@
+# Virtual Environment
+.venv/
+
+# Python
+__pycache__/
+*.pyc
+
+# VS Code
+.vscode/
+
+# Environment Variables
+.env
+
+# Large Raw Data
+data/raw/*.tif
+data/raw/*.zip
+data/raw/*.7z
+
+# Outputs
+data/outputs/
