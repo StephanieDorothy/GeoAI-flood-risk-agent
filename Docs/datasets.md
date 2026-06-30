@@ -136,7 +136,7 @@ This dataset contributes the terrain component of the flood model. It will be us
 
 This dataset demonstrated the importance of validating spatial metadata before analysis. Although the DEM is distributed in EPSG:4326, flood modelling requires measurements in metres. Therefore, the raster will be reprojected to a projected CRS (EPSG:32737) before spatial analysis.
 
-# Dataset 003 — ESA WorldCover 2021 (Land Cover)
+# Dataset 002 — ESA WorldCover 2021 (Land Cover)
 
 ## Purpose
 
