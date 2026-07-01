@@ -1,229 +1,347 @@
-# GeoAI Flood Risk Decision Agent
+# GeoAI Flood Risk Agent - Dataset Documentation
 
-# Dataset Catalogue
+This document records every dataset used in the GeoAI Flood Risk Agent project.
 
-This document records every dataset used in the project to ensure reproducibility, transparency, and proper documentation.
+For each dataset we document:
 
----
-
-# Dataset 001: SRTM Digital Elevation Model (DEM)
-
-## 1. Dataset Overview
-
-**Dataset Name:** SRTM Global 1 Arc-Second Digital Elevation Model (SRTMGL1)
-
-**Theme:** Elevation
-
-**Purpose in Project:**
-This dataset provides terrain elevation information for Nairobi County. It forms the foundation of the flood risk model by supporting the derivation of terrain characteristics such as slope and elevation, which influence how surface water flows and accumulates.
+- Purpose
+- Source
+- Download date
+- Coordinate Reference System (CRS)
+- Resolution
+- Preprocessing steps
+- Validation
+- Notes
 
 ---
 
-## 2. Data Source
-
-**Source:** NASA Shuttle Radar Topography Mission (SRTM)
-
-**Download Platform:** OpenTopography
-
-**Download Date:** 29 June 2026 *(Update if different)*
-
-**Data Licence:** Open Data
-
----
-
-## 3. Storage Location
-
-**Raw Dataset**
-
-`data/raw/dem/output_SRTMGL1.tif`
-
-**Processed Dataset**
-
-`data/processed/dem/`
-
----
-
-## 4. Metadata Verification
-
-| Property           | Value                                          |
-| ------------------ | ---------------------------------------------- |
-| File Format        | GeoTIFF (.tif)                                 |
-| CRS                | EPSG:4326 (WGS84 Geographic Coordinate System) |
-| Coordinate Units   | Degrees                                        |
-| Raster Type        | Single-band raster                             |
-| Width              | 2136 pixels                                    |
-| Height             | 1102 pixels                                    |
-| Pixel Size         | 0.000277777° (~30 m)                           |
-| Data Type          | Int16                                          |
-| NoData Value       | -32768                                         |
-| Compression        | LZW                                            |
-| Minimum Elevation  | 1466 m                                         |
-| Maximum Elevation  | 2200 m                                         |
-| Mean Elevation     | 1695.50 m                                      |
-| Standard Deviation | 166.79 m                                       |
-| Valid Pixels       | 100%                                           |
-
----
-
-## 5. Spatial Coverage
-
-**Study Area:** Nairobi County and surrounding region
-
-**Extent**
-
-* West: 36.531250°
-* East: 37.124583°
-* South: -1.457083°
-* North: -1.150972°
-
----
-
-## 6. Quality Assurance (QA)
-
-### Metadata Verification
-
-* ✓ File successfully opened in QGIS.
-* ✓ CRS verified.
-* ✓ Resolution verified.
-* ✓ Raster dimensions verified.
-* ✓ Single raster band confirmed.
-* ✓ NoData value confirmed.
-* ✓ Elevation statistics reviewed.
-* ✓ Raster contains 100% valid pixels.
-
-### Visual Inspection
-
-* ✓ Raster displays correctly in QGIS.
-* ✓ Terrain appears realistic.
-* ✓ No obvious missing tiles or corrupted regions observed.
-
-**QA Status:** Approved for preprocessing.
-
----
-
-## 7. Preprocessing History
-
-| Step                      | Status     |
-| ------------------------- | ---------- |
-| Download raw DEM          | ✓ Complete |
-| Verify metadata           | ✓ Complete |
-| Visual inspection in QGIS | ✓ Complete |
-| Clip to Nairobi County    | ✓ Complete  |
-| Reproject to EPSG:32737   | ☐ Pending  |
-| Validate processed raster | ✓ Complete  |
-
----
-
-## 8. Why This Dataset Was Selected
-
-The SRTM Digital Elevation Model was selected because it is a globally recognised, freely available elevation dataset with an approximate spatial resolution of 30 metres. It provides sufficient detail for county-scale flood risk assessment while remaining computationally efficient for a reproducible GeoAI workflow.
-
----
-
-## 9. Contribution to the GeoAI Flood Risk Decision Agent
-
-This dataset contributes the terrain component of the flood model. It will be used to:
-
-* Calculate terrain elevation.
-* Generate slope maps.
-* Support future flow direction and drainage analyses.
-* Identify areas where water is likely to accumulate.
-* Contribute to the overall flood risk score used by the GeoAI Decision Agent.
-
----
-
-## 10. Lessons Learned
-
-This dataset demonstrated the importance of validating spatial metadata before analysis. Although the DEM is distributed in EPSG:4326, flood modelling requires measurements in metres. Therefore, the raster will be reprojected to a projected CRS (EPSG:32737) before spatial analysis.
-
-# Dataset 002 — ESA WorldCover 2021 (Land Cover)
+# Dataset 001 — Digital Elevation Model (DEM)
 
 ## Purpose
+Provides terrain elevation for flood risk modelling. It will later be used to derive:
 
-Provides land cover classification for Nairobi County. This dataset represents the physical surface cover (e.g., vegetation, built-up areas, water bodies) and will be used in the GeoAI Flood Risk Decision Agent to model surface runoff and infiltration characteristics.
-
----
+- Slope
+- Flow Direction
+- Flow Accumulation
+- Terrain Analysis
 
 ## Source
 
-Provider: European Space Agency (ESA)
+Provider:
+NASA Shuttle Radar Topography Mission (SRTM)
 
-Dataset: ESA WorldCover 2021 Version 2.0
+Resolution:
+30 metres
 
-Resolution: 10 metres
+Download Date:
+29 June 2026
 
-License: CC BY 4.0
-
-CRS: EPSG:4326 (WGS84)
-
----
+Original CRS:
+EPSG:4326 (WGS84)
 
 ## Raw Dataset
 
-Location:
+Stored locally:
 
-data/raw/landcover/
-
-Original filename:
-
-ESA_WorldCover_10m_2021_v200_S03E036_Map.tif
-
-Status:
-
-Read-only
-
----
+```
+data/raw/dem/output_SRTMGL1.tif
+```
 
 ## Preprocessing
 
-Steps performed:
+Completed in QGIS.
 
-- Verified raster metadata
-- Inspected in QGIS
-- Clipped using Nairobi County boundary
-- Saved processed raster separately
-- Preserved raw raster unchanged
+Steps:
 
-Processed Output:
+1. Loaded the raw DEM.
+2. Loaded the Nairobi County boundary.
+3. Clipped the raster using the Nairobi boundary.
+4. Saved the clipped raster as:
 
-data/processed/Landcover/Nairobi Landcover.tif
+```
+data/processed/dem/dem_nairobi.tif
+```
 
----
+The original raster remains unchanged.
 
 ## Validation
 
 Validation script:
 
-src/validation/validate_land_cover.py
+```
+src/validation/validate_dem.py
+```
 
-Validation Status:
+Checks performed:
 
-Passed
+- File exists
+- CRS
+- Resolution
+- Raster dimensions
+- Elevation statistics
+- NoData value
+- Raster integrity
 
-Raster Type:
-
-Categorical Raster
-
-Classes detected:
-
-10
-
-20
-
-30
-
-40
-
-50
-
-60
-
-80
-
-90
-
----
+Validation completed successfully.
 
 ## Notes
 
-This raster will later be converted into flood susceptibility weights during the multi-layer flood risk modelling stage.
+The DEM remains in EPSG:4326 for consistency with the other datasets. Reprojection will be performed later during the modelling stage if required.
+
+---
+
+# Dataset 002 — Nairobi County Boundary
+
+## Purpose
+
+Defines the Area of Interest (AOI) for the project.
+
+The boundary is used to:
+
+- Clip raster datasets
+- Standardize study extent
+- Limit spatial analyses to Nairobi County
+
+## Source
+
+Provider:
+geoBoundaries
+
+Country:
+Kenya
+
+Administrative Level:
+ADM1 (County)
+
+Download Date:
+29 June 2026
+
+Original CRS:
+EPSG:4326 (WGS84)
+
+## Raw Dataset
+
+Stored locally:
+
+```
+data/raw/boundaries/geoBoundaries-KEN-ADM1.geojson
+```
+
+## Processed Dataset
+
+The Nairobi County boundary was extracted and saved as:
+
+```
+data/processed/vectors/Nairobi_county_boundary.gpkg
+```
+
+## Validation
+
+Validated in QGIS by confirming:
+
+- Correct county selection
+- Geometry integrity
+- CRS
+- Extent
+
+## Notes
+
+This boundary will be reused throughout the project for clipping and spatial masking.
+
+---
+
+# Dataset 003 — ESA WorldCover Land Cover
+
+## Purpose
+
+Represents land cover classes across Nairobi.
+
+This dataset will later support:
+
+- Surface runoff estimation
+- Impervious surface identification
+- Land cover weighting within the flood risk model
+
+## Source
+
+Provider:
+European Space Agency (ESA)
+
+Dataset:
+WorldCover 2021
+
+Resolution:
+10 metres
+
+Download Date:
+30 June 2026
+
+Original CRS:
+EPSG:4326 (WGS84)
+
+## Raw Dataset
+
+Stored locally:
+
+```
+data/raw/landcover/
+```
+
+## Preprocessing
+
+Completed in QGIS.
+
+Steps:
+
+1. Loaded the WorldCover raster.
+2. Clipped using the Nairobi County boundary.
+3. Saved as:
+
+```
+data/processed/Landcover/Nairobi Landcover.tif
+```
+
+## Validation
+
+Validation script:
+
+```
+src/validation/validate_land_cover.py
+```
+
+Checks performed:
+
+- File exists
+- CRS
+- Raster dimensions
+- Resolution
+- Land cover class values
+- Unique class identification
+- NoData value
+
+Validation completed successfully.
+
+## Notes
+
+Only the Nairobi subset is used during modelling.
+
+---
+
+# Dataset 004 — WorldPop Population Raster
+
+## Purpose
+
+Represents the spatial distribution of population across Nairobi.
+
+This dataset will later support:
+
+- Exposure analysis
+- Population-at-risk estimation
+- Risk scoring
+
+## Source
+
+Provider:
+WorldPop
+
+Dataset:
+Kenya Population Count 2021 (100m)
+
+Temporal Coverage:
+2021
+
+Resolution:
+100 metres
+
+Download Date:
+1 July 2026
+
+Original CRS:
+EPSG:4326 (WGS84)
+
+License:
+CC BY 4.0
+
+## Raw Dataset
+
+Stored locally:
+
+```
+data/raw/population/ken_pop_2021_CN_100m_R2025A_v1.tif
+```
+
+## Preprocessing
+
+Completed in QGIS.
+
+Steps:
+
+1. Loaded the national Kenya population raster.
+2. Clipped using the Nairobi County boundary.
+3. Saved as:
+
+```
+data/processed/population/Nairobi population.tif
+```
+
+## Validation
+
+Validation script:
+
+```
+src/validation/validate_population.py
+```
+
+Checks performed:
+
+- File exists
+- CRS
+- Resolution
+- Raster dimensions
+- Population statistics
+- NoData value
+- Raster integrity
+
+Validation completed successfully.
+
+## Notes
+
+The project intentionally uses the 2021 WorldPop dataset to maintain temporal consistency with the 2021 ESA WorldCover dataset.
+
+---
+
+# Dataset Acquisition Workflow
+
+Every dataset used in this project follows the same professional workflow:
+
+1. Understand the dataset
+2. Download the raw data
+3. Verify metadata
+4. Inspect in QGIS
+5. Preprocess the data
+6. Validate the output
+7. Document the dataset
+8. Use it in Python
+9. Integrate it into the GeoAI model
+
+This workflow ensures reproducibility, transparency, and professional GIS project management.
+
+---
+
+# Repository Philosophy
+
+The GitHub repository contains:
+
+- Source code
+- Documentation
+- Validation scripts
+- Configuration files
+- Project structure
+
+The repository does **not** contain:
+
+- Raw datasets
+- Processed datasets
+- Generated outputs
+
+Anyone reproducing the project can download the datasets from their original sources and follow the documented preprocessing workflow.
