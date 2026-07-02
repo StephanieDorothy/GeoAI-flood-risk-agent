@@ -1,20 +1,111 @@
+# ==================================================
+# GeoAI Flood Risk Agent
+# Git Ignore Configuration
+# --------------------------------------------------
+# This repository tracks only reproducible project
+# artifacts (code, documentation, configuration).
+# Raw datasets, processed datasets, outputs, and
+# local development files are intentionally excluded.
+# ==================================================
+
+# ==================================================
 # Virtual Environment
+# ==================================================
+
 .venv/
 
+# ==================================================
 # Python
-__pycache__/
-*.pyc
+# ==================================================
 
+__pycache__/
+*.py[cod]
+*$py.class
+
+# ==================================================
+# Jupyter Notebook Checkpoints
+# ==================================================
+
+.ipynb_checkpoints/
+
+# ==================================================
+# Environment Variables
+# ==================================================
+
+.env
+.env.*
+
+# ==================================================
 # VS Code
+# ==================================================
+
 .vscode/
 
-# Environment Variables
-.env
+# ==================================================
+# Operating System Files
+# ==================================================
 
-# Large Raw Data
-data/raw/*.tif
-data/raw/*.zip
-data/raw/*.7z
+.DS_Store
+Thumbs.db
+desktop.ini
 
-# Outputs
+# ==================================================
+# Project Data (NOT TRACKED)
+# --------------------------------------------------
+# GitHub does NOT store datasets.
+# Anyone reproducing the project should obtain the
+# datasets by following docs/datasets.md.
+# ==================================================
+
+data/raw/
+data/processed/
 data/outputs/
+
+# ==================================================
+# Temporary Files
+# ==================================================
+
+*.tmp
+*.temp
+*.bak
+*.log
+
+# ==================================================
+# GIS Temporary Files
+# ==================================================
+
+*.aux
+*.aux.xml
+*.ovr
+*.qml~
+*.qmd~
+*.lock
+
+# ==================================================
+# Python Build Artifacts
+# ==================================================
+
+build/
+dist/
+*.egg-info/
+
+# ==================================================
+# Coverage & Testing
+# ==================================================
+
+.coverage
+.pytest_cache/
+htmlcov/
+
+# ==================================================
+# IDE Files
+# ==================================================
+
+.idea/
+
+# ==================================================
+# Local Secrets
+# ==================================================
+
+secrets/
+credentials/

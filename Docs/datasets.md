@@ -310,6 +310,107 @@ The project intentionally uses the 2021 WorldPop dataset to maintain temporal co
 
 ---
 
+# Dataset 005 — OpenStreetMap Rivers (Kenya)
+
+## Purpose
+
+This dataset represents rivers and other mapped waterways extracted from OpenStreetMap (OSM). Within the GeoAI Flood Risk Agent, the river network is used to identify areas that are close to natural drainage channels, which is an important factor when assessing flood susceptibility.
+
+---
+
+## Source
+
+Provider:
+OpenStreetMap (Geofabrik Extract)
+
+Dataset:
+Kenya Waterways
+
+Website:
+https://download.geofabrik.de/africa/kenya.html
+
+---
+
+## Raw Dataset
+
+Filename:
+
+gis_osm_waterways_free_1.shp
+
+Stored in:
+
+data/raw/rivers/
+
+The raw dataset is never modified and serves as the permanent reference copy.
+
+---
+
+## Processed Dataset
+
+Filename:
+
+Nairobi_rivers.gpkg
+
+Stored in:
+
+data/processed/rivers/
+
+The processed dataset contains only waterways located within Nairobi County.
+
+---
+
+## CRS
+
+EPSG:4326 (WGS84)
+
+No reprojection was performed during preprocessing.
+
+---
+
+## Preprocessing Workflow
+
+1. Downloaded Kenya waterways dataset from Geofabrik.
+2. Loaded the dataset into QGIS.
+3. Loaded the Nairobi County boundary.
+4. Clipped the waterways using the Nairobi boundary.
+5. Exported the clipped dataset as a GeoPackage (.gpkg).
+6. Preserved the original CRS (EPSG:4326).
+
+---
+
+## Validation
+
+Validation was completed using:
+
+src/validation/validate_rivers.py
+
+The validation script confirms:
+
+- Dataset exists.
+- CRS is correct.
+- Geometry type is valid.
+- Attribute fields are present.
+- Geometry validity was checked before analysis.
+
+---
+
+## Intended Use
+
+The river dataset will later be used to:
+
+- Calculate distance to rivers.
+- Generate river proximity layers.
+- Support flood susceptibility modelling.
+- Improve spatial reasoning within the GeoAI Flood Risk Agent.
+
+---
+
+## Lessons Learned
+
+- Learned the importance of validating vector datasets before analysis.
+- Learned why GeoPackage is preferred over Shapefile for processed vector data.
+- Learned how river networks contribute to flood risk assessment.
+
 # Dataset Acquisition Workflow
 
 Every dataset used in this project follows the same professional workflow:
@@ -345,3 +446,4 @@ The repository does **not** contain:
 - Generated outputs
 
 Anyone reproducing the project can download the datasets from their original sources and follow the documented preprocessing workflow.
+
