@@ -1,32 +1,57 @@
 from pathlib import Path
 
-# --------------------------------------------------
-# Project Root
-# --------------------------------------------------
+# ==================================================
+# PROJECT ROOT
+# ==================================================
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
-# --------------------------------------------------
-# Data Directories
-# --------------------------------------------------
+print("CONFIG FILE LOADED")
+
+# ==================================================
+# DATA DIRECTORIES
+# ==================================================
 
 DATA_DIR = PROJECT_ROOT / "data"
 
+# -------------------------------
+# Raw Data
+# -------------------------------
+
 RAW_DATA_DIR = DATA_DIR / "raw"
+
+# -------------------------------
+# Processed Data
+# -------------------------------
 
 PROCESSED_DATA_DIR = DATA_DIR / "processed"
 
+# -------------------------------
+# Analysis-Ready Data
+# -------------------------------
+
+ANALYSIS_DATA_DIR = DATA_DIR / "analysis"
+
+ANALYSIS_DEM_DIR = ANALYSIS_DATA_DIR / "dem"
+ANALYSIS_LANDCOVER_DIR = ANALYSIS_DATA_DIR / "landcover"
+ANALYSIS_POPULATION_DIR = ANALYSIS_DATA_DIR / "population"
+ANALYSIS_RIVERS_DIR = ANALYSIS_DATA_DIR / "rivers"
+ANALYSIS_BOUNDARIES_DIR = ANALYSIS_DATA_DIR / "boundaries"
+
+# -------------------------------
+# Outputs
+# -------------------------------
+
 OUTPUTS_DIR = DATA_DIR / "outputs"
 
-# --------------------------------------------------
-# Documentation
-# --------------------------------------------------
+# ==================================================
+# DOCUMENTATION
+# ==================================================
 
-DOCS_DIR = PROJECT_ROOT / "docs"
+DOCS_DIR = PROJECT_ROOT / "Docs"
 
-# --------------------------------------------------
-# Source Code
-# --------------------------------------------------
+# ==================================================
+# SOURCE CODE
+# ==================================================
 
 SRC_DIR = PROJECT_ROOT / "src"
-print("CONFIG FILE LOADED")

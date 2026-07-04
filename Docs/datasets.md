@@ -428,6 +428,44 @@ Every dataset used in this project follows the same professional workflow:
 This workflow ensures reproducibility, transparency, and professional GIS project management.
 
 ---
+## Analysis Preparation
+
+To prepare the DEM for spatial analysis, the processed DEM was reprojected from its original geographic coordinate system (EPSG:4326) into the project's official analysis coordinate system:
+
+**EPSG:32737 – WGS 84 / UTM Zone 37 South**
+
+The reprojected dataset is stored in:
+
+data/analysis/dem/dem_nairobi_utm37s.tif
+
+The original processed DEM remains unchanged.
+
+This analysis-ready DEM will be used throughout the project for:
+
+- Slope generation
+- Aspect calculation
+- Flow direction
+- Flow accumulation
+- Terrain analysis
+- Flood susceptibility modelling
+
+Reprojection was performed using:
+
+src/preprocessing/reproject_dem.py
+
+Validation was completed using:
+
+src/validation/validate_analysis_dem.py
+
+## Lessons Learned
+
+During this stage of the project, the following GIS engineering principles were applied:
+
+- Raw datasets should never be modified.
+- Processed datasets preserve the original spatial reference after clipping and cleaning.
+- Analysis datasets are stored separately and prepared specifically for modelling.
+- A projected CRS (EPSG:32737) is required for accurate distance, area, and terrain analysis.
+- Reprojection is performed only after preprocessing to preserve the integrity of the original datasets.
 
 # Repository Philosophy
 
