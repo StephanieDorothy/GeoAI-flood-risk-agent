@@ -456,6 +456,61 @@ src/preprocessing/reproject_dem.py
 Validation was completed using:
 
 src/validation/validate_analysis_dem.py
+# Dataset 002 – Nairobi County Boundary
+
+## Purpose
+Administrative boundary used to clip all project datasets and define the official Area of Interest (AOI) for the GeoAI Flood Risk Agent.
+
+## Source Dataset
+
+Dataset Name:
+Nairobi County Boundary
+
+Original Source:
+geoBoundaries (ADM1 Kenya)
+
+Original CRS:
+EPSG:4326 (WGS 84)
+
+Processed Dataset
+
+Location:
+
+data/processed/boundaries/Nairobi_county_boundary.gpkg
+
+Processing Steps
+
+- Downloaded ADM1 boundary.
+- Extracted Nairobi County.
+- Saved as GeoPackage.
+- Preserved original CRS (EPSG:4326).
+
+Analysis Dataset
+
+Location:
+
+data/analysis/boundaries/Nairobi_boundary_32737.gpkg
+
+Analysis CRS
+
+EPSG:32737
+WGS 84 / UTM Zone 37 South
+
+Validation
+
+✓ Dataset opens successfully.
+✓ CRS verified.
+✓ Geometry preserved.
+✓ Ready for overlay analysis.
+
+Purpose in GeoAI Model
+
+Used for:
+
+- Dataset clipping
+- Spatial masking
+- Area of Interest definition
+- Overlay analysis
 
 ## Lessons Learned
 
