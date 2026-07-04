@@ -55,3 +55,13 @@ DOCS_DIR = PROJECT_ROOT / "Docs"
 # ==================================================
 
 SRC_DIR = PROJECT_ROOT / "src"
+
+# ==================================================
+# PROJECT COORDINATE REFERENCE SYSTEMS (CRS)
+# ==================================================
+
+# Original geographic CRS used by downloaded datasets
+GEOGRAPHIC_CRS = "EPSG:4326"
+
+# Official analysis CRS for the GeoAI Flood Risk Agent
+PROJECTED_CRS = "EPSG:32737"
