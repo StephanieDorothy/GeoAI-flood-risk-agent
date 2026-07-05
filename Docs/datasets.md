@@ -512,6 +512,94 @@ Used for:
 - Area of Interest definition
 - Overlay analysis
 
+# Dataset 003 – ESA WorldCover Land Cover
+
+## Purpose
+
+Represents land cover classes for Nairobi and provides environmental context for flood-risk modelling.
+
+---
+
+## Source Dataset
+
+Dataset Name:
+
+ESA WorldCover 10 m 2021
+
+Provider:
+
+European Space Agency (ESA)
+
+Original CRS:
+
+EPSG:4326
+
+Spatial Resolution:
+
+10 metres
+
+Temporal Coverage:
+
+2021
+
+---
+
+## Processed Dataset
+
+Location:
+
+data/processed/Landcover/Nairobi Landcover.tif
+
+Processing Steps
+
+- Downloaded ESA WorldCover 2021.
+- Clipped to Nairobi County.
+- Preserved original CRS (EPSG:4326).
+
+---
+
+## Analysis Dataset
+
+Location:
+
+data/analysis/landcover/landcover_32737.tif
+
+Analysis CRS
+
+EPSG:32737
+
+Resampling Method
+
+Nearest Neighbour
+
+Reason
+
+Land cover contains categorical classes.
+Nearest Neighbour preserves original class values.
+
+---
+
+## Validation
+
+✓ File opens successfully.
+
+✓ CRS verified as EPSG:32737.
+
+✓ Class values preserved.
+
+✓ Ready for spatial overlay analysis.
+
+---
+
+## Purpose in GeoAI Model
+
+Used for:
+
+- Surface characterization
+- Urban vs vegetation analysis
+- Flood susceptibility modelling
+- Environmental feature extraction
+
 ## Lessons Learned
 
 During this stage of the project, the following GIS engineering principles were applied:
