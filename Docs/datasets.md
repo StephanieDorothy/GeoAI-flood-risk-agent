@@ -600,6 +600,60 @@ Used for:
 - Flood susceptibility modelling
 - Environmental feature extraction
 
+# Dataset 004 – Population.
+
+# Analysis-Ready Population Dataset
+
+# Analysis Version
+
+File Name: population_32737.tif
+Location: data/analysis/population/
+Coordinate Reference System: EPSG:32737 (WGS 84 / UTM Zone 37 South)
+Purpose: Analysis-ready population raster for all distance- and area-based GIS operations within the GeoAI Flood Risk Agent.
+
+# Preprocessing Performed
+
+Clipped the Kenya WorldPop 2021 raster to the Nairobi County boundary.
+Preserved the original 100 m spatial resolution.
+Reprojected the clipped raster from EPSG:4326 to EPSG:32737.
+Used Nearest Neighbour resampling to preserve the original population values.
+
+# Validation
+
+Validation confirmed:
+
+Raster opens successfully.
+CRS correctly updated to EPSG:32737.
+Population statistics remained consistent after reprojection.
+NoData values preserved correctly.
+
+# Dataset 005 – Rivers
+
+# Analysis-Ready Rivers Dataset
+
+# Analysis Version
+
+File Name: rivers_32737.gpkg
+Location: data/analysis/rivers/
+Coordinate Reference System: EPSG:32737 (WGS 84 / UTM Zone 37 South)
+Purpose: Analysis-ready river network used for distance-to-river calculations and flood susceptibility modelling.
+
+# Preprocessing Performed
+
+Downloaded the OpenStreetMap waterways dataset for Kenya.
+Clipped the dataset to the Nairobi County boundary.
+Preserved all river attributes.
+Reprojected from EPSG:4326 to EPSG:32737.
+
+# Validation
+
+Validation confirmed:
+
+Dataset opens successfully.
+CRS correctly updated to EPSG:32737.
+River geometries preserved after reprojection.
+Attribute table retained without data loss.
+
 ## Lessons Learned
 
 During this stage of the project, the following GIS engineering principles were applied:
