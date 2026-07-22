@@ -653,6 +653,34 @@ Dataset opens successfully.
 CRS correctly updated to EPSG:32737.
 River geometries preserved after reprojection.
 Attribute table retained without data loss.
+## Derived Dataset 001 — Slope Raster
+
+### Purpose
+Represents terrain steepness derived from the analysis-ready Digital Elevation Model (DEM). Slope is used as an input to the GeoAI Flood Risk Agent because it influences surface runoff and water accumulation.
+
+### Source Dataset
+Analysis-ready DEM:
+`data/analysis/dem/dem_nairobi_utm37s.tif`
+
+### Processing Method
+- Reprojected DEM in EPSG:32737.
+- Calculated terrain gradients using NumPy.
+- Converted gradients to slope in degrees.
+- Preserved NoData areas as -9999.
+- Saved as GeoTIFF with LZW compression.
+
+### Output Dataset
+`data/analysis/terrain/slope.tif`
+
+### Validation Summary
+- CRS: EPSG:32737
+- Resolution: 30.87 m
+- Minimum Slope: 0.00°
+- Maximum Slope: 41.72°
+- Mean Slope: 3.91°
+
+### Role in the GeoAI Model
+Higher slope values indicate faster runoff, while lower slope values highlight flatter terrain where water is more likely to accumulate. This layer will later be combined with elevation, rivers, land cover, and population in the flood susceptibility model.
 
 ## Lessons Learned
 
