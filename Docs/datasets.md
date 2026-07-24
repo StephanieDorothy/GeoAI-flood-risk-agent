@@ -681,6 +681,33 @@ Analysis-ready DEM:
 
 ### Role in the GeoAI Model
 Higher slope values indicate faster runoff, while lower slope values highlight flatter terrain where water is more likely to accumulate. This layer will later be combined with elevation, rivers, land cover, and population in the flood susceptibility model.
+## Derived Dataset 002 — Aspect Raster
+
+### Purpose
+Represents the compass direction that each terrain cell faces, derived from the analysis-ready Digital Elevation Model (DEM). Aspect is a terrain derivative that helps describe terrain orientation and contributes to hydrological and environmental analyses.
+
+### Source Dataset
+Analysis-ready DEM:
+`data/analysis/dem/dem_nairobi_utm37s.tif`
+
+### Processing Method
+- Used the analysis-ready DEM in EPSG:32737.
+- Calculated terrain gradients using NumPy.
+- Converted gradients into aspect values expressed in degrees clockwise from north.
+- Assigned NoData value (-9999) to flat terrain and original NoData cells.
+- Saved as a compressed GeoTIFF using LZW compression.
+
+### Output Dataset
+`data/analysis/terrain/aspect.tif`
+
+### Validation Summary
+- CRS: EPSG:32737
+- Resolution: 30.87 m
+- Data Type: Float32
+- NoData Value: -9999
+
+### Role in the GeoAI Model
+Aspect describes the orientation of terrain surfaces. While not a primary flood predictor on its own, it complements slope and elevation by providing information about terrain orientation, which influences runoff behaviour, soil moisture, and environmental conditions.
 
 ## Lessons Learned
 
