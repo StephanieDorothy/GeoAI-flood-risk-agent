@@ -709,6 +709,37 @@ Analysis-ready DEM:
 ### Role in the GeoAI Model
 Aspect describes the orientation of terrain surfaces. While not a primary flood predictor on its own, it complements slope and elevation by providing information about terrain orientation, which influences runoff behaviour, soil moisture, and environmental conditions.
 
+## Derived Dataset 003 — Hydrologically Conditioned DEM (Filled DEM)
+
+### Purpose
+
+A hydrologically conditioned Digital Elevation Model created by filling artificial depressions (sinks) in the analysis-ready DEM. This ensures continuous surface drainage for downstream hydrological analyses.
+
+### Source Dataset
+
+`data/analysis/dem/dem_nairobi_utm37s.tif`
+
+### Processing Method
+
+- Used WhiteboxTools `FillDepressions`.
+- Filled artificial depressions while preserving the overall terrain.
+- Automatically corrected flat areas to ensure continuous drainage.
+- Saved as an analysis-ready GeoTIFF.
+
+### Output Dataset
+
+`data/analysis/terrain/filled_dem.tif`
+
+### Validation Summary
+
+- CRS: EPSG:32737
+- Same spatial resolution as the analysis DEM.
+- Hydrologically conditioned for flow routing.
+
+### Role in the GeoAI Model
+
+The Filled DEM becomes the primary elevation surface for hydrological modelling. All subsequent analyses—including Flow Direction, Flow Accumulation, watershed delineation, and stream extraction—are derived from this dataset instead of the original DEM.
+
 ## Lessons Learned
 
 During this stage of the project, the following GIS engineering principles were applied:
