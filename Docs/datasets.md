@@ -771,6 +771,38 @@ A D8 Flow Direction raster generated from the hydrologically conditioned DEM. Ea
 
 The Flow Direction raster defines the downstream path of surface runoff for every raster cell. It is the primary input for Flow Accumulation, watershed analysis, stream extraction, and flood susceptibility modelling.
 
+## Derived Dataset 005 — Flow Accumulation
+
+### Purpose
+
+A D8 Flow Accumulation raster generated from the Flow Direction raster. Each raster cell stores the number of upstream cells contributing flow to that location.
+
+### Source Dataset
+
+`data/analysis/terrain/flow_direction.tif`
+
+### Processing Method
+
+- Used WhiteboxTools `D8FlowAccumulation`.
+- Input raster used ESRI D8 pointer encoding.
+- Output type: Cell Count.
+- Saved as an analysis-ready GeoTIFF.
+
+### Output Dataset
+
+`data/analysis/terrain/flow_accumulation.tif`
+
+### Validation Summary
+
+- CRS: EPSG:32737
+- Raster generated successfully.
+- Verified valid accumulation values.
+- Ready for stream network extraction.
+
+### Role in the GeoAI Model
+
+The Flow Accumulation raster identifies areas where runoff converges. It forms the foundation for extracting stream networks, identifying drainage pathways, and modelling flood-prone locations.
+
 ## Lessons Learned
 
 During this stage of the project, the following GIS engineering principles were applied:
