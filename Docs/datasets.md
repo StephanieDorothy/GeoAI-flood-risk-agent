@@ -739,6 +739,37 @@ A hydrologically conditioned Digital Elevation Model created by filling artifici
 ### Role in the GeoAI Model
 
 The Filled DEM becomes the primary elevation surface for hydrological modelling. All subsequent analyses—including Flow Direction, Flow Accumulation, watershed delineation, and stream extraction—are derived from this dataset instead of the original DEM.
+## Derived Dataset 004 — Flow Direction (D8)
+
+### Purpose
+
+A D8 Flow Direction raster generated from the hydrologically conditioned DEM. Each raster cell stores the direction of surface runoff toward its steepest downslope neighbour using the ESRI D8 pointer convention.
+
+### Source Dataset
+
+`data/analysis/terrain/filled_dem.tif`
+
+### Processing Method
+
+- Used WhiteboxTools `D8Pointer`.
+- Generated flow direction using the D8 (Deterministic Eight-Neighbour) algorithm.
+- Used ESRI pointer encoding.
+- Saved as an analysis-ready GeoTIFF.
+
+### Output Dataset
+
+`data/analysis/terrain/flow_direction.tif`
+
+### Validation Summary
+
+- CRS: EPSG:32737
+- Raster successfully generated.
+- Verified valid ESRI D8 direction codes.
+- Ready for Flow Accumulation.
+
+### Role in the GeoAI Model
+
+The Flow Direction raster defines the downstream path of surface runoff for every raster cell. It is the primary input for Flow Accumulation, watershed analysis, stream extraction, and flood susceptibility modelling.
 
 ## Lessons Learned
 
