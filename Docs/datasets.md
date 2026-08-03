@@ -803,6 +803,37 @@ A D8 Flow Accumulation raster generated from the Flow Direction raster. Each ras
 
 The Flow Accumulation raster identifies areas where runoff converges. It forms the foundation for extracting stream networks, identifying drainage pathways, and modelling flood-prone locations.
 
+## Derived Dataset 006 — Stream Network
+
+### Purpose
+
+A binary raster representing the extracted stream network derived from the Flow Accumulation raster using a flow accumulation threshold.
+
+### Source Dataset
+
+`data/analysis/terrain/flow_accumulation.tif`
+
+### Processing Method
+
+- Used WhiteboxTools `ExtractStreams`.
+- Flow accumulation threshold: **1000 cells**.
+- Output raster contains binary stream classification.
+
+### Output Dataset
+
+`data/analysis/terrain/stream_network.tif`
+
+### Validation Summary
+
+- CRS: EPSG:32737
+- Raster generated successfully.
+- Verified binary stream classes (0 = non-stream, 1 = stream).
+- Ready for watershed and flood modelling.
+
+### Role in the GeoAI Model
+
+The Stream Network raster identifies the primary drainage pathways across the study area. It will support watershed analysis, flood routing, and future GeoAI flood susceptibility modelling.
+
 ## Lessons Learned
 
 During this stage of the project, the following GIS engineering principles were applied:
