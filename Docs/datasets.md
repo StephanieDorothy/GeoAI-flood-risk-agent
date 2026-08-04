@@ -834,6 +834,37 @@ A binary raster representing the extracted stream network derived from the Flow 
 
 The Stream Network raster identifies the primary drainage pathways across the study area. It will support watershed analysis, flood routing, and future GeoAI flood susceptibility modelling.
 
+## Derived Dataset 007 — Watershed
+
+### Purpose
+
+A watershed raster delineating the contributing drainage area upstream of a selected pour point.
+
+### Source Datasets
+
+- `data/analysis/terrain/flow_direction.tif`
+- `data/analysis/terrain/pour_point.shp`
+
+### Processing Method
+
+- Used WhiteboxTools `Watershed`.
+- Input flow direction raster encoded using the ESRI D8 pointer scheme.
+- A manually digitized pour point defined the watershed outlet.
+
+### Output Dataset
+
+`data/analysis/terrain/watershed.tif`
+
+### Validation Summary
+
+- CRS: EPSG:32737
+- Watershed successfully delineated.
+- Output verified and ready for downstream analysis.
+
+### Role in the GeoAI Model
+
+The watershed identifies the entire upstream area contributing runoff to the selected outlet. It provides the spatial extent for analysing flood-generating processes, land cover impacts, rainfall-runoff relationships, and future GeoAI flood susceptibility modelling.
+
 ## Lessons Learned
 
 During this stage of the project, the following GIS engineering principles were applied:
