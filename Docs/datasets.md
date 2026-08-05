@@ -865,6 +865,37 @@ A watershed raster delineating the contributing drainage area upstream of a sele
 
 The watershed identifies the entire upstream area contributing runoff to the selected outlet. It provides the spatial extent for analysing flood-generating processes, land cover impacts, rainfall-runoff relationships, and future GeoAI flood susceptibility modelling.
 
+## Flood Conditioning Factor 001 — Elevation
+
+### Purpose
+
+Prepared elevation raster used as a conditioning factor for flood susceptibility modelling.
+
+### Source Dataset
+
+`data/analysis/terrain/filled_dem.tif`
+
+### Processing Method
+
+- Copied the hydrologically conditioned DEM into the flood conditioning factors directory.
+- Preserved all raster metadata.
+- Renamed for modelling consistency.
+
+### Output Dataset
+
+`data/analysis/flood_factors/elevation.tif`
+
+### Validation Summary
+
+- CRS: EPSG:32737
+- Raster copied successfully.
+- Metadata preserved.
+- Ready for normalization.
+
+### Role in the GeoAI Model
+
+Elevation represents the vertical position of the terrain. Lower-lying areas generally have a greater likelihood of water accumulation and are therefore an important factor in flood susceptibility modelling.
+
 ## Lessons Learned
 
 During this stage of the project, the following GIS engineering principles were applied:
