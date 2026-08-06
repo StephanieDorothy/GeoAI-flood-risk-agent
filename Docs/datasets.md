@@ -896,6 +896,39 @@ Prepared elevation raster used as a conditioning factor for flood susceptibility
 
 Elevation represents the vertical position of the terrain. Lower-lying areas generally have a greater likelihood of water accumulation and are therefore an important factor in flood susceptibility modelling.
 
+## Distance to Rivers
+
+### Purpose
+
+Represents the Euclidean distance from every raster cell to the nearest mapped river.
+
+### Input
+
+- Rivers (EPSG:32737)
+- Rasterized river network
+
+### Method
+
+- Rivers rasterized using the project DEM as reference.
+- Euclidean Distance calculated using WhiteboxTools.
+
+### Output
+
+data/analysis/flood_factors/distance_to_rivers.tif
+
+### Validation
+
+- CRS verified (EPSG:32737)
+- Resolution matches DEM
+- Raster dimensions verified
+- Minimum distance = 0 m
+- Maximum distance ≈ 16.08 km
+- Mean distance ≈ 2.68 km
+
+### Status
+
+Completed
+
 ## Lessons Learned
 
 During this stage of the project, the following GIS engineering principles were applied:
