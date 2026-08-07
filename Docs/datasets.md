@@ -929,6 +929,21 @@ data/analysis/flood_factors/distance_to_rivers.tif
 
 Completed
 
+## Flood Conditioning Factor 3 — Slope
+
+**Dataset:** slope.tif
+
+**Source:**
+Derived from the validated terrain slope raster.
+
+**Purpose:**
+Represents terrain steepness used in flood susceptibility modelling. Lower slope values generally indicate greater flood susceptibility due to slower runoff and increased water accumulation.
+
+**Status:**
+✅ Prepared
+✅ Previously validated
+✅ Visual inspection completed in QGIS
+
 ## Lessons Learned
 
 During this stage of the project, the following GIS engineering principles were applied:
