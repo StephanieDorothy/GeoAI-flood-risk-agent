@@ -944,6 +944,74 @@ Represents terrain steepness used in flood susceptibility modelling. Lower slope
 ✅ Previously validated
 ✅ Visual inspection completed in QGIS
 
+## Flood Conditioning Factor 4 — Land Cover
+
+### Purpose
+
+Represents land cover classes across Nairobi and provides a
+categorical flood conditioning factor for the future flood
+susceptibility model.
+
+### Source
+
+- Provider: European Space Agency (ESA)
+- Dataset: WorldCover 2021
+- Original Resolution: 10 metres
+- Original CRS: EPSG:4326 (WGS84)
+
+### Analysis-Ready Dataset
+
+The Nairobi subset was previously clipped and reprojected to:
+
+EPSG:32737 (WGS 84 / UTM Zone 37 South)
+
+Analysis-ready source:
+
+data/analysis/landcover/landcover_32737.tif
+
+### Flood Factor Dataset
+
+Prepared from the validated analysis-ready raster.
+
+Output:
+
+data/analysis/flood_factors/landcover.tif
+
+### Validated Classes
+
+The flood-factor raster contains the following land-cover
+classes:
+
+- 10
+- 20
+- 30
+- 40
+- 50
+- 60
+- 80
+- 90
+
+### Validation
+
+Python validation confirmed:
+
+- CRS: EPSG:32737
+- Resolution: approximately 9.26 m
+- Width: 5348 pixels
+- Height: 3395 pixels
+- Data type: uint8
+- NoData value: 0
+- Eight valid land-cover classes
+
+The raster was also visually inspected in QGIS using
+categorical/unique-value symbology.
+
+### Status
+
+Completed
+
+
+
 ## Lessons Learned
 
 During this stage of the project, the following GIS engineering principles were applied:
