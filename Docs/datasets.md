@@ -1010,6 +1010,82 @@ categorical/unique-value symbology.
 
 Completed
 
+## Flood Conditioning Factor 005 — Population / Exposure
+
+### Purpose
+
+Represents the spatial distribution of estimated population used to
+characterize human exposure within the flood risk decision model.
+
+Population is treated as an exposure factor rather than as a direct
+measure of physical flood susceptibility.
+
+### Source Dataset
+
+`data/analysis/population/population_32737.tif`
+
+### Processing Method
+
+- Used the validated analysis-ready WorldPop population raster.
+- Preserved the original population values.
+- Preserved the original raster CRS, extent, resolution, transform,
+  data type, and NoData value.
+- Prepared a dedicated flood-factor copy for subsequent modelling.
+- No normalization or flood-risk scoring was applied at this stage.
+
+### Output Dataset
+
+`data/analysis/flood_factors/population.tif`
+
+### Raster Properties
+
+- CRS: EPSG:32737
+- Width: 534 cells
+- Height: 338 cells
+- Resolution: approximately 92.60 m × 92.60 m
+- Data type: float32
+- NoData value: -99999.0
+
+### Population Statistics
+
+- Valid cells: 61,995
+- Minimum population: 0.0
+- Maximum population: 1,018.9541
+- Mean population: 83.76664
+- Median population: 37.255993
+- Zero-population cells: 31
+- Positive-population cells: 61,964
+
+### Validation
+
+The prepared population flood factor was validated against the
+analysis-ready population raster.
+
+Validation confirmed:
+
+- CRS preserved
+- Raster dimensions preserved
+- Resolution preserved
+- Spatial transform preserved
+- Bounds preserved
+- Data type preserved
+- NoData value preserved
+- Population values preserved
+- Population statistics preserved
+
+The raster was also inspected visually in QGIS.
+
+### Role in the GeoAI Flood Risk Model
+
+Population represents the human exposure dimension of the model.
+
+It does not independently determine whether an area is physically
+susceptible to flooding. Instead, it identifies areas where larger
+numbers of people may potentially be affected by flood hazards.
+
+The population factor will be standardized during the subsequent
+factor normalization stage before being incorporated into the final
+MCDA model.
 
 
 ## Lessons Learned
