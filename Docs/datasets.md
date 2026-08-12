@@ -1087,6 +1087,49 @@ The population factor will be standardized during the subsequent
 factor normalization stage before being incorporated into the final
 MCDA model.
 
+## Phase 6 — Factor Standardization
+
+**Status:** Completed
+
+The flood-conditioning factors were standardized to prepare them for subsequent MCDA analysis.
+
+Standardized factors:
+
+- Elevation — inverse normalization to 0–1
+- Slope — inverse normalization to 0–1
+- Distance to Rivers — inverse normalization to 0–1
+- Population — positive normalization to 0–1
+- Land Cover — categorical reclassification to flood-susceptibility scores
+
+Land Cover reclassification:
+
+| Land Cover Class | Score |
+|---:|---:|
+| 10 | 0.20 |
+| 20 | 0.30 |
+| 30 | 0.45 |
+| 40 | 0.60 |
+| 50 | 1.00 |
+| 60 | 0.75 |
+| 80 | 0.00 |
+| 90 | 0.15 |
+
+Validation confirmed:
+
+- CRS consistency
+- Raster dimensions, transform, and resolution
+- Valid cell counts
+- 0–1 score range
+- Expected factor relationships
+- Land Cover class-to-score mapping
+
+The original flood-factor rasters were preserved. No reprojection or resampling was performed during standardization.
+
+Standardized outputs are stored in:
+
+`data/analysis/standardized/`
+
+QGIS visual verification is the final step before Phase 6 documentation and completion.
 
 ## Lessons Learned
 
