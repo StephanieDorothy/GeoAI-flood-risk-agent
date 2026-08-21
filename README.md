@@ -1,48 +1,68 @@
-# GeoAI Flood Risk Agent
+# GeoAI Flood Risk Decision Agent
 
 A Python-based geospatial analysis project for flood susceptibility modelling in Nairobi County, Kenya.
 
-> **Project Status (August 2026)**
+---
+
+## Project Status — August 2026
+
+> **Current Milestone: Phase 7 — Spatial Alignment and MCDA Preparation**
+
+### Completed
+
+* ✅ Phase 1 — Data Acquisition
+* ✅ Phase 2 — Data Validation
+* ✅ Phase 3 — Analysis-Ready Data
+* ✅ Phase 4 — Terrain and Hydrological Analysis
+* ✅ Phase 5 — Flood Conditioning Factors
+* ✅ Phase 6 — Factor Standardization / Normalization
+* ✅ Phase 7 — Spatial Alignment and MCDA Preparation
+
+### Upcoming
+
+* ⏳ Phase 8 — MCDA Flood Susceptibility Modelling
+* ⏳ Phase 9 — Flood Susceptibility Validation
+* ⏳ Phase 10 — GeoAI Interpretation and Decision Support
+
+> **Phase 7 is fully completed, validated, visually verified in QGIS, documented, and pushed to GitHub.**
 >
-> **Current Milestone:** Phase 6 – Factor Standardization / Normalization
->
-> ✅ Data Acquisition Complete
->
-> ✅ Data Validation Complete
->
-> ✅ Analysis-Ready Data Complete
->
-> ✅ Terrain and Hydrological Analysis Complete
->
-> ✅ Flood Conditioning Factors Complete
->
-> ✅ Factor Standardization / Normalization Complete
->
-> ⏳ Spatial Alignment and MCDA Preparation – Next Stage
->
-> ⏳ MCDA Flood Susceptibility Modelling – Planned
->
-> ⏳ GeoAI Interpretation and Decision Support – Planned
+> The project is now ready to proceed to **Phase 8 — MCDA Flood Susceptibility Modelling**.
 
 ---
 
 # Project Overview
 
-The **GeoAI Flood Risk Agent** is a modular GIS project that combines Python, geospatial data processing, terrain analysis, hydrological modelling, factor standardization, and Multi-Criteria Decision Analysis (MCDA) to develop a reproducible flood susceptibility modelling workflow for Nairobi County, Kenya.
+The **GeoAI Flood Risk Decision Agent** is a modular Python-based geospatial analysis and spatial decision-support project for flood susceptibility modelling in Nairobi County, Kenya.
 
-The project was initiated with the goal of developing a GeoAI-powered spatial decision support system capable of analysing spatial flood-conditioning factors and eventually providing explainable flood-risk information.
+The project integrates GIS, remote sensing, terrain analysis, hydrological modelling, spatial analysis, raster processing, factor standardization, spatial alignment, Multi-Criteria Decision Analysis (MCDA), and GeoAI-assisted interpretation.
 
-The current development stage has completed the preparation and standardization of the major flood-conditioning factors. The next stage will focus on spatially aligning the standardized factors to a common modelling grid before MCDA weighted overlay.
+The overall workflow is designed to transform raw geospatial datasets into validated flood-conditioning factors, standardize those factors into comparable scores, align them to a common modelling grid, combine them through MCDA, validate the resulting flood susceptibility surface, and ultimately provide an explainable spatial decision-support capability.
 
-Each stage of the workflow is implemented, validated, documented, and version-controlled before progressing to the next phase. This ensures that the project remains reproducible, modular, testable, and easy to maintain.
+The project follows a reproducible, modular, and validation-driven development approach.
 
----
+Each major phase follows:
 
-# Study Area
+```text
+Concept
+    ↓
+Methodology
+    ↓
+Implementation
+    ↓
+Execution
+    ↓
+Validation
+    ↓
+QGIS Visual Verification
+    ↓
+Documentation
+    ↓
+Git Commit
+    ↓
+Git Push
+```
 
-This project focuses on **Nairobi County, Kenya**, where rapid urbanization, changing land cover, terrain characteristics, drainage conditions, and seasonal rainfall contribute to recurring flood events.
-
-Nairobi provides a practical study area for developing and evaluating a reproducible GIS-based flood susceptibility modelling and decision-support workflow.
+The objective is not simply to produce a flood map, but to build a professional and explainable geospatial workflow that can be inspected, reproduced, validated, and extended.
 
 ---
 
@@ -52,25 +72,67 @@ The project aims to:
 
 * Build a reproducible GIS workflow using Python.
 * Integrate raster and vector geospatial datasets.
-* Validate and prepare spatial datasets for analysis.
-* Perform terrain and hydrological preprocessing.
-* Generate flood conditioning factors.
-* Standardize multiple spatial factors onto a comparable scale.
-* Align standardized factors to a common modelling grid.
-* Apply Multi-Criteria Decision Analysis (MCDA) for flood susceptibility modelling.
-* Produce explainable flood susceptibility information.
-* Develop a GeoAI-assisted spatial decision-support workflow.
-* Provide reproducible and well-documented geospatial processing methods.
+* Validate spatial datasets before analysis.
+* Prepare analysis-ready geospatial data.
+* Perform terrain and hydrological analysis.
+* Generate flood-conditioning factors.
+* Define explicit relationships between conditioning factors and flood susceptibility.
+* Standardize different factors onto a common 0–1 scale.
+* Spatially align standardized factors to a common modelling grid.
+* Apply Multi-Criteria Decision Analysis (MCDA).
+* Generate a flood susceptibility surface.
+* Validate the resulting flood susceptibility model.
+* Analyse population exposure in relation to flood susceptibility.
+* Apply GeoAI methods to interpret spatial results.
+* Develop an explainable spatial decision-support workflow.
+* Maintain reproducibility through Python scripts, validation scripts, documentation, and Git version control.
+
+---
+
+# Study Area
+
+The study area for this project is:
+
+**Nairobi County, Kenya**
+
+Nairobi provides a suitable environment for developing and demonstrating a flood susceptibility decision-support workflow because of its:
+
+* Urban development
+* Changing land-cover patterns
+* Complex terrain
+* River and drainage networks
+* Population concentration
+* Potential flood exposure
+* Spatial variation in environmental conditions
+
+The project uses spatial datasets representing terrain, hydrology, rivers, land cover, and population exposure.
 
 ---
 
 # Project Roadmap
 
-## ✅ Phase 1 — Data Acquisition
+| Phase    | Description                               | Status      |
+| -------- | ----------------------------------------- | ----------- |
+| Phase 1  | Data Acquisition                          | ✅ Completed |
+| Phase 2  | Data Validation                           | ✅ Completed |
+| Phase 3  | Analysis-Ready Data                       | ✅ Completed |
+| Phase 4  | Terrain and Hydrological Analysis         | ✅ Completed |
+| Phase 5  | Flood Conditioning Factors                | ✅ Completed |
+| Phase 6  | Factor Standardization / Normalization    | ✅ Completed |
+| Phase 7  | Spatial Alignment and MCDA Preparation    | ✅ Completed |
+| Phase 8  | MCDA Flood Susceptibility Modelling       | ⏳ Next      |
+| Phase 9  | Flood Susceptibility Validation           | ⏳ Planned   |
+| Phase 10 | GeoAI Interpretation and Decision Support | ⏳ Planned   |
 
-**Status:** Completed
+---
 
-The following datasets were acquired for the project:
+# Phase 1 — Data Acquisition
+
+**Status: ✅ Completed**
+
+The first phase established the project's foundational geospatial datasets.
+
+The following datasets were acquired:
 
 * Digital Elevation Model (DEM)
 * Nairobi County Boundary
@@ -78,360 +140,457 @@ The following datasets were acquired for the project:
 * Population
 * Rivers
 
-These datasets provide the foundation for terrain analysis, hydrological modelling, flood conditioning factor generation, and exposure assessment.
+These datasets provide the environmental, hydrological, land-cover, and population information required for the subsequent modelling stages.
+
+The acquired datasets were organized into the project data structure before validation and processing.
 
 ---
 
-## ✅ Phase 2 — Data Validation
+# Phase 2 — Data Validation
 
-**Status:** Completed
+**Status: ✅ Completed**
 
-The acquired datasets were individually inspected and validated before analysis.
+Before any modelling was performed, the acquired datasets were independently inspected and validated.
 
 Validation included:
 
-* Coordinate Reference System (CRS) verification
-* Raster metadata inspection
-* Raster dimensions and resolution checks
-* Vector geometry validation
-* NoData inspection
-* Dataset integrity checks
-* Spatial extent verification
+* Coordinate Reference System (CRS)
+* Raster dimensions
+* Raster resolution
+* Spatial extent
+* Raster data type
+* NoData values
+* Vector geometry
+* Dataset integrity
+* Spatial coverage
 
-Each major dataset has its own validation workflow.
+The purpose of this phase was to ensure that downstream processing was performed using valid and understood datasets.
+
+The project adopts the principle that:
+
+> **Data should be validated before it is analysed.**
 
 ---
 
-## ✅ Phase 3 — Analysis-Ready Data
+# Phase 3 — Analysis-Ready Data
 
-**Status:** Completed
+**Status: ✅ Completed**
 
-The project datasets were prepared for spatial analysis using a common projected coordinate reference system:
+The validated datasets were transformed into an analysis-ready spatial framework.
 
-**EPSG:32737 — WGS 84 / UTM Zone 37 South**
+The primary projected CRS selected for the project is:
 
-This projected CRS provides metric units suitable for:
+```text
+EPSG:32737
+WGS 84 / UTM Zone 37 South
+```
+
+This projected coordinate reference system uses metric units and is therefore appropriate for:
 
 * Distance calculations
-* Terrain analysis
-* Raster processing
-* Spatial overlay
-* Flood conditioning factor generation
+* Raster analysis
+* Terrain processing
+* Hydrological modelling
+* Spatial overlays
+* Flood-conditioning factor generation
+* MCDA processing
 
-The analysis-ready datasets were organized within the project data structure before downstream processing.
+The datasets were prepared so that subsequent analysis could be performed within a consistent projected spatial reference.
 
 ---
 
-## ✅ Phase 4 — Terrain and Hydrological Analysis
+# Phase 4 — Terrain and Hydrological Analysis
 
-**Status:** Completed
+**Status: ✅ Completed**
 
-Terrain and hydrological preprocessing were implemented using Python, Rasterio, and WhiteboxTools.
+Phase 4 focused on extracting terrain and hydrological information from the Digital Elevation Model.
 
-Completed outputs include:
+The project used Python geospatial tools together with WhiteboxTools for terrain and hydrological processing.
 
-* Filled DEM
+Completed terrain products include:
+
+* Digital Elevation Model preparation
+* Elevation
 * Slope
 * Aspect
-* D8 Flow Direction
+
+Completed hydrological products include:
+
+* Flow Direction
 * Flow Accumulation
 * Stream Network
 * Watershed Delineation
 
-The hydrological workflow was used to understand:
+The hydrological workflow included DEM preparation and flow-processing operations.
 
-* Terrain characteristics
-* Flow direction
-* Flow concentration
-* Drainage behaviour
-* Stream development
-* Contributing watershed areas
+A stream network was generated using a flow-accumulation threshold of:
 
-Each major processing stage included:
+```text
+1000
+```
 
-* Python processing script
-* Validation script
-* QGIS visual inspection
-* Documentation
-* Git version history
+The resulting terrain and hydrological products provided the foundation for the flood-conditioning factor stage.
 
 ---
 
-## ✅ Phase 5 — Flood Conditioning Factors
+# Phase 5 — Flood Conditioning Factors
 
-**Status:** Completed
+**Status: ✅ Completed**
 
-Phase 5 transformed the validated terrain, hydrological, land-cover, river, and population datasets into modelling inputs for the flood susceptibility workflow.
+Phase 5 transformed the validated terrain, hydrological, land-cover, river, and population datasets into flood-conditioning factors.
 
-The completed flood conditioning factors are:
+Five major factors were prepared:
 
-### 1. Elevation
+1. Elevation
+2. Slope
+3. Distance to Rivers
+4. Land Cover
+5. Population
 
-**Output:**
-
-`data/analysis/flood_factors/elevation.tif`
-
-Elevation represents the vertical position of the terrain and provides information relevant to potential water accumulation and flood susceptibility.
-
----
-
-### 2. Slope
-
-**Output:**
-
-`data/analysis/flood_factors/slope.tif`
-
-Slope represents terrain steepness and provides information about surface runoff behaviour and potential water accumulation.
-
-The slope raster was prepared from the validated terrain analysis workflow rather than unnecessarily recalculating an existing validated product.
+These factors represent different environmental and exposure characteristics that can contribute to the spatial distribution or consequences of flooding.
 
 ---
 
-### 3. Distance to Rivers
+## 5.1 Elevation
 
-**Output:**
+Elevation was prepared as a continuous flood-conditioning factor.
 
-`data/analysis/flood_factors/distance_to_rivers.tif`
+Higher and lower terrain positions can influence water accumulation and inundation behaviour.
 
-Distance to rivers represents the Euclidean distance from each raster cell to the nearest mapped river feature.
-
-Areas closer to rivers generally have greater potential exposure to river-related flooding, although distance to rivers is interpreted together with the other conditioning factors.
+The elevation factor was subsequently standardized using an inverse relationship for the flood susceptibility model.
 
 ---
 
-### 4. Land Cover
+## 5.2 Slope
 
-**Output:**
+Slope was derived from the terrain analysis workflow.
 
-`data/analysis/flood_factors/land_cover.tif`
+Slope provides information about terrain steepness and can influence:
 
-Land cover represents the physical characteristics of the Earth's surface.
+* Surface runoff
+* Water movement
+* Drainage
+* Potential accumulation
 
-The land-cover dataset contains categorical classes representing different surface-cover types.
-
-The project preserves these categorical classes at the conditioning-factor stage. Their flood-susceptibility influence was later established through an explicit reclassification methodology during Phase 6.
-
----
-
-### 5. Population Exposure
-
-**Output:**
-
-`data/analysis/flood_factors/population.tif`
-
-Population represents the human exposure dimension of the flood model.
-
-The population raster is based on WorldPop gridded population estimates.
-
-The prepared factor preserves the original population values and raster properties. Population is not treated as a direct physical measure of flood susceptibility; instead, it provides information about where larger numbers of people may potentially be affected by flood hazards.
+The slope factor was subsequently standardized using the project's defined inverse relationship.
 
 ---
 
-## Phase 5 Validation
+## 5.3 Distance to Rivers
 
-**Status:** Completed
+A river raster was created from the validated river vector data.
 
-All five flood conditioning factors were subjected to the project's validation workflow.
+The river rasterization process successfully processed:
+
+```text
+655 river features
+```
+
+The river raster was then used to calculate Euclidean distance to rivers.
+
+The resulting distance-to-rivers raster had the following validated statistics:
+
+```text
+Minimum: 0.0 m
+Maximum: 16077.409 m
+Mean:    2684.8079 m
+```
+
+The distance factor was subsequently standardized using an inverse relationship because areas closer to rivers receive higher susceptibility scores.
+
+---
+
+## 5.4 Land Cover
+
+The land-cover dataset was prepared as a categorical flood-conditioning factor.
+
+The detected land-cover classes included:
+
+```text
+10
+20
+30
+40
+50
+60
+80
+90
+```
+
+The categorical nature of land cover required a reclassification approach rather than continuous min-max normalization.
+
+The land-cover classes were later converted into flood-susceptibility scores during Phase 6.
+
+---
+
+## 5.5 Population
+
+Population was prepared as an exposure-related factor.
+
+The validated population raster had:
+
+```text
+CRS:
+EPSG:32737
+
+Data Type:
+float32
+
+Valid Cells:
+61995
+
+Minimum:
+0.0
+
+Maximum:
+1018.9541
+
+Mean:
+83.76664
+
+Median:
+37.255993
+```
+
+The original population values were preserved in the prepared flood-conditioning raster.
+
+Population is treated as an exposure dimension rather than a direct physical flood-conditioning mechanism.
+
+---
+
+# Phase 5 Validation
+
+**Status: ✅ Completed**
+
+The flood-conditioning factors were subjected to validation before standardization.
 
 Validation included:
 
-* Raster existence checks
-* CRS verification
-* Raster dimensions
-* Resolution verification
-* Spatial extent checks
-* NoData inspection
-* Data type verification
-* Statistical inspection where appropriate
-* Spatial comparison
-* QGIS visual inspection
+* Raster existence
+* CRS
+* Dimensions
+* Resolution
+* Spatial extent
+* Data type
+* NoData values
+* Valid-cell statistics
+* Spatial inspection
+* QGIS verification
 
-The completed factors were therefore ready for standardization.
+The completed factors were therefore considered suitable for the standardization stage.
 
 ---
 
 # Phase 6 — Factor Standardization / Normalization
 
-**Status:** Completed
+**Status: ✅ Completed**
 
-Phase 6 converted the five flood-conditioning factors into comparable flood-susceptibility scores suitable for subsequent MCDA modelling.
+Phase 6 converted the five flood-conditioning factors into comparable scores suitable for MCDA.
 
-The factors originally had different units, value ranges, resolutions, and meanings. Directly combining these raw values would therefore have produced an inappropriate weighted overlay.
+The raw factors had different:
 
-The standardization stage established explicit relationships between each factor and flood susceptibility before implementation.
+* Units
+* Value ranges
+* Meanings
+* Spatial resolutions
+* Data types
 
----
+They therefore could not be directly combined using weighted overlay.
 
-## Factor Standardization Methodology
+The purpose of Phase 6 was to convert the factors into a common modelling scale:
 
-| Factor             | Data Type             | Relationship    | Standardization              |
-| ------------------ | --------------------- | --------------- | ---------------------------- |
-| Elevation          | Continuous            | Inverse         | Min-Max normalization        |
-| Slope              | Continuous            | Inverse         | Min-Max normalization        |
-| Distance to Rivers | Continuous            | Inverse         | Min-Max normalization        |
-| Population         | Continuous / Exposure | Positive        | Min-Max normalization        |
-| Land Cover         | Categorical           | Class-dependent | Categorical reclassification |
+```text
+0 – 1
+```
 
-Continuous factors were converted to a common **0–1 scale**.
+A score closer to:
 
-A score closer to **1** represents greater contribution to the modelled flood susceptibility or exposure relationship, while a score closer to **0** represents lower contribution.
+```text
+1
+```
 
----
+represents a greater contribution to the defined flood susceptibility or exposure relationship.
 
-## 1. Elevation Standardization
+A score closer to:
 
-**Input:**
+```text
+0
+```
 
-`data/analysis/flood_factors/elevation.tif`
-
-**Output:**
-
-`data/analysis/standardized/elevation_score.tif`
-
-Elevation was standardized using an inverse relationship because lower-lying terrain can be more susceptible to water accumulation and inundation.
-
-The transformation produced scores from:
-
-`0.0 → 1.0`
-
-Validation confirmed:
-
-* CRS consistency
-* Raster dimensions
-* Transform
-* Resolution
-* Valid cell count
-* 0–1 score range
-* Expected inverse relationship
-
-The source-score correlation was:
-
-`-1.000000`
+represents a lower contribution.
 
 ---
 
-## 2. Slope Standardization
+# Factor Standardization Methodology
 
-**Input:**
-
-`data/analysis/flood_factors/slope.tif`
-
-**Output:**
-
-`data/analysis/standardized/slope_score.tif`
-
-Slope was standardized using an inverse relationship because lower slopes generally favour slower drainage and greater potential for surface water accumulation.
-
-The transformation produced scores from:
-
-`0.0 → 1.0`
-
-Validation confirmed the expected inverse relationship.
-
-The source-score correlation was:
-
-`-1.000000`
+| Factor             | Type                  | Relationship    | Method                         |
+| ------------------ | --------------------- | --------------- | ------------------------------ |
+| Elevation          | Continuous            | Inverse         | Min-Max inverse normalization  |
+| Slope              | Continuous            | Inverse         | Min-Max inverse normalization  |
+| Distance to Rivers | Continuous            | Inverse         | Min-Max inverse normalization  |
+| Population         | Continuous / Exposure | Positive        | Min-Max positive normalization |
+| Land Cover         | Categorical           | Class-dependent | Categorical reclassification   |
 
 ---
 
-## 3. Distance to Rivers Standardization
+# Elevation Standardization
 
-**Input:**
+Elevation was standardized using an inverse relationship.
 
-`data/analysis/flood_factors/distance_to_rivers.tif`
+Conceptually:
 
-**Output:**
+```text
+Lower elevation
+      ↓
+Higher susceptibility score
+```
 
-`data/analysis/standardized/distance_to_rivers_score.tif`
+The resulting standardized raster was:
+
+```text
+data/analysis/standardized/elevation_score.tif
+```
+
+Validation confirmed the expected inverse relationship:
+
+```text
+Correlation:
+-1.000000
+```
+
+The standardized values were successfully constrained to the expected 0–1 range.
+
+---
+
+# Slope Standardization
+
+Slope was standardized using an inverse relationship.
+
+Conceptually:
+
+```text
+Lower slope
+      ↓
+Higher susceptibility score
+```
+
+The resulting standardized raster was:
+
+```text
+data/analysis/standardized/slope_score.tif
+```
+
+Validation confirmed the expected relationship.
+
+The standardized values were within the expected 0–1 range.
+
+---
+
+# Distance to Rivers Standardization
 
 Distance to rivers was standardized using an inverse relationship.
 
-Therefore:
+Conceptually:
 
-* Areas closer to rivers receive higher scores.
-* Areas farther from rivers receive lower scores.
+```text
+Closer to river
+      ↓
+Higher susceptibility score
+```
 
-The transformation produced scores from:
+The resulting standardized raster was:
 
-`0.0 → 1.0`
-
-Validation confirmed:
-
-`Source-score correlation: -1.000000`
-
----
-
-## 4. Population Standardization
-
-**Input:**
-
-`data/analysis/flood_factors/population.tif`
-
-**Output:**
-
-`data/analysis/standardized/population_score.tif`
-
-Population was standardized using a positive relationship because higher population values represent greater potential human exposure.
-
-Therefore:
-
-* Lower population → lower exposure score
-* Higher population → higher exposure score
-
-The transformation produced scores from:
-
-`0.0 → 1.0`
+```text
+data/analysis/standardized/distance_to_rivers_score.tif
+```
 
 Validation confirmed:
 
-`Source-score correlation: 1.000000`
+```text
+Correlation:
+-1.000000
+```
 
-The original population values were preserved in the source flood-factor raster.
-
----
-
-## 5. Land Cover Reclassification
-
-**Input:**
-
-`data/analysis/flood_factors/landcover.tif`
-
-**Output:**
-
-`data/analysis/standardized/landcover_score.tif`
-
-Land Cover was treated differently from the continuous factors because its values represent categorical classes rather than measurements.
-
-The established reclassification methodology was:
-
-| Land Cover Class | Flood Susceptibility Score |
-| ---------------: | -------------------------: |
-|               10 |                       0.20 |
-|               20 |                       0.30 |
-|               30 |                       0.45 |
-|               40 |                       0.60 |
-|               50 |                       1.00 |
-|               60 |                       0.75 |
-|               80 |                       0.00 |
-|               90 |                       0.15 |
-
-The resulting standardized raster contains the expected eight score values:
-
-`0.00, 0.15, 0.20, 0.30, 0.45, 0.60, 0.75, 1.00`
-
-Validation confirmed that every detected land-cover class was correctly mapped to its intended score.
+The standardized raster successfully represented the intended inverse relationship.
 
 ---
 
-## Phase 6 Standardized Outputs
+# Population Standardization
 
-The standardized rasters are stored in:
+Population was standardized using a positive relationship.
+
+Conceptually:
+
+```text
+Higher population
+      ↓
+Higher exposure score
+```
+
+The resulting standardized raster was:
+
+```text
+data/analysis/standardized/population_score.tif
+```
+
+Validation confirmed:
+
+```text
+Correlation:
+1.000000
+```
+
+The original population values were preserved separately from the standardized population score.
+
+---
+
+# Land Cover Reclassification
+
+Land Cover required categorical reclassification rather than continuous min-max normalization.
+
+The established mapping was:
+
+| Class | Land Cover               | Score |
+| ----: | ------------------------ | ----: |
+|    10 | Tree Cover               |  0.20 |
+|    20 | Shrubland                |  0.30 |
+|    30 | Grassland                |  0.45 |
+|    40 | Cropland                 |  0.60 |
+|    50 | Built-up                 |  1.00 |
+|    60 | Bare / Sparse Vegetation |  0.75 |
+|    80 | Permanent Water          |  0.00 |
+|    90 | Herbaceous Wetland       |  0.15 |
+
+These values represent relative modelling scores.
+
+They are **not probabilities of flooding**.
+
+The resulting standardized land-cover raster contains the intended score values:
+
+```text
+0.00
+0.15
+0.20
+0.30
+0.45
+0.60
+0.75
+1.00
+```
+
+Validation confirmed that the detected land-cover classes were correctly mapped to their intended scores.
+
+---
+
+# Phase 6 Standardized Outputs
+
+The standardized factors are stored in:
 
 ```text
 data/analysis/standardized/
 ```
 
-Outputs include:
+The outputs include:
 
 ```text
 elevation_score.tif
@@ -441,33 +600,32 @@ population_score.tif
 landcover_score.tif
 ```
 
-The original flood-conditioning-factor rasters were not modified during standardization.
+The original flood-conditioning factors were preserved.
 
-No reprojection or resampling was performed during this stage.
-
-This was intentional because the source factors currently exist on different native grids. Spatial alignment will be handled as a separate modelling preparation stage before MCDA.
+Standardization did not overwrite the original factor rasters.
 
 ---
 
-## Phase 6 Validation
+# Phase 6 Validation
 
-**Status:** Completed
+**Status: ✅ Completed**
 
 The standardized factors were validated using:
 
-`src/validation/validate_standardized_factors.py`
+```text
+src/validation/validate_standardized_factors.py
+```
 
 Validation confirmed:
 
 * CRS consistency
 * Raster dimensions
-* Raster transform
 * Raster resolution
-* Valid cell counts
-* Continuous 0–1 standardization
-* Expected direction of continuous relationships
-* Land Cover class detection
-* Land Cover class-to-score mapping
+* Valid-cell counts
+* 0–1 standardization
+* Expected continuous-factor relationships
+* Land-cover class detection
+* Land-cover class-to-score mapping
 
 Validation results:
 
@@ -479,120 +637,655 @@ Population              PASS
 Land Cover              PASS
 ```
 
-The validation confirmed that all five standardized flood-conditioning factors were correctly generated and are ready for the next modelling preparation stage.
-
-QGIS visual verification is used as an additional spatial inspection step before final phase closure.
+All five standardized flood-conditioning factors passed Phase 6 validation.
 
 ---
 
 # Phase 7 — Spatial Alignment and MCDA Preparation
 
-**Status:** Next Stage
+**Status: ✅ Completed**
 
-The standardized factors currently retain their original raster grids.
+Phase 7 prepared the five standardized flood-conditioning factors for cell-by-cell Multi-Criteria Decision Analysis.
 
-For example:
+Although Phase 6 placed the factors on a common numerical scale, the input rasters did not all have the same spatial grid.
 
-* Elevation, slope, and distance to rivers use approximately 30.87 m resolution.
-* Population uses approximately 92.60 m resolution.
-* Land Cover uses approximately 9.26 m resolution.
+For MCDA, corresponding raster cells must represent corresponding geographic locations.
 
-These factors cannot yet be directly combined in an MCDA weighted overlay.
-
-The next stage will therefore establish a common modelling grid.
-
-Spatial alignment will include:
-
-* Selecting the reference grid
-* Establishing the target CRS
-* Establishing the target extent
-* Establishing the target resolution
-* Resampling factors where required
-* Preserving appropriate resampling methods for continuous and categorical data
-* Aligning raster transforms
-* Verifying dimensions
-* Verifying spatial extent
-* Validating NoData handling
-* Preparing the standardized factors for MCDA
-
-The original standardized rasters will remain preserved.
+Phase 7 therefore established a common modelling grid and aligned all five standardized factors to that grid.
 
 ---
 
-# Phase 8 — MCDA Flood Susceptibility Model
+# Phase 7 Objective
 
-**Status:** Planned
+The objective of Phase 7 was to produce five spatially aligned standardized factors:
 
-Once all standardized factors have been spatially aligned to a common modelling grid, they will be combined using **Multi-Criteria Decision Analysis (MCDA)**.
+1. Elevation
+2. Slope
+3. Distance to Rivers
+4. Population
+5. Land Cover
 
-Conceptually:
+The resulting rasters can now be combined cell-by-cell during the MCDA stage.
+
+---
+
+# Phase 7 Reference Grid
+
+The standardized elevation raster was selected as the reference grid:
 
 ```text
-Elevation Score
-       ↓
-Slope Score
-       ↓
-Distance to Rivers Score
-       ↓
-Land Cover Score
-       ↓
-Population Score
-       ↓
-Spatial Alignment
-       ↓
-Common Modelling Grid
-       ↓
-Defensible Factor Weights
-       ↓
-MCDA Weighted Overlay
-       ↓
+elevation_score.tif
+```
+
+The reference grid properties are:
+
+```text
+CRS:
+EPSG:32737
+
+Coordinate Reference System:
+WGS 84 / UTM Zone 37 South
+
+Width:
+1603 columns
+
+Height:
+1019 rows
+
+Resolution:
+30.865516819072 × 30.865516819072 metres
+```
+
+The reference grid establishes the common:
+
+* CRS
+* Width
+* Height
+* Pixel size
+* Transform
+* Grid origin
+* Spatial extent
+* Pixel-to-coordinate relationship
+
+The negative Y pixel size used by north-up rasters is expected and represents the normal raster row orientation.
+
+---
+
+# Why Spatial Alignment Was Necessary
+
+The standardized factors originated from different source grids.
+
+For example:
+
+```text
+Elevation:
+approximately 30.87 m
+
+Slope:
+approximately 30.87 m
+
+Distance to Rivers:
+approximately 30.87 m
+
+Population:
+approximately 92.60 m
+
+Land Cover:
+approximately 9.26 m
+```
+
+Although the factors had already been standardized numerically, their raster cells did not initially correspond spatially.
+
+A common 0–1 scale alone is therefore insufficient for cell-by-cell MCDA.
+
+Spatial alignment ensures that:
+
+```text
+Cell [row, column]
+```
+
+in one factor represents the same geographic location as:
+
+```text
+Cell [row, column]
+```
+
+in every other factor.
+
+---
+
+# Phase 7 Alignment Strategy
+
+The alignment workflow was:
+
+```text
+1. Select reference grid
+        ↓
+2. Inspect standardized factors
+        ↓
+3. Compare CRS and raster grids
+        ↓
+4. Preserve already-aligned factors
+        ↓
+5. Resample incompatible factors
+        ↓
+6. Save aligned outputs separately
+        ↓
+7. Validate aligned rasters
+        ↓
+8. Verify visually in QGIS
+```
+
+---
+
+# Elevation Alignment
+
+Elevation already matched the reference grid.
+
+Therefore:
+
+```text
+No resampling required
+```
+
+Its values and spatial structure were preserved.
+
+---
+
+# Slope Alignment
+
+Slope already matched the reference grid.
+
+Therefore:
+
+```text
+No resampling required
+```
+
+Its values were preserved.
+
+---
+
+# Distance to Rivers Alignment
+
+Distance to Rivers already matched the reference grid.
+
+Therefore:
+
+```text
+No resampling required
+```
+
+Its values were preserved.
+
+---
+
+# Population Alignment
+
+The population factor originally had a coarser spatial resolution of approximately:
+
+```text
+92.60 m
+```
+
+It was aligned to the reference grid using:
+
+```text
+Bilinear interpolation
+```
+
+Bilinear interpolation was selected because population is represented as a continuous numerical surface.
+
+The operation changes the raster representation to the common grid; it does not create new population observations.
+
+---
+
+# Land Cover Alignment
+
+The land-cover factor originated from a finer-resolution raster of approximately:
+
+```text
+9.26 m
+```
+
+It was aligned to the reference grid using:
+
+```text
+Nearest-neighbour resampling
+```
+
+Nearest-neighbour resampling was selected because land cover is categorical and the process must avoid creating artificial intermediate class values.
+
+---
+
+# Phase 7 Output Directory
+
+The aligned standardized factors are stored in:
+
+```text
+data/analysis/aligned/
+```
+
+The outputs are:
+
+```text
+elevation_score.tif
+slope_score.tif
+distance_to_rivers_score.tif
+population_score.tif
+landcover_score.tif
+```
+
+The original Phase 6 standardized factors remain preserved in:
+
+```text
+data/analysis/standardized/
+```
+
+---
+
+# Phase 7 Implementation
+
+The alignment workflow is implemented in:
+
+```text
+src/flood_factors/align_standardized_factors.py
+```
+
+The script:
+
+1. Identifies the project root.
+2. Uses relative project paths.
+3. Reads the standardized factor rasters.
+4. Selects `elevation_score.tif` as the reference grid.
+5. Compares each factor with the reference grid.
+6. Preserves factors that already match.
+7. Resamples population using bilinear interpolation.
+8. Resamples land cover using nearest-neighbour interpolation.
+9. Writes aligned factors into the aligned directory.
+10. Performs alignment-related checks.
+
+The script does not apply MCDA weights.
+
+Its purpose is to prepare the standardized factors spatially for Phase 8.
+
+---
+
+# Phase 7 Data Properties
+
+All aligned factors use:
+
+```text
+Data Type:
+float32
+
+NoData:
+-9999
+```
+
+Common grid:
+
+```text
+CRS:
+EPSG:32737
+
+Width:
+1603
+
+Height:
+1019
+
+Resolution:
+30.865516819072 × 30.865516819072 m
+```
+
+---
+
+# Phase 7 Dedicated Validation
+
+A dedicated validation script was created:
+
+```text
+src/validation/validate_aligned_factors.py
+```
+
+The validation checks:
+
+* File existence
+* CRS
+* Width
+* Height
+* Resolution
+* Transform
+* Bounds
+* Data type
+* NoData metadata
+* Valid-cell presence
+* NaN values
+* Infinite values
+* Minimum score
+* Maximum score
+* Valid-cell counts
+* NoData counts
+* Value preservation for factors that did not require resampling
+
+---
+
+# Phase 7 Validation Results
+
+The completed validation produced:
+
+```text
+Total Checks: 76
+Passed:       76
+Failed:        0
+
+Overall Status:
+PASS
+```
+
+Therefore:
+
+```text
+76 / 76 checks passed
+```
+
+This confirms that all five aligned standardized factors satisfied the defined spatial and numerical validation requirements.
+
+---
+
+# Phase 7 Aligned Factor Statistics
+
+| Factor             |  Minimum |  Maximum |     Mean |
+| ------------------ | -------: | -------: | -------: |
+| Elevation          | 0.000000 | 1.000000 | 0.596241 |
+| Slope              | 0.000000 | 1.000000 | 0.906355 |
+| Distance to Rivers | 0.000000 | 1.000000 | 0.833007 |
+| Population         | 0.000000 | 0.976962 | 0.082178 |
+| Land Cover         | 0.000000 | 1.000000 | 0.563188 |
+
+All aligned factors remained within the expected standardized range:
+
+```text
+0 ≤ score ≤ 1
+```
+
+The population maximum does not need to equal exactly 1.0 after bilinear resampling. Its maximum remained within the required standardized range.
+
+---
+
+# Phase 7 Value Preservation
+
+Three factors already matched the reference grid:
+
+* Elevation
+* Slope
+* Distance to Rivers
+
+These factors therefore did not require resampling.
+
+Validation confirmed that their values were preserved.
+
+Population and Land Cover were intentionally resampled because their original grids did not match the reference grid.
+
+---
+
+# Phase 7 QGIS Visual Verification
+
+After automated numerical validation, the five aligned rasters were loaded into QGIS.
+
+The visual verification included:
+
+* Loading all five aligned factors.
+* Comparing their spatial coverage.
+* Inspecting layer extents.
+* Using transparency and overlays.
+* Inspecting the population factor after bilinear resampling.
+* Inspecting the land-cover factor after nearest-neighbour resampling.
+* Comparing raster properties.
+* Checking for spatial displacement.
+* Checking for unexpected grid shifts.
+
+### Visual Verification Result
+
+```text
+All five aligned factors visually overlap correctly in QGIS.
+```
+
+No obvious spatial displacement or unexpected grid shift was observed.
+
+---
+
+# Phase 7 Quality Assurance
+
+Phase 7 passed two complementary quality-assurance stages.
+
+## Numerical Validation
+
+```text
+76 / 76 checks passed
+0 failures
+```
+
+## Visual Validation
+
+```text
+All five aligned factors visually overlap correctly in QGIS.
+```
+
+The combination of automated validation and QGIS visual inspection confirms that the standardized factors are spatially and numerically prepared for MCDA.
+
+---
+
+# Phase 7 Reproducibility
+
+Phase 7 can be reproduced using the tracked source code and project structure.
+
+The workflow uses relative project paths rather than machine-specific absolute paths.
+
+Run the alignment process from the repository root:
+
+```bash
+python src/flood_factors/align_standardized_factors.py
+```
+
+Then run validation:
+
+```bash
+python src/validation/validate_aligned_factors.py
+```
+
+The workflow is:
+
+```text
+Standardized Factors
+        ↓
+Alignment Script
+        ↓
+Aligned Factors
+        ↓
+Validation Script
+        ↓
+Numerical QA
+        ↓
+QGIS Visual Verification
+        ↓
+MCDA-Ready Factors
+```
+
+---
+
+# Phase 7 Outputs
+
+## Source Code
+
+```text
+src/flood_factors/align_standardized_factors.py
+```
+
+## Validation Code
+
+```text
+src/validation/validate_aligned_factors.py
+```
+
+## Documentation
+
+```text
+Docs/methodology.md
+```
+
+## Aligned Analytical Outputs
+
+```text
+data/analysis/aligned/
+```
+
+The generated raster outputs are analytical data products and are not tracked in Git under the project's repository policy.
+
+The repository tracks reproducible artifacts including:
+
+* Source code
+* Validation scripts
+* Documentation
+* Configuration
+* README
+* Project structure
+* Reproducible processing workflows
+
+---
+
+# Phase 8 — MCDA Flood Susceptibility Modelling
+
+**Status: ⏳ NEXT PHASE**
+
+Phase 8 is the next stage of the project.
+
+With Phase 7 completed, the five standardized flood-conditioning factors are now aligned to the same modelling grid and are ready for weighted overlay.
+
+The purpose of Phase 8 is to combine the aligned standardized factors using **Multi-Criteria Decision Analysis (MCDA)**.
+
+The conceptual workflow will be:
+
+```text
+Aligned Elevation Score
+          ↓
+Aligned Slope Score
+          ↓
+Aligned Distance-to-Rivers Score
+          ↓
+Aligned Land-Cover Score
+          ↓
+Aligned Population Score
+          ↓
+        MCDA
+          ↓
+Weighted Overlay
+          ↓
 Flood Susceptibility Surface
 ```
 
-The final weights will be reviewed and documented based on the established factor methodology.
+The MCDA stage will require defensible factor weights.
 
-Previously used experimental weights will not automatically be reused without methodological justification.
+The weights will be explicitly documented and justified before implementation.
+
+The project will not automatically reuse experimental weights from earlier development stages without methodological justification.
+
+---
+
+# Phase 8 Planned Tasks
+
+The planned Phase 8 workflow includes:
+
+1. Define the MCDA weighting methodology.
+2. Establish defensible factor weights.
+3. Confirm that all factor weights are valid.
+4. Confirm that the weights sum to 1.
+5. Read the five aligned standardized rasters.
+6. Apply the selected weights.
+7. Perform cell-by-cell weighted overlay.
+8. Generate the flood susceptibility surface.
+9. Preserve NoData areas appropriately.
+10. Save the susceptibility raster.
+11. Validate raster properties.
+12. Validate numerical range.
+13. Inspect susceptibility statistics.
+14. Visualize the susceptibility surface in QGIS.
+15. Document the methodology.
+16. Commit and push the completed Phase 8 work to GitHub.
+17. Update this README after Phase 8 completion.
 
 ---
 
 # Phase 9 — Flood Susceptibility Validation
 
-**Status:** Planned
+**Status: ⏳ PLANNED**
 
-The final flood susceptibility surface will be independently validated.
+Phase 9 will independently evaluate the flood susceptibility model produced during Phase 8.
 
 Validation will examine:
 
-* Raster properties
+* Raster integrity
+* CRS
+* Dimensions
+* Resolution
+* Spatial extent
+* NoData handling
+* Minimum and maximum susceptibility values
+* Statistical distribution
 * Spatial patterns
 * High-susceptibility areas
 * Relationship to rivers
 * Relationship to elevation
 * Relationship to slope
 * Relationship to land cover
-* Relationship to population exposure
-* Spatial consistency
-* Comparison with available reference information where appropriate
+* Population exposure in susceptible areas
+* Available reference information where appropriate
 
-The purpose is to ensure that the final map is analytically defensible rather than simply visually attractive.
+The purpose of Phase 9 is to determine whether the resulting susceptibility surface is analytically defensible.
+
+The model will not be considered complete simply because the raster has been successfully generated.
 
 ---
 
-# Phase 10 — GeoAI Interpretation
+# Phase 10 — GeoAI Interpretation and Decision Support
 
-**Status:** Planned
+**Status: ⏳ PLANNED**
 
-After the GIS flood susceptibility model has been validated, the project will introduce the GeoAI interpretation layer.
+Phase 10 will introduce the GeoAI interpretation and decision-support component.
 
-The GeoAI component will be designed to interpret the spatial outputs and explain:
+The GeoAI layer will operate on validated spatial outputs and will focus on explaining the results rather than replacing the underlying GIS analysis.
 
-* Where flood susceptibility is high
-* Which factors contribute to the susceptibility
-* How different spatial conditions influence the result
-* Where exposed populations are concentrated
-* What spatial evidence supports a particular risk interpretation
+The system will ultimately aim to answer questions such as:
 
-The objective is to move from a static flood map toward an **explainable spatial decision-support system**.
+* Where are the areas of highest flood susceptibility?
+* Which factors contribute to the susceptibility?
+* Why does a particular area receive a high susceptibility score?
+* Where are potentially exposed populations concentrated?
+* What spatial evidence supports the interpretation?
+* Which areas may require greater attention from planners or decision-makers?
+
+The final objective is to progress from:
+
+```text
+Raw Geospatial Data
+        ↓
+GIS Processing
+        ↓
+Flood Conditioning Factors
+        ↓
+Standardization
+        ↓
+Spatial Alignment
+        ↓
+MCDA
+        ↓
+Validated Flood Susceptibility
+        ↓
+GeoAI Interpretation
+        ↓
+Spatial Decision Support
+```
 
 ---
 
@@ -608,7 +1301,8 @@ GeoAI-flood-risk-agent/
 │       ├── terrain/
 │       ├── population/
 │       ├── flood_factors/
-│       └── standardized/
+│       ├── standardized/
+│       └── aligned/
 │
 ├── src/
 │   ├── terrain/
@@ -618,6 +1312,7 @@ GeoAI-flood-risk-agent/
 │   └── ...
 │
 ├── Docs/
+│   └── methodology.md
 │
 ├── outputs/
 │
@@ -626,7 +1321,7 @@ GeoAI-flood-risk-agent/
 └── README.md
 ```
 
-The project separates hydrological terrain products from flood-model inputs and standardized modelling factors.
+The analytical data workflow is organized as:
 
 ```text
 data/analysis/terrain/
@@ -635,238 +1330,579 @@ Terrain and hydrological products
 
 data/analysis/flood_factors/
         ↓
-Flood susceptibility conditioning factors
+Flood-conditioning factors
 
 data/analysis/standardized/
         ↓
 Comparable 0–1 modelling scores
+
+data/analysis/aligned/
+        ↓
+MCDA-ready spatially aligned factors
 ```
 
-This separation keeps the modelling architecture modular and makes the later spatial-alignment and MCDA stages easier to maintain.
+This structure keeps the project modular and separates source factors, standardized factors, and MCDA-ready factors.
 
 ---
 
 # Technologies
 
-## GIS
+## GIS and Spatial Analysis
 
 * QGIS
 * WhiteboxTools
 
-## Python Libraries
+## Programming
+
+* Python
+
+## Python Geospatial Libraries
 
 * GeoPandas
 * Rasterio
 * Shapely
-* NumPy
-* Pandas
 * PyProj
 * Fiona
 
-## Development Tools
+## Scientific and Data Processing Libraries
 
-* Python 3.12.10
+* NumPy
+* Pandas
+
+## Development and Version Control
+
+* Visual Studio Code
 * Git
 * GitHub
-* Visual Studio Code
+* Python virtual environment
 
 ---
 
 # Development Environment
 
-### Python Version
-
-* Python 3.12.10
-
-### Core Libraries
-
-* GeoPandas 1.1.3
-* Rasterio 1.5.0
-* Shapely 2.1.2
-* PyProj 3.7.2
-* Fiona 1.10.1
-* NumPy 2.5.0
-* Pandas 3.0.3
-
-### Environment Status
-
-* Development environment verified
-* Dependencies installed successfully
-* Project tested within a dedicated virtual environment
-* Reproducible dependency configuration maintained through `requirements.txt`
-
----
-
-# Development Workflow
-
-Every major processing stage follows the same engineering workflow:
+## Python Version
 
 ```text
-Concept
-    ↓
-Understand the methodology
-    ↓
-Implementation
-    ↓
-Run
-    ↓
-Python Validation
-    ↓
-QGIS Verification
-    ↓
-Documentation
-    ↓
-Git Status Check
-    ↓
-Git Commit
-    ↓
-Git Push
+Python 3.12.10
 ```
 
-This workflow ensures that each project stage is:
+## Core Libraries
 
-* Reproducible
-* Testable
-* Documented
-* Version-controlled
-* Easy to troubleshoot
-* Easy to explain to other GIS professionals
-
----
-
-# Data and Reproducibility Policy
-
-The repository tracks reproducible project artifacts rather than large geospatial datasets.
-
-Tracked project artifacts include:
-
-* Python source code
-* Validation scripts
-* Documentation
-* Configuration files
-* Project structure
-* README
-* Git history
-* Reproducible processing workflows
-
-Large raster and vector datasets, generated outputs, temporary files, and virtual-environment files are excluded from version control where appropriate.
-
-This keeps the GitHub repository lightweight while preserving the complete methodology required to reproduce the workflow.
-
----
-
-# Current Capabilities
-
-The repository currently includes:
-
-* Reproducible GIS data preparation
-* Raster and vector validation workflows
-* CRS verification and spatial preparation
-* Terrain preprocessing
-* Slope and aspect analysis
-* Hydrological analysis using WhiteboxTools
-* D8 flow direction analysis
-* Flow accumulation analysis
-* Stream network extraction
-* Watershed delineation
-* Flood conditioning factor preparation
-* Distance-to-river analysis
-* Land-cover factor preparation
-* Population exposure factor preparation
-* Continuous factor standardization
-* Land-cover categorical reclassification
-* Population exposure standardization
-* Automated standardized-factor validation
-* QGIS-based visual verification
-* Modular Python project architecture
-* Documentation and Git-based version control
-
----
-
-# Current Outputs
-
-The completed project workflow currently produces:
-
-### Terrain and Hydrological Products
-
-* Filled Digital Elevation Model (DEM)
-* Slope raster
-* Aspect raster
-* D8 Flow Direction raster
-* Flow Accumulation raster
-* Stream Network raster
-* Watershed raster
-
-### Flood Conditioning Factors
-
-* Elevation factor
-* Slope factor
-* Distance to Rivers factor
-* Land Cover factor
-* Population Exposure factor
-
-### Standardized Factors
-
-* Elevation score raster
-* Slope score raster
-* Distance to Rivers score raster
-* Population score raster
-* Land Cover score raster
-
-### Validation
-
-The project contains validation workflows for the major terrain, hydrological, analysis-ready, flood-conditioning-factor, and standardized-factor datasets.
-
----
-
-# Getting Started
-
-Clone the repository using Git.
-
-Navigate to the project directory:
-
-```bash
-cd GeoAI-flood-risk-agent
+```text
+GeoPandas 1.1.3
+Rasterio 1.5.0
+Shapely 2.1.2
+PyProj 3.7.2
+Fiona 1.10.1
+NumPy 2.5.0
+Pandas 3.0.3
 ```
 
-Create a virtual environment:
+## Environment Status
+
+* ✅ Dedicated Python virtual environment
+* ✅ Project dependencies installed
+* ✅ Development environment tested
+* ✅ `requirements.txt` maintained
+* ✅ Relative project paths used
+* ✅ Git version control implemented
+
+The virtual environment is created using:
 
 ```bash
 python -m venv .venv
 ```
 
-Activate the virtual environment.
+It can then be activated on Windows using:
 
-Install the required dependencies:
+```powershell
+.venv\Scripts\Activate.ps1
+```
+
+Dependencies can be installed using:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-The project should then be run from the repository root so that the configured relative project paths resolve correctly.
+---
+
+# Development Workflow
+
+The project follows a structured lesson and development workflow.
+
+Each major lesson or implementation stage follows:
+
+```text
+1. Concept
+        ↓
+2. Why It Matters
+        ↓
+3. Methodology
+        ↓
+4. Implementation
+        ↓
+5. Execution
+        ↓
+6. Testing
+        ↓
+7. Validation
+        ↓
+8. QGIS Verification
+        ↓
+9. Documentation
+        ↓
+10. Git Commit
+        ↓
+11. Git Push
+```
+
+The project is therefore developed incrementally rather than implementing the entire workflow at once.
+
+After completing a major phase:
+
+* The implementation is tested.
+* Validation is performed.
+* QGIS is used for visual verification where appropriate.
+* Documentation is updated.
+* Git status is checked.
+* Changes are committed.
+* Changes are pushed to GitHub.
+* The README is updated to reflect the actual project status.
+
+---
+
+# Data and Reproducibility Policy
+
+The repository follows a reproducibility-focused Git policy.
+
+The repository tracks:
+
+* Python source code
+* Validation scripts
+* Documentation
+* Configuration
+* README
+* Reproducible processing workflows
+* Project structure
+
+The repository does **not** intentionally track:
+
+* Raw datasets
+* Large processed datasets
+* Generated raster outputs
+* Temporary files
+* Virtual environments
+* Machine-specific files
+
+This keeps the repository manageable while preserving the code and documentation required to reproduce the analytical workflow.
+
+The project uses relative paths rather than hard-coded machine-specific paths wherever possible.
+
+---
+
+# Reproducibility Principles
+
+The project follows these principles:
+
+### 1. Preserve Source Data
+
+Original datasets are kept separate from derived products.
+
+### 2. Do Not Overwrite Analytical Products Unnecessarily
+
+Original factors and standardized factors are preserved separately.
+
+### 3. Separate Processing Stages
+
+Each major transformation has its own script or module.
+
+### 4. Validate Before Moving Forward
+
+A completed processing script is not considered sufficient without validation.
+
+### 5. Use QGIS for Visual Verification
+
+Automated validation is complemented by visual inspection where spatial interpretation is important.
+
+### 6. Version Control Reproducible Artifacts
+
+Source code, validation scripts, documentation, and project configuration are maintained through Git.
+
+### 7. Document Methodological Decisions
+
+Important choices such as:
+
+* CRS
+* Resampling methods
+* Standardization relationships
+* Land-cover scores
+* Reference grids
+* MCDA weights
+
+are documented rather than hidden inside the code.
+
+---
+
+# Current Capabilities
+
+The project currently supports:
+
+* GIS data acquisition
+* Raster and vector data validation
+* CRS verification
+* Analysis-ready spatial preparation
+* DEM processing
+* Terrain analysis
+* Slope generation
+* Aspect generation
+* Hydrological analysis
+* Flow direction analysis
+* Flow accumulation analysis
+* Stream network extraction
+* Watershed analysis
+* Flood-conditioning factor preparation
+* River rasterization
+* Distance-to-river calculation
+* Land-cover preparation
+* Population exposure preparation
+* Continuous factor standardization
+* Categorical land-cover reclassification
+* Standardized-factor validation
+* Spatial alignment
+* Raster resampling
+* Automated aligned-factor validation
+* QGIS visual verification
+* Reproducible Python workflows
+* Git-based version control
+* Phase-based project documentation
+
+---
+
+# Current Outputs
+
+## Terrain and Hydrological Outputs
+
+The project has produced:
+
+* Analysis-ready DEM
+* Elevation raster
+* Slope raster
+* Aspect raster
+* Flow Direction raster
+* Flow Accumulation raster
+* Stream Network raster
+* Watershed outputs
+
+---
+
+## Flood Conditioning Factors
+
+The completed flood-conditioning factors include:
+
+```text
+elevation.tif
+slope.tif
+distance_to_rivers.tif
+land_cover.tif
+population.tif
+```
+
+These are stored within:
+
+```text
+data/analysis/flood_factors/
+```
+
+---
+
+## Standardized Factors
+
+The standardized outputs include:
+
+```text
+elevation_score.tif
+slope_score.tif
+distance_to_rivers_score.tif
+population_score.tif
+landcover_score.tif
+```
+
+These are stored within:
+
+```text
+data/analysis/standardized/
+```
+
+---
+
+## Aligned Standardized Factors
+
+The Phase 7 outputs include:
+
+```text
+elevation_score.tif
+slope_score.tif
+distance_to_rivers_score.tif
+population_score.tif
+landcover_score.tif
+```
+
+These are stored within:
+
+```text
+data/analysis/aligned/
+```
+
+All five aligned factors share:
+
+```text
+CRS:
+EPSG:32737
+
+Width:
+1603
+
+Height:
+1019
+
+Resolution:
+30.865516819072 × 30.865516819072 m
+```
+
+---
+
+# Validation
+
+Validation is an important component of the project architecture.
+
+The project currently includes validation workflows for:
+
+* Data acquisition
+* Analysis-ready data
+* Terrain products
+* Hydrological products
+* Flood-conditioning factors
+* Standardized factors
+* Spatially aligned factors
+
+The Phase 6 standardized-factor validation confirmed that all five standardized factors passed their defined checks.
+
+The Phase 7 aligned-factor validation achieved:
+
+```text
+Total Checks: 76
+Passed:       76
+Failed:        0
+
+Result:
+PASS
+```
+
+The aligned factors were also visually verified in QGIS.
+
+---
+
+# Phase Completion Philosophy
+
+A project phase is considered complete only when:
+
+```text
+Implementation
+      +
+Testing
+      +
+Validation
+      +
+Visual Verification where appropriate
+      +
+Documentation
+      +
+Git Version Control
+```
+
+have been completed.
+
+This ensures that the project does not simply contain working scripts, but maintains an auditable and reproducible development history.
+
+---
+
+# Getting Started
+
+Clone the repository:
+
+```bash
+git clone https://github.com/StephanieDorothy/GeoAI-flood-risk-agent.git
+```
+
+Navigate into the project:
+
+```bash
+cd GeoAI-flood-risk-agent
+```
+
+Create the virtual environment:
+
+```bash
+python -m venv .venv
+```
+
+Activate the environment on Windows:
+
+```powershell
+.venv\Scripts\Activate.ps1
+```
+
+Install dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+Run scripts from the repository root so that the project's relative paths resolve correctly.
+
+---
+
+# Reproducing Phase 7
+
+From the project root:
+
+```bash
+python src/flood_factors/align_standardized_factors.py
+```
+
+Then run:
+
+```bash
+python src/validation/validate_aligned_factors.py
+```
+
+The expected validation outcome is:
+
+```text
+76 / 76 checks passed
+```
+
+QGIS can then be used to visually inspect the aligned rasters.
+
+---
+
+# Phase 8 Entry Point
+
+The project is now ready to begin:
+
+```text
+PHASE 8
+MCDA FLOOD SUSCEPTIBILITY MODELLING
+```
+
+The starting inputs for Phase 8 are the five validated aligned standardized factors:
+
+```text
+data/analysis/aligned/
+```
+
+The next implementation should therefore begin with:
+
+```text
+1. MCDA methodology
+2. Factor weighting
+3. Weight validation
+4. Weighted overlay implementation
+5. Flood susceptibility raster generation
+6. Numerical validation
+7. QGIS verification
+8. Documentation
+9. Git commit and push
+10. README update
+```
+
+Phase 8 will build directly on the validated outputs of Phases 1–7.
 
 ---
 
 # Future Work
 
-The next major development stage is **Spatial Alignment and MCDA Preparation**.
+## Phase 8
 
-Planned developments include:
+**MCDA Flood Susceptibility Modelling**
 
-* QGIS verification and final closure of Phase 6
-* Spatial alignment of standardized factors
-* Selection of the common MCDA modelling grid
-* Establishment of target resolution and extent
-* Appropriate resampling of continuous and categorical factors
-* Spatial metadata validation after alignment
-* Preparation of aligned factors for weighted overlay
-* Establishing defensible MCDA factor weights
-* Generating the flood susceptibility surface
-* Validating the final susceptibility model
-* Developing GeoAI-assisted spatial interpretation
-* Producing explainable flood-risk information
-* Developing an interactive decision-support interface
-* Preparing final professional visualizations and portfolio documentation
+* Establish defensible factor weights
+* Implement weighted overlay
+* Generate flood susceptibility surface
+* Validate the numerical output
+* Inspect susceptibility distribution
+* Visualize the susceptibility surface
+
+## Phase 9
+
+**Flood Susceptibility Validation**
+
+* Validate the final susceptibility raster
+* Analyse spatial patterns
+* Compare susceptibility with conditioning factors
+* Examine relationship with river proximity
+* Examine relationship with terrain
+* Examine relationship with population exposure
+* Compare against suitable reference information where available
+
+## Phase 10
+
+**GeoAI Interpretation and Decision Support**
+
+* Develop explainable spatial interpretation
+* Interpret high-susceptibility areas
+* Identify contributing factors
+* Analyse population exposure
+* Develop decision-support outputs
+* Build toward an interactive or query-based spatial decision-support system
+* Produce professional final maps and project documentation
+
+---
+
+# Project Development Philosophy
+
+This project is being developed as more than a collection of GIS scripts.
+
+It is intended to demonstrate an end-to-end professional geospatial workflow involving:
+
+```text
+Data
+ ↓
+Validation
+ ↓
+Spatial Preparation
+ ↓
+Terrain Analysis
+ ↓
+Hydrological Analysis
+ ↓
+Flood Factors
+ ↓
+Standardization
+ ↓
+Spatial Alignment
+ ↓
+MCDA
+ ↓
+Validation
+ ↓
+GeoAI Interpretation
+ ↓
+Decision Support
+```
+
+The emphasis throughout the project is on:
+
+* Reproducibility
+* Spatial correctness
+* Explicit methodology
+* Automated validation
+* Visual verification
+* Modular code
+* Clear documentation
+* Version control
+* Explainability
 
 ---
 
@@ -876,10 +1912,18 @@ Planned developments include:
 
 GIS | Remote Sensing | Spatial Data Science | Python for Geospatial Analysis
 
-GitHub: StephanieDorothy
+GitHub:
+
+```text
+https://github.com/StephanieDorothy/GeoAI-flood-risk-agent
+```
 
 ---
 
 # License
 
-This project is licensed for educational and portfolio purposes.
+This project is developed for educational, research, portfolio, and professional development purposes.
+
+The project methodology, source code, documentation, and generated analytical workflow are intended to demonstrate reproducible geospatial analysis and spatial decision-support development.
+
+---
