@@ -1910,9 +1910,11 @@ The emphasis throughout the project is on:
 
 **Dorothy Stephanie**
 
-GIS | Remote Sensing | Spatial Data Science | Python for Geospatial Analysis
+GIS | Remote Sensing | Spatial Data Science | Python for Geospatial Analysis.
+
 
 GitHub:
+
 
 ```text
 https://github.com/StephanieDorothy/GeoAI-flood-risk-agent
