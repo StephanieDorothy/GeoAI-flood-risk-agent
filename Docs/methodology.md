@@ -756,4 +756,7 @@ Phase 7 therefore establishes the spatial foundation required for a valid cell-b
 
 In the next phase, the aligned standardized factors will be assigned scientifically justified relative weights and combined into a weighted flood-risk surface.
 
+
+
+
 The MCDA stage will use the aligned factors without altering their standardized values and will apply the selected factor weights explicitly during the weighted overlay operation.
