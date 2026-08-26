@@ -758,5 +758,4 @@ In the next phase, the aligned standardized factors will be assigned scientifica
 
 
 
-
 The MCDA stage will use the aligned factors without altering their standardized values and will apply the selected factor weights explicitly during the weighted overlay operation.
