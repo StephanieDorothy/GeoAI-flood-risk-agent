@@ -2415,3 +2415,10 @@ QGIS Visual Verification
               ↓
 VALIDATED FLOOD SUSCEPTIBILITY PRODUCTS
 ```
+### One important documentation decision
+
+I deliberately included **both the continuous MCDA methodology and the classification methodology** in Phase 8. This is important because your actual Phase 8 work did not stop when `flood_susceptibility.tif` was generated—you subsequently produced and independently validated `flood_susceptibility_classified.tif`.
+
+So the methodology now accurately documents the **whole Phase 8 analytical chain**, rather than leaving the classification work undocumented.
+
+Also, I have kept the language careful around **"susceptibility" versus "risk"**. This will become particularly important in Phase 9 and Phase 10, because we do not want the final GeoAI agent to incorrectly tell a user that a susceptibility score is a flood probability.
