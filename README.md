@@ -2895,7 +2895,9 @@ The project methodology, source code, documentation, and analytical workflow are
 ║ Phase 9  Validation                       ⏳     ║
 ║ Phase 10 GeoAI Decision Support           ⏳     ║
 ║                                                  ║
-║ CURRENT MILESTONE: PHASE 8 COMPLETED             ║
+║ CURRENT MILESTONE: PHASE 8 COMPLETED   
+
+          ║
 ║                                                  ║
 ║ NEXT: PHASE 9 — FLOOD SUSCEPTIBILITY VALIDATION  ║
 ╚══════════════════════════════════════════════════╝
