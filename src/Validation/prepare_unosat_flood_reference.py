@@ -3,57 +3,63 @@ Phase 9.11.3 - Prepare UNOSAT Flood Reference Data
 
 Purpose
 -------
-Prepare the official UNOSAT Product 3834 flood extent for external
-validation against the Nairobi County MCDA flood-susceptibility model.
+Prepare an independent UNOSAT satellite-derived flood observation layer
+for external validation of the GeoAI flood susceptibility model.
 
-The script:
+The validation reference is constructed using:
 
-1. Locates the official UNOSAT flood extent shapefile.
-2. Loads the original flood geometry without modifying the source.
-3. Diagnoses invalid geometry.
-4. Repairs invalid geometry in memory using Shapely make_valid().
-5. Reprojects the repaired geometry to the MCDA CRS.
-6. Determines the spatial overlap between the UNOSAT flood reference
-   and the MCDA analysis footprint.
-7. Searches the UNOSAT package for a suitable analysis/observation
-   extent layer.
-8. Prevents unobserved areas from being treated as non-flooded.
-9. Creates an MCDA-aligned binary flood reference raster:
-       1 = observed flood
-       0 = observed non-flood
-       NoData = not observed / outside valid reference domain
-10. Validates the resulting reference raster.
-11. Writes a detailed JSON preparation report.
+    UNOSAT Analysis Extent
+        MINUS
+    Cloud Obstruction
+        INTERSECT
+    MCDA Footprint
 
-Important
----------
-The original UNOSAT files are NEVER modified.
+Reference raster values:
 
-All geometry repair, reprojection, clipping, and raster creation are
-performed on derived/in-memory data.
+    1     = Observed flood
+    0     = Observed non-flood
+    -9999 = Unobserved / outside valid observation domain
 
-This script is a preparation step only. It does NOT perform statistical
-external validation. That will be Phase 9.11.4 and 9.11.5.
+Important scientific principle
+------------------------------
+Cloud-obstructed areas are NOT treated as observed non-flood.
+
+Only areas within the valid UNOSAT observation domain are assigned
+observed flood/non-flood values.
+
+The original UNOSAT source files are never modified.
+
+Outputs
+-------
+results/phase9_validation/external_validation/
+    unosat_flood_reference_aligned.tif
+    unosat_reference_preparation.json
+
+Author
+------
+GeoAI Flood Risk Decision Agent
+Phase 9 External Validation
 """
 
 from __future__ import annotations
 
 import json
-import math
-from datetime import date, datetime
 from pathlib import Path
+from typing import Any
 
 import geopandas as gpd
 import numpy as np
 import rasterio
 from rasterio.features import rasterize
+from rasterio.transform import array_bounds
 from shapely.geometry import box
-from shapely.validation import explain_validity
+from shapely.ops import unary_union
+from shapely.validation import make_valid
 
 
-# =============================================================================
-# PROJECT PATHS
-# =============================================================================
+# ---------------------------------------------------------------------
+# Project paths
+# ---------------------------------------------------------------------
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
@@ -74,14 +80,6 @@ MCDA_RASTER = (
     / "flood_susceptibility.tif"
 )
 
-CLASSIFIED_RASTER = (
-    PROJECT_ROOT
-    / "data"
-    / "analysis"
-    / "mcda"
-    / "flood_susceptibility_classified.tif"
-)
-
 OUTPUT_DIR = (
     PROJECT_ROOT
     / "results"
@@ -89,686 +87,803 @@ OUTPUT_DIR = (
     / "external_validation"
 )
 
-OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-
 REFERENCE_RASTER = OUTPUT_DIR / "unosat_flood_reference_aligned.tif"
-PREPARATION_REPORT = OUTPUT_DIR / "unosat_reference_preparation.json"
+REPORT_JSON = OUTPUT_DIR / "unosat_reference_preparation.json"
 
 
-# =============================================================================
-# EXPECTED PRIMARY FLOOD LAYER
-# =============================================================================
+# ---------------------------------------------------------------------
+# UNOSAT source layers
+# ---------------------------------------------------------------------
 
-PRIMARY_FLOOD_FILENAME = "PL_20240501_FloodExtent_Nairobi_Kiambu.shp"
+FLOOD_LAYER_NAME = "PL_20240501_FloodExtent_Nairobi_Kiambu.shp"
+
+ANALYSIS_EXTENT_LAYER_NAME = (
+    "PL_20240501_AnalysisExtent_Nairobi_Kiambu.shp"
+)
+
+CLOUD_LAYER_NAME = (
+    "PL_20240501_CloudObstruction_Nairobi_Kiambu.shp"
+)
 
 
-# =============================================================================
-# JSON SERIALIZATION
-# =============================================================================
+# ---------------------------------------------------------------------
+# Model/reference settings
+# ---------------------------------------------------------------------
 
-def json_safe(value):
+TARGET_CRS = "EPSG:32737"
+
+REFERENCE_NODATA = -9999
+
+FLOOD_VALUE = 1
+
+NON_FLOOD_VALUE = 0
+
+RASTERIZATION_ALL_TOUCHED = False
+
+
+# ---------------------------------------------------------------------
+# Utility functions
+# ---------------------------------------------------------------------
+
+
+def json_safe(value: Any) -> Any:
     """
-    Convert common NumPy, datetime and Path objects into JSON-safe values.
+    Convert NumPy/Shapely-related values into JSON-safe Python values.
     """
-
-    if isinstance(value, Path):
-        return str(value)
-
-    if isinstance(value, (datetime, date)):
-        return value.isoformat()
-
-    if isinstance(value, np.integer):
-        return int(value)
-
-    if isinstance(value, np.floating):
-        if np.isnan(value) or np.isinf(value):
-            return None
-        return float(value)
-
-    if isinstance(value, np.ndarray):
-        return value.tolist()
-
     if isinstance(value, dict):
         return {str(k): json_safe(v) for k, v in value.items()}
 
     if isinstance(value, (list, tuple)):
         return [json_safe(v) for v in value]
 
+    if isinstance(value, np.integer):
+        return int(value)
+
+    if isinstance(value, np.floating):
+        return float(value)
+
+    if isinstance(value, np.ndarray):
+        return value.tolist()
+
+    if isinstance(value, Path):
+        return str(value)
+
+    if value is None:
+        return None
+
+    if isinstance(value, float) and not np.isfinite(value):
+        return None
+
     return value
 
 
-# =============================================================================
-# HELPERS
-# =============================================================================
-
-def print_header(title: str):
-    print()
-    print("=" * 80)
-    print(title)
-    print("=" * 80)
-
-
-def find_shapefiles(root: Path) -> list[Path]:
-    """Return all shapefiles recursively."""
-
-    return sorted(root.rglob("*.shp"))
-
-
-def find_primary_flood_layer(root: Path) -> Path:
-    """Locate the expected primary UNOSAT flood extent layer."""
-
-    matches = list(root.rglob(PRIMARY_FLOOD_FILENAME))
+def find_required_layer(filename: str) -> Path:
+    """
+    Locate a required UNOSAT Shapefile.
+    """
+    matches = list(UNOSAT_ROOT.rglob(filename))
 
     if not matches:
         raise FileNotFoundError(
-            f"Primary flood layer not found:\n"
-            f"  {PRIMARY_FLOOD_FILENAME}\n"
+            f"Required UNOSAT layer was not found:\n"
+            f"  {filename}\n"
             f"Search root:\n"
-            f"  {root}"
+            f"  {UNOSAT_ROOT}"
         )
 
     if len(matches) > 1:
-        raise RuntimeError(
-            "Multiple copies of the primary flood layer were found:\n"
-            + "\n".join(str(p) for p in matches)
+        print(
+            f"WARNING: Multiple matches found for {filename}. "
+            f"Using the first match:"
         )
+
+        for match in matches:
+            print(f"  {match}")
 
     return matches[0]
 
 
-def find_analysis_extent_candidates(root: Path) -> list[Path]:
+def repair_geometries(gdf: gpd.GeoDataFrame) -> tuple[gpd.GeoDataFrame, dict]:
     """
-    Search for likely UNOSAT observation/analysis extent layers.
+    Repair invalid geometries in memory using make_valid().
 
-    We deliberately do not assume a single filename because the package
-    may use different naming conventions.
+    The source file is never modified.
     """
+    gdf = gdf.copy()
 
-    candidates = []
+    initial_invalid = int((~gdf.geometry.is_valid).sum())
+    initial_null = int(gdf.geometry.isna().sum())
+    initial_empty = int(gdf.geometry.is_empty.sum())
 
-    keywords = (
-        "analysis",
-        "analysed",
-        "analyzed",
-        "cloud",
-        "extent",
-        "area",
-        "study",
-    )
+    gdf = gdf.loc[gdf.geometry.notna()].copy()
+    gdf = gdf.loc[~gdf.geometry.is_empty].copy()
 
-    for shp in find_shapefiles(root):
+    if len(gdf) > 0:
+        gdf["geometry"] = gdf.geometry.apply(
+            lambda geom: make_valid(geom) if not geom.is_valid else geom
+        )
 
-        # The primary flood layer itself is not an observation-domain layer.
-        if shp.name.lower() == PRIMARY_FLOOD_FILENAME.lower():
-            continue
-
-        name = shp.stem.lower()
-
-        if any(keyword in name for keyword in keywords):
-            candidates.append(shp)
-
-    return sorted(set(candidates))
-
-
-def repair_geometry(gdf: gpd.GeoDataFrame) -> tuple[gpd.GeoDataFrame, dict]:
-    """
-    Repair invalid geometries in memory.
-
-    The original source file is never modified.
-    """
-
-    original_invalid = int((~gdf.geometry.is_valid).sum())
-
-    invalid_examples = []
-
-    if original_invalid > 0:
-        for geom in gdf.loc[~gdf.geometry.is_valid, "geometry"].head(10):
-            invalid_examples.append(explain_validity(geom))
-
-    repaired = gdf.copy()
-
-    if original_invalid > 0:
-        repaired["geometry"] = repaired.geometry.make_valid()
-
-    remaining_invalid = int((~repaired.geometry.is_valid).sum())
-
-    null_count = int(repaired.geometry.isna().sum())
-    empty_count = int(repaired.geometry.is_empty.sum())
+    final_invalid = int((~gdf.geometry.is_valid).sum())
+    final_null = int(gdf.geometry.isna().sum())
+    final_empty = int(gdf.geometry.is_empty.sum())
 
     diagnostics = {
-        "original_invalid_geometry_count": original_invalid,
-        "remaining_invalid_geometry_count": remaining_invalid,
-        "null_geometry_count": null_count,
-        "empty_geometry_count": empty_count,
-        "repair_method": "shapely_make_valid",
-        "repair_performed": original_invalid > 0,
-        "original_invalid_examples": invalid_examples,
+        "initial_feature_count": initial_invalid + len(gdf),
+        "initial_invalid_geometries": initial_invalid,
+        "initial_null_geometries": initial_null,
+        "initial_empty_geometries": initial_empty,
+        "final_feature_count": len(gdf),
+        "final_invalid_geometries": final_invalid,
+        "final_null_geometries": final_null,
+        "final_empty_geometries": final_empty,
+        "geometry_repair_pass": (
+            final_invalid == 0
+            and final_null == 0
+            and final_empty == 0
+        ),
     }
 
-    return repaired, diagnostics
+    return gdf, diagnostics
 
 
-def get_raster_metadata(path: Path) -> dict:
-    """Return important raster metadata."""
+def project_geometries(
+    gdf: gpd.GeoDataFrame,
+    target_crs: str,
+) -> gpd.GeoDataFrame:
+    """
+    Reproject a GeoDataFrame to the target CRS.
+    """
+    if gdf.crs is None:
+        raise ValueError("Input layer has no CRS.")
 
-    with rasterio.open(path) as src:
-        return {
-            "path": str(path),
-            "crs": str(src.crs),
-            "width": src.width,
-            "height": src.height,
-            "count": src.count,
-            "dtype": src.dtypes[0],
-            "nodata": src.nodata,
-            "transform": list(src.transform),
-            "resolution_x": src.res[0],
-            "resolution_y": src.res[1],
-            "bounds": {
-                "left": src.bounds.left,
-                "bottom": src.bounds.bottom,
-                "right": src.bounds.right,
-                "top": src.bounds.top,
-            },
-        }
+    return gdf.to_crs(target_crs)
 
 
-def geometry_bounds_area_km2(geometry) -> float:
-    """Return area in km² for a geometry in a projected CRS."""
+def union_geometry(gdf: gpd.GeoDataFrame):
+    """
+    Create a unary union from valid geometries.
+    """
+    geometries = [
+        geom
+        for geom in gdf.geometry
+        if geom is not None
+        and not geom.is_empty
+        and geom.is_valid
+    ]
 
+    if not geometries:
+        raise ValueError("No valid geometries available for union.")
+
+    result = unary_union(geometries)
+
+    if result.is_empty:
+        raise ValueError("Union geometry is empty.")
+
+    if not result.is_valid:
+        result = make_valid(result)
+
+    if result.is_empty:
+        raise ValueError("Repaired union geometry is empty.")
+
+    return result
+
+
+def area_km2(geometry) -> float:
+    """
+    Calculate projected geometry area in square kilometres.
+    """
     if geometry is None or geometry.is_empty:
         return 0.0
 
     return float(geometry.area / 1_000_000.0)
 
 
-# =============================================================================
-# MAIN
-# =============================================================================
+def geometry_bounds_overlap(
+    geometry,
+    raster_bounds,
+) -> bool:
+    """
+    Quickly determine whether geometry bounds overlap raster bounds.
+    """
+    geometry_box = box(*geometry.bounds)
 
-def main():
+    raster_box = box(
+        raster_bounds.left,
+        raster_bounds.bottom,
+        raster_bounds.right,
+        raster_bounds.top,
+    )
 
-    print_header("PHASE 9.11.3 - UNOSAT FLOOD REFERENCE DATA PREPARATION")
+    return geometry_box.intersects(raster_box)
 
-    report = {
-        "phase": "9.11.3",
-        "title": "UNOSAT Flood Reference Data Preparation",
-        "status": "IN_PROGRESS",
-        "project_root": str(PROJECT_ROOT),
-        "unosat_root": str(UNOSAT_ROOT),
-        "primary_flood_layer": None,
-        "mcda_reference": None,
-        "classified_reference": None,
-        "analysis_extent_candidates": [],
-        "geometry_repair": {},
-        "reprojection": {},
-        "spatial_overlap": {},
-        "reference_raster": {},
-        "validation": {},
-        "scientific_notes": [],
-    }
 
-    # -------------------------------------------------------------------------
-    # 1. Validate required inputs
-    # -------------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Main workflow
+# ---------------------------------------------------------------------
 
-    print_header("1. INPUT VALIDATION")
 
-    if not UNOSAT_ROOT.exists():
-        raise FileNotFoundError(
-            f"UNOSAT directory does not exist:\n{UNOSAT_ROOT}"
-        )
+def main() -> None:
+
+    print("=" * 72)
+    print("PHASE 9.11.3 - UNOSAT FLOOD REFERENCE PREPARATION")
+    print("=" * 72)
+
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+
+    # ---------------------------------------------------------------
+    # 1. Locate source layers
+    # ---------------------------------------------------------------
+
+    print("\n[1/10] Locating UNOSAT source layers...")
+
+    flood_path = find_required_layer(FLOOD_LAYER_NAME)
+
+    analysis_extent_path = find_required_layer(
+        ANALYSIS_EXTENT_LAYER_NAME
+    )
+
+    cloud_path = find_required_layer(
+        CLOUD_LAYER_NAME
+    )
+
+    print(f"  Flood extent:")
+    print(f"    {flood_path}")
+
+    print(f"  Analysis extent:")
+    print(f"    {analysis_extent_path}")
+
+    print(f"  Cloud obstruction:")
+    print(f"    {cloud_path}")
 
     if not MCDA_RASTER.exists():
         raise FileNotFoundError(
-            f"MCDA susceptibility raster does not exist:\n{MCDA_RASTER}"
+            f"MCDA raster not found:\n{MCDA_RASTER}"
         )
 
-    if not CLASSIFIED_RASTER.exists():
-        raise FileNotFoundError(
-            f"Classified susceptibility raster does not exist:\n{CLASSIFIED_RASTER}"
+    print(f"  MCDA raster:")
+    print(f"    {MCDA_RASTER}")
+
+    # ---------------------------------------------------------------
+    # 2. Read MCDA reference grid
+    # ---------------------------------------------------------------
+
+    print("\n[2/10] Reading MCDA reference grid...")
+
+    with rasterio.open(MCDA_RASTER) as mcda:
+
+        mcda_crs = mcda.crs
+        mcda_width = mcda.width
+        mcda_height = mcda.height
+        mcda_transform = mcda.transform
+        mcda_resolution = mcda.res
+        mcda_bounds = mcda.bounds
+
+        mcda_data = mcda.read(1)
+        mcda_nodata = mcda.nodata
+
+    if mcda_crs is None:
+        raise ValueError("MCDA raster has no CRS.")
+
+    if str(mcda_crs) != TARGET_CRS:
+        raise ValueError(
+            f"MCDA CRS mismatch.\n"
+            f"Expected: {TARGET_CRS}\n"
+            f"Found: {mcda_crs}"
         )
 
-    flood_path = find_primary_flood_layer(UNOSAT_ROOT)
+    mcda_valid = np.isfinite(mcda_data)
 
-    print(f"UNOSAT package: PASS")
-    print(f"MCDA raster: PASS")
-    print(f"Classified raster: PASS")
-    print()
-    print(f"Primary flood layer:")
-    print(f"  {flood_path}")
+    if mcda_nodata is not None:
+        mcda_valid &= mcda_data != mcda_nodata
 
-    report["primary_flood_layer"] = str(flood_path)
-    report["mcda_reference"] = get_raster_metadata(MCDA_RASTER)
-    report["classified_reference"] = get_raster_metadata(CLASSIFIED_RASTER)
+    print(f"  CRS: {mcda_crs}")
+    print(f"  Dimensions: {mcda_width} x {mcda_height}")
+    print(
+        f"  Resolution: "
+        f"{mcda_resolution[0]:.9f} x "
+        f"{mcda_resolution[1]:.9f} m"
+    )
+    print(f"  NoData: {mcda_nodata}")
+    print(f"  Valid MCDA cells: {int(mcda_valid.sum()):,}")
 
-    # -------------------------------------------------------------------------
-    # 2. Read primary flood layer
-    # -------------------------------------------------------------------------
+    # ---------------------------------------------------------------
+    # 3. Read UNOSAT layers
+    # ---------------------------------------------------------------
 
-    print_header("2. PRIMARY FLOOD LAYER INSPECTION")
+    print("\n[3/10] Reading UNOSAT layers...")
 
     flood_gdf = gpd.read_file(flood_path)
-
-    if flood_gdf.empty:
-        raise RuntimeError("Primary flood layer contains no features.")
-
-    if flood_gdf.crs is None:
-        raise RuntimeError(
-            "Primary flood layer has no CRS. "
-            "Cannot safely prepare the reference."
-        )
-
-    print(f"Features: {len(flood_gdf)}")
-    print(f"CRS: {flood_gdf.crs}")
-    print(f"Geometry types: {flood_gdf.geometry.geom_type.unique().tolist()}")
-
-    print()
-    print("Relevant source attributes:")
-
-    for field in [
-        "Water_Clas",
-        "Water_Stat",
-        "Sensor_ID",
-        "Sensor_Dat",
-        "EventCode",
-        "Area_m2",
-        "Area_ha",
-    ]:
-        if field in flood_gdf.columns:
-            values = flood_gdf[field].drop_duplicates().tolist()
-            print(f"  {field}: {values}")
-
-    report["flood_layer_metadata"] = {
-        "feature_count": len(flood_gdf),
-        "crs": str(flood_gdf.crs),
-        "geometry_types": flood_gdf.geometry.geom_type.unique().tolist(),
-        "fields": list(flood_gdf.columns),
-    }
-
-    # -------------------------------------------------------------------------
-    # 3. Geometry validation and repair
-    # -------------------------------------------------------------------------
-
-    print_header("3. GEOMETRY VALIDATION AND REPAIR")
-
-    prepared_flood, geometry_diagnostics = repair_geometry(flood_gdf)
+    analysis_gdf = gpd.read_file(analysis_extent_path)
+    cloud_gdf = gpd.read_file(cloud_path)
 
     print(
-        "Original invalid geometries: "
-        f"{geometry_diagnostics['original_invalid_geometry_count']}"
+        f"  Flood features: "
+        f"{len(flood_gdf):,}"
     )
 
     print(
-        "Remaining invalid geometries: "
-        f"{geometry_diagnostics['remaining_invalid_geometry_count']}"
+        f"  Analysis extent features: "
+        f"{len(analysis_gdf):,}"
     )
 
     print(
-        "Null geometries: "
-        f"{geometry_diagnostics['null_geometry_count']}"
+        f"  Cloud obstruction features: "
+        f"{len(cloud_gdf):,}"
     )
 
     print(
-        "Empty geometries: "
-        f"{geometry_diagnostics['empty_geometry_count']}"
+        f"  Flood CRS: "
+        f"{flood_gdf.crs}"
     )
 
-    if geometry_diagnostics["remaining_invalid_geometry_count"] > 0:
+    print(
+        f"  Analysis extent CRS: "
+        f"{analysis_gdf.crs}"
+    )
+
+    print(
+        f"  Cloud CRS: "
+        f"{cloud_gdf.crs}"
+    )
+
+    # ---------------------------------------------------------------
+    # 4. Repair geometries in memory
+    # ---------------------------------------------------------------
+
+    print("\n[4/10] Validating and repairing geometries...")
+
+    flood_gdf, flood_geometry_report = repair_geometries(
+        flood_gdf
+    )
+
+    analysis_gdf, analysis_geometry_report = repair_geometries(
+        analysis_gdf
+    )
+
+    cloud_gdf, cloud_geometry_report = repair_geometries(
+        cloud_gdf
+    )
+
+    print(
+        f"  Flood invalid before repair: "
+        f"{flood_geometry_report['initial_invalid_geometries']}"
+    )
+
+    print(
+        f"  Flood invalid after repair: "
+        f"{flood_geometry_report['final_invalid_geometries']}"
+    )
+
+    print(
+        f"  Analysis extent invalid after repair: "
+        f"{analysis_geometry_report['final_invalid_geometries']}"
+    )
+
+    print(
+        f"  Cloud invalid after repair: "
+        f"{cloud_geometry_report['final_invalid_geometries']}"
+    )
+
+    if not (
+        flood_geometry_report["geometry_repair_pass"]
+        and analysis_geometry_report["geometry_repair_pass"]
+        and cloud_geometry_report["geometry_repair_pass"]
+    ):
         raise RuntimeError(
-            "Geometry repair did not resolve all invalid geometries."
+            "Geometry preparation failed."
         )
 
-    if geometry_diagnostics["null_geometry_count"] > 0:
+    print("  Geometry preparation: PASS")
+
+    # ---------------------------------------------------------------
+    # 5. Reproject to MCDA CRS
+    # ---------------------------------------------------------------
+
+    print("\n[5/10] Reprojecting UNOSAT layers to EPSG:32737...")
+
+    flood_projected = project_geometries(
+        flood_gdf,
+        TARGET_CRS,
+    )
+
+    analysis_projected = project_geometries(
+        analysis_gdf,
+        TARGET_CRS,
+    )
+
+    cloud_projected = project_geometries(
+        cloud_gdf,
+        TARGET_CRS,
+    )
+
+    print(
+        f"  Flood CRS after reprojection: "
+        f"{flood_projected.crs}"
+    )
+
+    print(
+        f"  Analysis extent CRS after reprojection: "
+        f"{analysis_projected.crs}"
+    )
+
+    print(
+        f"  Cloud CRS after reprojection: "
+        f"{cloud_projected.crs}"
+    )
+
+    if (
+        str(flood_projected.crs) != TARGET_CRS
+        or str(analysis_projected.crs) != TARGET_CRS
+        or str(cloud_projected.crs) != TARGET_CRS
+    ):
         raise RuntimeError(
-            "Null geometries remain after preparation."
+            "One or more UNOSAT layers failed CRS transformation."
         )
 
-    if geometry_diagnostics["empty_geometry_count"] > 0:
-        raise RuntimeError(
-            "Empty geometries remain after preparation."
+    print("  CRS transformation: PASS")
+
+    # ---------------------------------------------------------------
+    # 6. Build valid observation domain
+    # ---------------------------------------------------------------
+
+    print("\n[6/10] Building valid observation domain...")
+
+    analysis_union = union_geometry(
+        analysis_projected
+    )
+
+    cloud_union = union_geometry(
+        cloud_projected
+    )
+
+    flood_union = union_geometry(
+        flood_projected
+    )
+
+    valid_observation_domain = analysis_union.difference(
+        cloud_union
+    )
+
+    if not valid_observation_domain.is_valid:
+        valid_observation_domain = make_valid(
+            valid_observation_domain
         )
 
-    report["geometry_repair"] = geometry_diagnostics
+    if valid_observation_domain.is_empty:
+        raise RuntimeError(
+            "Valid observation domain is empty."
+        )
 
-    print("Geometry preparation: PASS")
-
-    # -------------------------------------------------------------------------
-    # 4. Reproject to MCDA CRS
-    # -------------------------------------------------------------------------
-
-    print_header("4. REPROJECTION TO MCDA CRS")
-
-    with rasterio.open(MCDA_RASTER) as mcda_src:
-
-        mcda_crs = mcda_src.crs
-        mcda_bounds = mcda_src.bounds
-        mcda_transform = mcda_src.transform
-        mcda_width = mcda_src.width
-        mcda_height = mcda_src.height
-        mcda_nodata = mcda_src.nodata
-
-    print(f"MCDA CRS: {mcda_crs}")
-    print(f"Flood source CRS: {prepared_flood.crs}")
-
-    if prepared_flood.crs != mcda_crs:
-        flood_projected = prepared_flood.to_crs(mcda_crs)
-        print(f"Reprojected flood reference to: {mcda_crs}")
-    else:
-        flood_projected = prepared_flood.copy()
-        print("Flood reference already matches MCDA CRS.")
-
-    print("Reprojection: PASS")
-
-    report["reprojection"] = {
-        "source_crs": str(prepared_flood.crs),
-        "target_crs": str(mcda_crs),
-        "reprojection_performed": str(prepared_flood.crs) != str(mcda_crs),
-    }
-
-    # -------------------------------------------------------------------------
-    # 5. MCDA footprint intersection
-    # -------------------------------------------------------------------------
-
-    print_header("5. MCDA FOOTPRINT OVERLAP")
-
-    mcda_footprint = box(
+    mcda_polygon = box(
         mcda_bounds.left,
         mcda_bounds.bottom,
         mcda_bounds.right,
         mcda_bounds.top,
     )
 
-    flood_union = flood_projected.geometry.union_all()
-
-    flood_intersection = flood_union.intersection(mcda_footprint)
-
-    overlap_area_km2 = geometry_bounds_area_km2(flood_intersection)
-
-    print(f"MCDA footprint:")
-    print(f"  Width: {mcda_width}")
-    print(f"  Height: {mcda_height}")
-    print(f"  CRS: {mcda_crs}")
-
-    print()
-    print(f"Flood/reference overlap area: {overlap_area_km2:.6f} km²")
-
-    if flood_intersection.is_empty:
-        raise RuntimeError(
-            "The UNOSAT flood reference has no spatial overlap "
-            "with the MCDA analysis footprint."
+    valid_observation_mcda = (
+        valid_observation_domain.intersection(
+            mcda_polygon
         )
-
-    print("Spatial overlap: PASS")
-
-    report["spatial_overlap"] = {
-        "mcda_crs": str(mcda_crs),
-        "mcda_width": mcda_width,
-        "mcda_height": mcda_height,
-        "flood_overlap_area_km2": overlap_area_km2,
-        "overlap_exists": True,
-    }
-
-    # -------------------------------------------------------------------------
-    # 6. Search for observation / analysis extent layers
-    # -------------------------------------------------------------------------
-
-    print_header("6. SEARCH FOR UNOSAT OBSERVATION/ANALYSIS EXTENT")
-
-    analysis_candidates = find_analysis_extent_candidates(UNOSAT_ROOT)
-
-    report["analysis_extent_candidates"] = [
-        str(path) for path in analysis_candidates
-    ]
-
-    if analysis_candidates:
-        print("Potential analysis/observation extent candidates:")
-
-        for candidate in analysis_candidates:
-            print(f"  {candidate.name}")
-
-    else:
-        print(
-            "No clearly named analysis/observation extent layer "
-            "was automatically identified."
-        )
-
-    # -------------------------------------------------------------------------
-    # 7. Safety decision regarding observed domain
-    # -------------------------------------------------------------------------
-
-    print_header("7. OBSERVATION-DOMAIN SAFETY CHECK")
-
-    """
-    We do NOT automatically create 0 = non-flood from the entire MCDA grid.
-
-    Unless a valid UNOSAT observation/analysis domain is identified, the
-    correct scientific action is to stop before producing a binary reference
-    raster.
-
-    This protects the validation from incorrectly treating unobserved areas
-    as observed non-flooded areas.
-    """
-
-    if len(analysis_candidates) == 0:
-
-        report["status"] = "PREPARATION_REQUIRES_OBSERVATION_DOMAIN"
-
-        report["scientific_notes"].append(
-            "A valid UNOSAT observation/analysis extent was not "
-            "automatically identified. The script therefore does not "
-            "create a binary 0/1 reference raster, because unobserved "
-            "areas must not be treated as observed non-flooded areas."
-        )
-
-        with PREPARATION_REPORT.open("w", encoding="utf-8") as f:
-            json.dump(
-                json_safe(report),
-                f,
-                indent=2,
-                ensure_ascii=False,
-            )
-
-        print()
-        print(
-            "SAFE STOP: No observation-domain layer was automatically "
-            "identified."
-        )
-        print()
-        print(
-            "The preparation report has been written, but the reference "
-            "raster was NOT created."
-        )
-        print()
-        print(f"Report:")
-        print(f"  {PREPARATION_REPORT}")
-        print()
-        print(
-            "This is intentional scientific protection against treating "
-            "unobserved areas as non-flooded."
-        )
-
-        return
-
-    # -------------------------------------------------------------------------
-    # 8. Require exactly one clear observation extent
-    # -------------------------------------------------------------------------
-
-    if len(analysis_candidates) > 1:
-
-        report["status"] = "PREPARATION_REQUIRES_ANALYSIS_EXTENT_SELECTION"
-
-        report["scientific_notes"].append(
-            "Multiple possible analysis/observation extent layers were "
-            "identified. Automatic selection was intentionally avoided "
-            "because the correct observation domain must be established "
-            "from UNOSAT product semantics rather than filename alone."
-        )
-
-        with PREPARATION_REPORT.open("w", encoding="utf-8") as f:
-            json.dump(
-                json_safe(report),
-                f,
-                indent=2,
-                ensure_ascii=False,
-            )
-
-        print()
-        print(
-            "SAFE STOP: Multiple potential observation-domain layers "
-            "were identified."
-        )
-        print()
-        print("They must be evaluated before creating the binary reference.")
-
-        for candidate in analysis_candidates:
-            print(f"  {candidate}")
-
-        print()
-        print(f"Report:")
-        print(f"  {PREPARATION_REPORT}")
-
-        return
-
-    # -------------------------------------------------------------------------
-    # 9. Read selected observation extent
-    # -------------------------------------------------------------------------
-
-    observation_extent_path = analysis_candidates[0]
-
-    print_header("8. OBSERVATION EXTENT PREPARATION")
-
-    observation_gdf = gpd.read_file(observation_extent_path)
-
-    if observation_gdf.empty:
-        raise RuntimeError(
-            f"Observation extent layer is empty:\n"
-            f"{observation_extent_path}"
-        )
-
-    if observation_gdf.crs is None:
-        raise RuntimeError(
-            f"Observation extent has no CRS:\n"
-            f"{observation_extent_path}"
-        )
-
-    print(f"Observation extent:")
-    print(f"  {observation_extent_path.name}")
-    print(f"Features: {len(observation_gdf)}")
-    print(f"CRS: {observation_gdf.crs}")
-
-    observation_prepared, observation_geometry_diagnostics = (
-        repair_geometry(observation_gdf)
     )
 
-    if (
-        observation_geometry_diagnostics[
-            "remaining_invalid_geometry_count"
-        ]
-        > 0
-    ):
-        raise RuntimeError(
-            "Observation extent geometry remains invalid after repair."
+    if not valid_observation_mcda.is_valid:
+        valid_observation_mcda = make_valid(
+            valid_observation_mcda
         )
 
-    if observation_prepared.crs != mcda_crs:
-        observation_projected = observation_prepared.to_crs(mcda_crs)
-    else:
-        observation_projected = observation_prepared.copy()
-
-    observation_union = observation_projected.geometry.union_all()
-
-    observation_mcda_overlap = observation_union.intersection(
-        mcda_footprint
-    )
-
-    if observation_mcda_overlap.is_empty:
+    if valid_observation_mcda.is_empty:
         raise RuntimeError(
-            "UNOSAT observation extent has no overlap with MCDA footprint."
+            "Valid observation domain has no overlap "
+            "with the MCDA footprint."
         )
 
-    observed_area_km2 = geometry_bounds_area_km2(
-        observation_mcda_overlap
+    # Flood observations are restricted to the valid observation domain.
+    observed_flood_geometry = flood_union.intersection(
+        valid_observation_mcda
     )
 
-    print(f"Observed/analysis domain overlap: {observed_area_km2:.6f} km²")
-    print("Observation extent preparation: PASS")
+    if not observed_flood_geometry.is_valid:
+        observed_flood_geometry = make_valid(
+            observed_flood_geometry
+        )
 
-    # -------------------------------------------------------------------------
-    # 10. Restrict flood reference to observation domain
-    # -------------------------------------------------------------------------
+    # ---------------------------------------------------------------
+    # 7. Spatial diagnostics
+    # ---------------------------------------------------------------
 
-    print_header("9. FLOOD REFERENCE DOMAIN PREPARATION")
+    print("\n[7/10] Calculating spatial diagnostics...")
 
-    valid_observation_domain = observation_mcda_overlap
+    analysis_area_km2 = area_km2(
+        analysis_union
+    )
 
-    flood_observed_geometry = flood_union.intersection(
+    cloud_area_km2 = area_km2(
+        cloud_union
+    )
+
+    valid_observation_area_km2 = area_km2(
         valid_observation_domain
     )
 
-    flood_observed_area_km2 = geometry_bounds_area_km2(
-        flood_observed_geometry
+    valid_observation_mcda_area_km2 = area_km2(
+        valid_observation_mcda
+    )
+
+    flood_total_area_km2 = area_km2(
+        flood_union
+    )
+
+    flood_valid_area_km2 = area_km2(
+        observed_flood_geometry
+    )
+
+    flood_mcda_area_km2 = area_km2(
+        flood_union.intersection(mcda_polygon)
+    )
+
+    flood_cloud_intersection_km2 = area_km2(
+        flood_union.intersection(cloud_union)
+    )
+
+    flood_analysis_intersection_km2 = area_km2(
+        flood_union.intersection(analysis_union)
     )
 
     print(
-        "Observed flood area within MCDA + observation domain: "
-        f"{flood_observed_area_km2:.6f} km²"
+        f"  Analysis extent area: "
+        f"{analysis_area_km2:.6f} km²"
     )
 
-    print("Flood/reference domain intersection: PASS")
-
-    # -------------------------------------------------------------------------
-    # 11. Create aligned reference raster
-    # -------------------------------------------------------------------------
-
-    print_header("10. CREATE MCDA-ALIGNED REFERENCE RASTER")
-
-    reference_array = rasterize(
-        [(valid_observation_domain, 0)],
-        out_shape=(mcda_height, mcda_width),
-        transform=mcda_transform,
-        fill=-9999,
-        dtype="int16",
+    print(
+        f"  Cloud obstruction area: "
+        f"{cloud_area_km2:.6f} km²"
     )
 
-    reference_array = reference_array.astype(np.int16)
+    print(
+        f"  Valid observation domain: "
+        f"{valid_observation_area_km2:.6f} km²"
+    )
 
-    # Flood cells override observed non-flood cells.
-    flood_shapes = [
-        (geom, 1)
-        for geom in flood_projected.geometry
-        if geom is not None and not geom.is_empty
-    ]
+    print(
+        f"  Valid observation domain within MCDA: "
+        f"{valid_observation_mcda_area_km2:.6f} km²"
+    )
 
-    flood_raster = rasterize(
-        flood_shapes,
+    print(
+        f"  Flood extent total: "
+        f"{flood_total_area_km2:.6f} km²"
+    )
+
+    print(
+        f"  Flood within analysis extent: "
+        f"{flood_analysis_intersection_km2:.6f} km²"
+    )
+
+    print(
+        f"  Flood within MCDA footprint: "
+        f"{flood_mcda_area_km2:.6f} km²"
+    )
+
+    print(
+        f"  Flood overlapping cloud obstruction: "
+        f"{flood_cloud_intersection_km2:.6f} km²"
+    )
+
+    print(
+        f"  Flood within valid observation domain: "
+        f"{flood_valid_area_km2:.6f} km²"
+    )
+
+    # ---------------------------------------------------------------
+    # 8. Rasterize onto exact MCDA grid
+    # ---------------------------------------------------------------
+
+    print("\n[8/10] Rasterizing reference data to MCDA grid...")
+
+    valid_domain_mask = rasterize(
+        [(valid_observation_mcda, 1)],
         out_shape=(mcda_height, mcda_width),
         transform=mcda_transform,
         fill=0,
-        dtype="int16",
+        dtype="uint8",
+        all_touched=RASTERIZATION_ALL_TOUCHED,
     )
 
-    observed_mask = reference_array != -9999
+    flood_mask = rasterize(
+        [(observed_flood_geometry, 1)],
+        out_shape=(mcda_height, mcda_width),
+        transform=mcda_transform,
+        fill=0,
+        dtype="uint8",
+        all_touched=RASTERIZATION_ALL_TOUCHED,
+    )
+
+    # Ensure flood cells can only occur within the valid observation
+    # domain.
+    flood_mask = flood_mask & valid_domain_mask
+
+    reference_array = np.full(
+        (mcda_height, mcda_width),
+        REFERENCE_NODATA,
+        dtype=np.int16,
+    )
 
     reference_array[
-        observed_mask & (flood_raster == 1)
-    ] = 1
+        valid_domain_mask == 1
+    ] = NON_FLOOD_VALUE
 
-    # Outside the valid observation domain remains NoData.
     reference_array[
-        ~observed_mask
-    ] = -9999
+        flood_mask == 1
+    ] = FLOOD_VALUE
 
-    profile = {
-        "driver": "GTiff",
-        "height": mcda_height,
-        "width": mcda_width,
-        "count": 1,
-        "dtype": "int16",
-        "crs": mcda_crs,
-        "transform": mcda_transform,
-        "nodata": -9999,
-        "compress": "lzw",
+    # Never allow cells outside the MCDA valid-data footprint to become
+    # reference observations.
+    reference_array[
+        ~mcda_valid
+    ] = REFERENCE_NODATA
+
+    observed_mask = (
+        reference_array != REFERENCE_NODATA
+    )
+
+    observed_flood_mask = (
+        reference_array == FLOOD_VALUE
+    )
+
+    observed_non_flood_mask = (
+        reference_array == NON_FLOOD_VALUE
+    )
+
+    unobserved_mask = (
+        reference_array == REFERENCE_NODATA
+    )
+
+    flood_cell_count = int(
+        observed_flood_mask.sum()
+    )
+
+    non_flood_cell_count = int(
+        observed_non_flood_mask.sum()
+    )
+
+    unobserved_cell_count = int(
+        unobserved_mask.sum()
+    )
+
+    observed_cell_count = int(
+        observed_mask.sum()
+    )
+
+    pixel_area_m2 = (
+        abs(mcda_transform.a)
+        * abs(mcda_transform.e)
+    )
+
+    rasterized_flood_area_km2 = (
+        flood_cell_count
+        * pixel_area_m2
+        / 1_000_000.0
+    )
+
+    rasterized_observed_area_km2 = (
+        observed_cell_count
+        * pixel_area_m2
+        / 1_000_000.0
+    )
+
+    rasterized_unobserved_area_km2 = (
+        unobserved_cell_count
+        * pixel_area_m2
+        / 1_000_000.0
+    )
+
+    print(
+        f"  Observed flood cells: "
+        f"{flood_cell_count:,}"
+    )
+
+    print(
+        f"  Observed non-flood cells: "
+        f"{non_flood_cell_count:,}"
+    )
+
+    print(
+        f"  Unobserved cells: "
+        f"{unobserved_cell_count:,}"
+    )
+
+    print(
+        f"  Rasterized observed area: "
+        f"{rasterized_observed_area_km2:.6f} km²"
+    )
+
+    print(
+        f"  Rasterized flood area: "
+        f"{rasterized_flood_area_km2:.6f} km²"
+    )
+
+    print(
+        f"  Rasterized unobserved area: "
+        f"{rasterized_unobserved_area_km2:.6f} km²"
+    )
+
+    # ---------------------------------------------------------------
+    # 9. Validate raster geometry and reference logic
+    # ---------------------------------------------------------------
+
+    print("\n[9/10] Validating prepared reference raster...")
+
+    unique_values = np.unique(reference_array)
+
+    print(
+        f"  Reference values present: "
+        f"{unique_values.tolist()}"
+    )
+
+    allowed_values = {
+        REFERENCE_NODATA,
+        NON_FLOOD_VALUE,
+        FLOOD_VALUE,
     }
+
+    if not set(unique_values.tolist()).issubset(
+        allowed_values
+    ):
+        raise RuntimeError(
+            "Reference raster contains unexpected values."
+        )
+
+    if flood_cell_count == 0:
+        raise RuntimeError(
+            "No observed flood cells were produced."
+        )
+
+    if non_flood_cell_count == 0:
+        raise RuntimeError(
+            "No observed non-flood cells were produced."
+        )
+
+    if observed_cell_count == 0:
+        raise RuntimeError(
+            "No observed cells were produced."
+        )
+
+    if not geometry_bounds_overlap(
+        valid_observation_mcda,
+        mcda_bounds,
+    ):
+        raise RuntimeError(
+            "Valid observation domain does not overlap "
+            "the MCDA raster bounds."
+        )
+
+    print("  Allowed reference values: PASS")
+    print("  Observed flood cells: PASS")
+    print("  Observed non-flood cells: PASS")
+    print("  Observed domain: PASS")
+    print("  MCDA spatial overlap: PASS")
+
+    # ---------------------------------------------------------------
+    # 10. Write raster and report
+    # ---------------------------------------------------------------
+
+    print("\n[10/10] Writing aligned reference raster and report...")
+
+    with rasterio.open(
+        MCDA_RASTER
+    ) as mcda:
+
+        profile = mcda.profile.copy()
+
+    profile.update(
+        driver="GTiff",
+        dtype="int16",
+        count=1,
+        nodata=REFERENCE_NODATA,
+        compress="deflate",
+        predictor=2,
+    )
 
     with rasterio.open(
         REFERENCE_RASTER,
@@ -776,168 +891,294 @@ def main():
         **profile,
     ) as dst:
 
-        dst.write(reference_array, 1)
+        dst.write(
+            reference_array,
+            1,
+        )
+
+        dst.set_band_description(
+            1,
+            "UNOSAT observed flood reference",
+        )
 
         dst.update_tags(
             phase="9.11.3",
-            source_product="UNOSAT Product 3834",
-            source_event="FL20240426KEN",
-            source_sensor="Pleiades",
-            source_sensor_date="2024-05-01",
-            reference_definition=(
-                "1=observed flood; "
-                "0=observed non-flood; "
-                "-9999=unobserved/outside reference domain"
+            reference_source="UNOSAT Product 3834",
+            event_code="FL20240426KEN",
+            sensor="Pleiades",
+            acquisition_date="2024-05-01",
+            flood_value="1",
+            non_flood_value="0",
+            nodata_value="-9999",
+            observation_domain=(
+                "AnalysisExtent_Nairobi_Kiambu "
+                "minus CloudObstruction_Nairobi_Kiambu "
+                "intersect MCDA footprint"
             ),
-            preparation_note=(
-                "Derived working reference; original UNOSAT source "
-                "data were not modified."
+            cloud_obstruction_treatment=(
+                "Excluded from observed domain; "
+                "not classified as non-flood"
+            ),
+            rasterization_method=(
+                "center-based rasterization; all_touched=False"
+            ),
+            validation_role=(
+                "Independent satellite-derived flood observation "
+                "for external validation"
             ),
         )
 
-    print(f"Reference raster created:")
-    print(f"  {REFERENCE_RASTER}")
+    # Final raster validation by reopening output.
+    with rasterio.open(
+        REFERENCE_RASTER
+    ) as reference:
 
-    # -------------------------------------------------------------------------
-    # 12. Validate reference raster
-    # -------------------------------------------------------------------------
+        output_crs = reference.crs
+        output_width = reference.width
+        output_height = reference.height
+        output_transform = reference.transform
+        output_resolution = reference.res
+        output_nodata = reference.nodata
+        output_array = reference.read(1)
 
-    print_header("11. REFERENCE RASTER VALIDATION")
-
-    with rasterio.open(REFERENCE_RASTER) as src:
-
-        prepared = src.read(1)
-
-        crs_match = src.crs == mcda_crs
-        dimensions_match = (
-            src.width == mcda_width
-            and src.height == mcda_height
+    geometry_match = (
+        output_width == mcda_width
+        and output_height == mcda_height
+        and np.allclose(
+            output_transform,
+            mcda_transform,
         )
-        transform_match = np.allclose(
-            np.array(src.transform),
-            np.array(mcda_transform),
-        )
-        resolution_match = (
-            np.isclose(src.res[0], rasterio.open(MCDA_RASTER).res[0])
-            and np.isclose(src.res[1], rasterio.open(MCDA_RASTER).res[1])
-        )
-
-        nodata_count = int(np.sum(prepared == -9999))
-        nonflood_count = int(np.sum(prepared == 0))
-        flood_count = int(np.sum(prepared == 1))
-
-        invalid_values = int(
-            np.sum(
-                ~np.isin(
-                    prepared,
-                    [-9999, 0, 1],
-                )
-            )
-        )
-
-    validation = {
-        "crs_match": crs_match,
-        "dimensions_match": dimensions_match,
-        "transform_match": transform_match,
-        "resolution_match": resolution_match,
-        "nodata_cells": nodata_count,
-        "observed_nonflood_cells": nonflood_count,
-        "observed_flood_cells": flood_count,
-        "invalid_value_cells": invalid_values,
-        "valid_observed_cells": nonflood_count + flood_count,
-        "reference_raster_created": REFERENCE_RASTER.exists(),
-    }
-
-    print(f"CRS match: {'PASS' if crs_match else 'FAIL'}")
-    print(
-        f"Dimensions match: "
-        f"{'PASS' if dimensions_match else 'FAIL'}"
     )
-    print(
-        f"Transform match: "
-        f"{'PASS' if transform_match else 'FAIL'}"
+
+    resolution_match = (
+        np.allclose(
+            output_resolution,
+            mcda_resolution,
+        )
     )
+
+    crs_match = (
+        str(output_crs) == TARGET_CRS
+    )
+
+    nodata_match = (
+        output_nodata == REFERENCE_NODATA
+    )
+
+    values_match = np.array_equal(
+        output_array,
+        reference_array,
+    )
+
     print(
-        f"Resolution match: "
+        f"  CRS match: "
+        f"{'PASS' if crs_match else 'FAIL'}"
+    )
+
+    print(
+        f"  Dimensions match: "
+        f"{'PASS' if geometry_match else 'FAIL'}"
+    )
+
+    print(
+        f"  Resolution match: "
         f"{'PASS' if resolution_match else 'FAIL'}"
     )
-    print(f"Observed non-flood cells: {nonflood_count:,}")
-    print(f"Observed flood cells: {flood_count:,}")
-    print(f"NoData/unobserved cells: {nodata_count:,}")
-    print(f"Invalid values: {invalid_values:,}")
+
+    print(
+        f"  NoData match: "
+        f"{'PASS' if nodata_match else 'FAIL'}"
+    )
+
+    print(
+        f"  Written values match source array: "
+        f"{'PASS' if values_match else 'FAIL'}"
+    )
 
     if not all(
         [
             crs_match,
-            dimensions_match,
-            transform_match,
+            geometry_match,
             resolution_match,
-            invalid_values == 0,
-            REFERENCE_RASTER.exists(),
+            nodata_match,
+            values_match,
         ]
     ):
         raise RuntimeError(
-            "Reference raster validation failed."
+            "Final reference raster validation failed."
         )
 
-    print()
-    print("Reference raster validation: PASS")
+    # ---------------------------------------------------------------
+    # Build provenance/validation report
+    # ---------------------------------------------------------------
 
-    report["reference_raster"] = {
-        "path": str(REFERENCE_RASTER),
-        "metadata": get_raster_metadata(REFERENCE_RASTER),
-        "observed_flood_area_km2": flood_observed_area_km2,
-        "observed_domain_area_km2": observed_area_km2,
+    report = {
+        "phase": "9.11.3",
+        "status": "COMPLETED",
+        "purpose": (
+            "Preparation of independent UNOSAT satellite-derived "
+            "flood observations for external validation."
+        ),
+        "source": {
+            "product": "UNOSAT Product 3834",
+            "event_code": "FL20240426KEN",
+            "sensor": "Pleiades",
+            "acquisition_date": "2024-05-01",
+            "flood_layer": str(flood_path),
+            "analysis_extent_layer": str(
+                analysis_extent_path
+            ),
+            "cloud_obstruction_layer": str(
+                cloud_path
+            ),
+        },
+        "reference_definition": {
+            "flood_value": FLOOD_VALUE,
+            "non_flood_value": NON_FLOOD_VALUE,
+            "nodata_value": REFERENCE_NODATA,
+            "valid_observation_domain": (
+                "Analysis Extent minus Cloud Obstruction"
+            ),
+            "validation_domain": (
+                "Valid observation domain intersect MCDA footprint"
+            ),
+            "cloud_obstruction_treatment": (
+                "Cloud-obstructed areas are unobserved and "
+                "are not assigned non-flood values."
+            ),
+            "rasterization_all_touched": RASTERIZATION_ALL_TOUCHED,
+        },
+        "mcda_reference_grid": {
+            "crs": str(mcda_crs),
+            "width": mcda_width,
+            "height": mcda_height,
+            "resolution_x_m": float(mcda_resolution[0]),
+            "resolution_y_m": float(mcda_resolution[1]),
+            "pixel_area_m2": float(pixel_area_m2),
+            "valid_cells": int(mcda_valid.sum()),
+        },
+        "geometry_diagnostics": {
+            "flood": flood_geometry_report,
+            "analysis_extent": analysis_geometry_report,
+            "cloud_obstruction": cloud_geometry_report,
+        },
+        "spatial_diagnostics": {
+            "analysis_extent_area_km2": analysis_area_km2,
+            "cloud_obstruction_area_km2": cloud_area_km2,
+            "valid_observation_domain_area_km2": (
+                valid_observation_area_km2
+            ),
+            "valid_observation_domain_mcda_area_km2": (
+                valid_observation_mcda_area_km2
+            ),
+            "flood_total_area_km2": flood_total_area_km2,
+            "flood_inside_analysis_extent_km2": (
+                flood_analysis_intersection_km2
+            ),
+            "flood_inside_mcda_footprint_km2": (
+                flood_mcda_area_km2
+            ),
+            "flood_overlapping_cloud_km2": (
+                flood_cloud_intersection_km2
+            ),
+            "flood_inside_valid_observation_domain_km2": (
+                flood_valid_area_km2
+            ),
+        },
+        "raster_reference_statistics": {
+            "flood_cells": flood_cell_count,
+            "non_flood_cells": non_flood_cell_count,
+            "observed_cells": observed_cell_count,
+            "unobserved_cells": unobserved_cell_count,
+            "rasterized_flood_area_km2": (
+                rasterized_flood_area_km2
+            ),
+            "rasterized_observed_area_km2": (
+                rasterized_observed_area_km2
+            ),
+            "rasterized_unobserved_area_km2": (
+                rasterized_unobserved_area_km2
+            ),
+            "unique_values": [
+                int(value)
+                for value in unique_values
+            ],
+        },
+        "output_validation": {
+            "output_raster": str(REFERENCE_RASTER),
+            "crs_match": crs_match,
+            "dimensions_match": geometry_match,
+            "resolution_match": resolution_match,
+            "nodata_match": nodata_match,
+            "values_match": values_match,
+            "validation_pass": all(
+                [
+                    crs_match,
+                    geometry_match,
+                    resolution_match,
+                    nodata_match,
+                    values_match,
+                ]
+            ),
+        },
+        "scientific_notes": [
+            (
+                "The UNOSAT flood polygon was restricted to the "
+                "valid observation domain before rasterization."
+            ),
+            (
+                "Cloud-obstructed areas were excluded from the "
+                "reference domain rather than being classified "
+                "as observed non-flood."
+            ),
+            (
+                "The reference raster is aligned exactly to the "
+                "MCDA grid to enable cell-by-cell external validation."
+            ),
+            (
+                "The reference represents observed flood extent "
+                "for the 1 May 2024 satellite acquisition and "
+                "does not represent flood probability."
+            ),
+            (
+                "Preparation of the reference raster does not by "
+                "itself establish predictive validity; spatial and "
+                "statistical validation are performed in subsequent "
+                "Phase 9.11 steps."
+            ),
+        ],
     }
 
-    report["validation"] = validation
+    with open(
+        REPORT_JSON,
+        "w",
+        encoding="utf-8",
+    ) as f:
 
-    report["scientific_notes"].extend(
-        [
-            "The original UNOSAT source data were not modified.",
-            "Invalid flood geometry was repaired only in the derived "
-            "working representation.",
-            "The UNOSAT flood reference was reprojected to the MCDA CRS "
-            "EPSG:32737.",
-            "The reference raster uses 1 for observed flood and 0 for "
-            "observed non-flood within the valid observation domain.",
-            "Cells outside the valid observation domain are NoData and "
-            "must not be interpreted as observed non-flood.",
-            "External statistical validation has not yet been performed.",
-        ]
-    )
-
-    report["status"] = "PHASE_9_11_3_DATA_PREPARATION_COMPLETED"
-
-    with PREPARATION_REPORT.open("w", encoding="utf-8") as f:
         json.dump(
             json_safe(report),
             f,
             indent=2,
-            ensure_ascii=False,
         )
 
-    # -------------------------------------------------------------------------
-    # FINAL
-    # -------------------------------------------------------------------------
-
-    print_header("PHASE 9.11.3 COMPLETE")
-
-    print(f"Preparation report:")
-    print(f"  {PREPARATION_REPORT}")
-
-    print()
-    print(f"Reference raster:")
-    print(f"  {REFERENCE_RASTER}")
-
-    print()
-    print("Original UNOSAT data were not modified.")
-
-    print()
     print(
-        "PHASE_9_11_3_DATA_PREPARATION_COMPLETED"
+        f"\nReference raster written to:\n"
+        f"  {REFERENCE_RASTER}"
     )
 
+    print(
+        f"\nPreparation report written to:\n"
+        f"  {REPORT_JSON}"
+    )
+
+    print("\n" + "=" * 72)
+    print("PHASE_9_11_3_REFERENCE_PREPARATION_COMPLETED")
+    print("=" * 72)
+
+
+# ---------------------------------------------------------------------
+# Entry point
+# ---------------------------------------------------------------------
 
 if __name__ == "__main__":
     main()
