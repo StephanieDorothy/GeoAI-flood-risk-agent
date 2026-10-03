@@ -1114,6 +1114,8 @@ Land Cover reclassification:
 | 80 | 0.00 |
 | 90 | 0.15 |
 
+
+
 Validation confirmed:
 
 - CRS consistency
