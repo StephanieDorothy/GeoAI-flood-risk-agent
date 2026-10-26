@@ -36,6 +36,12 @@ data/analysis/
 data/outputs/
 
 # -------------------------------
+# Generated Results
+# Keep analytical outputs out of Git
+# -------------------------------
+/results/
+
+# -------------------------------
 # Temporary Files
 # -------------------------------
 *.log
