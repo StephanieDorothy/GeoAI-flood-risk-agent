@@ -173,13 +173,13 @@ A projected coordinate system supports distance calculations, raster processing,
 
 # Project Status
 
-## Current milestone: Phase 9 synthesis and documentation
+## Current milestone: Phase 10 - GeoAI Interpretation and Decision Support
 
 Phases 1–8 established the core geospatial processing and MCDA modelling workflow.
 
 Phase 9 extended the project beyond computational correctness to examine spatial behaviour, factor influence, robustness, uncertainty, and external validation.
 
-The analytical validation activities and scientific synthesis have been completed in the working project. The current milestone is to finalize the synthesis and project handoff documentation, update this README, reconcile the methodology documentation, and review the resulting Git changes.
+Phase 9 analytical work, scientific synthesis, external validation, and documentation are complete. The Phase 9 documentation has been committed to GitHub. The current milestone is Phase 10: GeoAI Interpretation and Decision Support.
 
 ### Completed phases
 
@@ -580,7 +580,7 @@ The successful checks establish computational consistency within the tested work
 
 # Phase 9: Spatial Diagnostics and Analytical Assessment
 
-**Status: Analytical assessment completed; final documentation and handoff in progress.**
+**Status: Completed — analytical assessment, external validation, scientific synthesis, and documentation.**
 
 Phase 9 investigated how the model behaves spatially and how its assumptions influence its outputs.
 
@@ -945,7 +945,7 @@ Potential development activities include:
 
 Any future GeoAI interface must accurately communicate the limitations established during Phase 9. It should not present the current model as a validated flood predictor.
 
-Phase 10 will be initiated only after the Phase 9 synthesis and README/methodology handoff have been reviewed and finalized.
+Phase 9 synthesis and documentation are complete. Phase 10 is the current development milestone and is ready to begin.
 
 ---
 
@@ -1440,13 +1440,13 @@ Phase 8   MCDA Susceptibility Modelling     COMPLETED
 Phase 9   Diagnostics and External
           Validation                        ANALYSIS COMPLETED
 Phase 9   Final Documentation and Handoff   COMPLETED
-Phase 10  GeoAI Decision Support            NOT STARTED
+Phase 10  GeoAI Decision Support            IN PROGRESS
 
 CURRENT MILESTONE:
-Finalize Phase 9 documentation and README.
+Phase 10 - GeoAI Interpretation and Decision Support.
 
 NEXT MILESTONE:
-Begin Phase 10 after documentation review.
+Implement and test the Phase 10 GeoAI interpretation and decision-support capabilities.
 ```
 
 **Scientific qualification:** The current MCDA scores are relative susceptibility indices, not calibrated flood probabilities. The evaluated UNOSAT comparison did not demonstrate the expected positive relationship between higher susceptibility scores and observed flooding. This limitation remains part of the project's documented evidence and guides future development.
