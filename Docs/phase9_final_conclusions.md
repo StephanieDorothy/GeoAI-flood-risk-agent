@@ -139,4 +139,4 @@ Phase 9 can be formally closed after:
 - Relevant methodology and dataset documentation is reconciled with the final project state.
 - Source code and documentation changes are reviewed before committing, with generated `results/` files excluded from the Git commit unless explicitly intended otherwise.
 
-**Status:** Final conclusions drafted. Verify the document against the existing project outputs before formal closure of Phase 9.
+**Status:** Final conclusions and documentation require final consistency checks against the recorded project outputs and repository changes before Phase 9 is formally closed.

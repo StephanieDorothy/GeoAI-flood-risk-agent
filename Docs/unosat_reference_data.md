@@ -158,17 +158,17 @@ The observed mismatch between the model's susceptibility ranking and the UNOSAT 
 
 The official UNOSAT product page is the primary source for product-level metadata and publication details.
 
-The precise product identity associated with the local shapefile package remains to be confirmed.
+The evaluated Nairobi-Kiambu layer is attributed to UNOSAT Product 3833. The local archive directory label 3834 is retained as a filesystem detail.
 
-Once confirmed, the final record should include the exact product identifier, official title, publication date, access date, original download location, and any relevant usage or attribution conditions.
+The source record identifies UNOSAT Product 3833 as the product associated with the evaluated Nairobi-Kiambu layer. The documentation records the product identifier, official product page, event code, observation date, source layer, local archive location, and relevant limitations. The original source files are retained separately from the derived validation outputs, and the preparation and evaluation workflow is documented for reproducibility.
 
 The project should retain the original source files separately from the derived validation outputs and document all transformations required to reproduce the reference raster.
 
 ## 9. Status
 
-**Phase 9.12.1 — Source and limitations documentation: Draft prepared.**
+**Phase 9.12.1 - Source and limitations documentation: Completed.**
 
-The source-product identity discrepancy remains unresolved. This document must not be treated as final source provenance until that discrepancy has been investigated and the product attribution confirmed.
+The evaluated Nairobi-Kiambu layer is attributed to Product 3833 based on its layer name, event metadata, and geographic coverage. The local archive directory remains labelled 3834; this is a filesystem detail, not the definitive product identifier.
 
 # UNOSAT Reference Preparation and Rasterization Workflow
 

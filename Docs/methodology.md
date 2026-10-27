@@ -2415,3 +2415,312 @@ QGIS Visual Verification
               ↓
 VALIDATED FLOOD SUSCEPTIBILITY PRODUCTS
 ```
+# PHASE 9 — SPATIAL VALIDATION, ROBUSTNESS, UNCERTAINTY, AND EXTERNAL EVALUATION
+
+Status: Phase 9 analytical work and documentation completed. Phase 9 is formally closed.
+
+## 9.1 Phase Overview
+
+Phase 9 evaluated the behaviour, spatial structure, sensitivity, uncertainty, and external validation performance of the Phase 8 MCDA flood-susceptibility model.
+
+Phase 8 established that the MCDA surface and its classified output could be reproduced computationally and passed the defined numerical and spatial validation checks. However, computational correctness alone does not establish that a susceptibility model corresponds to observed flooding.
+
+Phase 9 therefore examined two distinct questions:
+
+1. **Internal model behaviour:** Does the model produce computationally reproducible outputs, interpretable spatial patterns, and results that can be assessed under alternative weighting assumptions?
+2. **External event-level agreement:** How do the model's susceptibility scores compare with an independent satellite-derived flood reference for a particular event?
+
+These questions require different forms of evidence. Internal validation evaluates the model's implementation and behaviour, while external validation evaluates its agreement with observations that were not used to construct the model.
+
+## 9.2 Phase 9 Objectives
+
+The objectives were to:
+
+- Describe the spatial distribution of the five susceptibility classes.
+- Examine spatial clustering and fragmentation of the classified output.
+- Investigate relationships between susceptibility and distance to rivers.
+- Examine the influence of terrain, land cover, and population-related factors.
+- Assess how the output responds to changes in factor weights.
+- Examine uncertainty associated with the adopted MCDA formulation.
+- Prepare an independent UNOSAT flood reference for spatial comparison.
+- Evaluate the relationship between susceptibility scores and the observed flood pattern.
+- Document the model's strengths, limitations, and priorities for further development.
+
+## 9.3 Input Model Products
+
+The principal MCDA products used during Phase 9 were:
+
+```text
+data/analysis/mcda/flood_susceptibility.tif
+
+data/analysis/mcda/flood_susceptibility_classified.tif
+```
+
+The continuous susceptibility raster contains relative MCDA scores. The classified raster contains five relative susceptibility classes.
+
+The model grid uses:
+
+```text
+CRS:          EPSG:32737
+Dimensions:   1603 columns × 1019 rows
+Resolution:   approximately 30.8655 m
+```
+
+The continuous raster contains 553,860 valid model cells. The remaining grid cells are outside the common valid-data footprint and must not be interpreted as cells with very low susceptibility.
+
+The classified raster uses:
+
+```text
+1 = Very Low
+2 = Low
+3 = Moderate
+4 = High
+5 = Very High
+0 = NoData
+```
+
+The classification is based on quantiles of the valid continuous scores. Each class therefore represents approximately 20% of valid model cells by construction.
+
+These classes describe relative ranking within the modelled footprint; they are not calibrated flood-probability categories.
+
+## 9.4 Spatial Distribution and Pattern Diagnostics
+
+The classified susceptibility surface was examined to understand its spatial distribution and the degree to which neighbouring cells formed connected patches.
+
+The analysis considered class distribution, spatial clustering, and fragmentation. These diagnostics describe the structure of the model output rather than directly measuring predictive accuracy.
+
+The five quantile classes each contain 110,772 valid cells, corresponding to 20% of the valid modelled cells.
+
+An eight-neighbour spatial cohesion diagnostic produced the following results:
+
+| Class | Cohesion |
+|---|---:|
+| Very Low | 0.831075 |
+| Low | 0.645321 |
+| Moderate | 0.639933 |
+| High | 0.670073 |
+| Very High | 0.795077 |
+
+Overall eight-neighbour cohesion was approximately 0.716721. The largest isolated-cell share was approximately 3.341% for the Moderate class. The diagnostic characterized the classified output as exhibiting minor fragmentation.
+
+These statistics describe spatial arrangement and connectedness. They do not establish that a spatially cohesive class corresponds to actual flood occurrence.
+
+## 9.5 River-Proximity Analysis
+
+The model's relationship with river proximity was examined because distance to rivers received the largest AHP weight.
+
+The adopted weight for distance to rivers was approximately 0.435290, or 43.529% of the weighted MCDA score.
+
+The river-proximity analysis investigated how susceptibility scores and classes varied with distance to the mapped river network. A separate range diagnostic was used to check the distribution and interpretation of the distance relationship.
+
+The river factor's high weight means it has the largest assigned contribution in the weighted overlay. It does not mean that this factor physically causes 43.529% of flooding.
+
+The river-proximity analysis should be interpreted as a diagnostic of the adopted model assumptions and output patterns, not as independent proof that the river-distance relationship is physically correct throughout Nairobi County.
+
+## 9.6 Terrain, Land-Cover, and Population Diagnostics
+
+Additional diagnostics examined the model's relationships with elevation, slope, land cover, and population.
+
+These analyses were intended to identify whether the resulting susceptibility patterns were consistent with the relationships assumed during factor standardization and MCDA construction.
+
+The terrain diagnostics considered elevation and slope. The land-cover diagnostics examined how the assigned class scores contributed to the output. The population diagnostics examined the relationship between the population-related factor and the composite score.
+
+Population requires particular care in interpretation. It represents an exposure-related dimension in the current composite model, rather than a direct physical mechanism that generates flooding.
+
+Consequently, the current output combines physical-conditioning assumptions with an exposure-related factor. It should not be treated as a pure hydrological simulation or as a complete flood-risk estimate.
+
+## 9.7 Sensitivity and Robustness Analysis
+
+A sensitivity analysis assessed how the MCDA classification responded to changes in factor weights.
+
+The analysis evaluated 11 scenarios: the baseline model and alternative scenarios involving approximately ±10% perturbations to factor weights. The perturbed weights were normalized for the scenario calculations.
+
+The analysis compared the resulting class assignments and the number of cells retaining their baseline class.
+
+The reported common comparison mask contained 553,860 cells, equivalent to approximately 33.907% of the full 1,633,457-cell raster grid.
+
+The baseline model was independently reconstructed with a maximum absolute difference of approximately 0.000000029880, passing the defined numerical comparison.
+
+The reported same-class agreement following a 10% increase in the river-distance weight was approximately 79.769%. The corresponding reported agreement was approximately 95% for the slope-related perturbation and approximately 92% for the elevation-related perturbation.
+
+These results indicate that some cells can change class under plausible changes to model weights. The amount of change varies by factor and scenario.
+
+The sensitivity analysis evaluates robustness to the tested weighting assumptions only. It does not establish predictive accuracy, and it does not cover every possible factor selection, source-data error, or modelling formulation.
+
+## 9.8 Uncertainty Assessment
+
+Phase 9 also examined uncertainty associated with the MCDA formulation and its weighting assumptions.
+
+The adopted weights were approximately:
+
+| Factor | Weight |
+|---|---:|
+| Elevation | 0.186874 |
+| Slope | 0.186874 |
+| Distance to rivers | 0.435290 |
+| Land cover | 0.128589 |
+| Population | 0.062372 |
+
+The AHP consistency ratio was approximately 0.026948, below the commonly applied 0.10 consistency threshold.
+
+A consistency ratio below this threshold indicates acceptable consistency in the pairwise-comparison judgments under the selected AHP procedure. It does not prove that the judgments are objectively correct or that the resulting model is accurate against observed floods.
+
+Uncertainty in the current model may arise from factor selection, source-data quality, temporal mismatch, factor standardization, subjective weighting judgments, spatial resolution, missing input coverage, and the limitations of a static weighted-overlay formulation.
+
+The uncertainty assessment should therefore be understood as a structured examination of the model's assumptions and behaviour, rather than a complete probabilistic uncertainty model.
+
+## 9.9 Independent UNOSAT Reference
+
+An independent satellite-derived flood reference associated with the April 2024 Kenya flood event was prepared for external evaluation.
+
+The principal layer used was:
+
+```text
+PL_20240501_FloodExtent_Nairobi_Kiambu.shp
+```
+
+The layer is associated with the UNOSAT event code:
+
+```text
+FL20240426KEN
+```
+
+The observation date recorded in the source metadata was 1 May 2024, using Pléiades satellite imagery.
+
+The reference geometry originated in geographic coordinates and was transformed into the model's projected analysis grid for spatial comparison.
+
+The prepared reference raster was stored at:
+
+```text
+results/phase9_validation/external_validation/unosat_flood_reference_aligned.tif
+```
+
+This file is a generated analytical result. It should be reproducible from the tracked preparation and validation scripts and the required source data; generated `results/` files are excluded from Git under the repository's tracking policy.
+
+The source metadata indicated that confidence was still to be evaluated and that the reference had not yet been field validated. These limitations were retained in the interpretation of the external validation.
+
+## 9.10 Observation Domain and Raster Preparation
+
+The external reference was not treated as a complete flood inventory covering every model cell.
+
+A valid observation domain was defined to distinguish locations where the reference could support comparison from locations that were unobserved or excluded.
+
+The preparation workflow included:
+
+1. Inspection of the available UNOSAT reference files and metadata.
+2. Selection and examination of the Nairobi–Kiambu flood-extent layer.
+3. Geometry preparation.
+4. Definition of the valid observation domain.
+5. Consideration of cloud-obstructed and otherwise excluded areas.
+6. Intersection with the valid MCDA footprint.
+7. Rasterization onto the common model grid.
+8. Assignment of explicit flood, observed non-flood, and unobserved codes.
+9. Statistical and spatial comparison against the susceptibility outputs.
+
+The final comparison used the intersection of the valid MCDA footprint and the valid UNOSAT observation domain.
+
+The resulting observation domain contained 228,194 cells, approximately 13.970% of the full MCDA grid. Of these, 19,201 were coded as observed flood and 208,993 as observed non-flood. The observed flood rate within this domain was approximately 8.414%.
+
+Cells outside the observation domain were not interpreted as confirmed non-flood locations.
+
+## 9.11 External Validation Results
+
+The UNOSAT reference was compared with the continuous susceptibility scores and the five classified susceptibility categories.
+
+For the evaluated observation domain, the mean susceptibility score in observed flood cells was approximately 0.806270, compared with approximately 0.828836 in observed non-flood cells.
+
+The difference in means was approximately -0.022566. The median score difference was approximately -0.035965.
+
+The Spearman rank correlation between the continuous susceptibility score and the observed flood indicator was approximately:
+
+```text
+Spearman rho = -0.138730
+```
+
+The ROC AUC was approximately:
+
+```text
+ROC AUC = 0.355737
+```
+
+These results indicate that the model did not demonstrate the expected positive susceptibility–flood relationship for this particular reference sample. The ROC AUC indicates reverse-direction discrimination in this sample relative to the expected positive ranking.
+
+The class-based comparison also showed that the observed flood pattern did not concentrate in the highest susceptibility classes as the original conceptual model would have expected.
+
+Approximately 48.873% of observed flood cells were in the combined High and Very High classes, while these classes accounted for approximately 64.502% of the observed domain. The observed flood rate in the combined High and Very High classes was approximately 6.376%, compared with approximately 12.119% in the combined Very Low, Low, and Moderate classes.
+
+The observed relationship is therefore a substantial mismatch with the intended positive susceptibility ranking for this event.
+
+These findings must be reported as observed. The model weights and classification thresholds should not be changed merely to improve agreement with this one reference dataset.
+
+## 9.12 Statistical Interpretation and Limitations
+
+The external comparison included statistical tests of association and rank discrimination. The chi-square test indicated an association between susceptibility class and the observed flood/non-flood counts, while the effect size measured using Cramér's V was approximately 0.130803.
+
+A statistically detectable association does not necessarily imply a useful or correctly directed predictive relationship. The direction and magnitude of the observed relationship must be considered alongside the test statistic.
+
+The observed negative rank relationship and ROC AUC below 0.5 indicate that the tested model did not achieve the intended positive discrimination in this reference sample.
+
+The following limitations are especially important:
+
+- The comparison concerns one event rather than a collection of independent flood events.
+- The observation domain covers only part of the modelled grid.
+- The source reference was preliminary and not yet field validated.
+- Satellite-observed inundation and static flood susceptibility represent different concepts.
+- The MCDA model does not explicitly simulate rainfall, runoff, antecedent wetness, river discharge, drainage capacity, or hydraulic processes.
+- Spatial dependence between neighbouring cells means that conventional cell-level statistical significance should not be interpreted as if every cell were an independent observation.
+- The temporal and spatial characteristics of the reference may differ from those of the datasets used to construct the susceptibility model.
+
+The results therefore provide event-specific evidence about agreement with the selected reference. They do not establish general performance across future flood events, and they do not prove that every possible MCDA formulation is unsuitable.
+
+## 9.13 Phase 9 Synthesis
+
+Phase 9 established evidence about the model's internal behaviour, spatial patterns, sensitivity to weighting assumptions, uncertainty, and external validation performance.
+
+The internal diagnostics support the conclusion that the model can be reproduced computationally and that its spatial structure and sensitivity can be examined transparently.
+
+The external validation provides a different and essential result: for the evaluated UNOSAT reference, the expected positive relationship between susceptibility ranking and observed flood extent was not supported.
+
+The current model should therefore be described as:
+
+> **An exploratory, AHP-weighted MCDA framework for relative flood-susceptibility mapping and spatial decision support in Nairobi County, with documented internal diagnostics, sensitivity analysis, uncertainty assessment, and event-specific external validation findings that identify priorities for further development.**
+
+The current model is not a calibrated flood-probability model, a dynamic flood forecast, or a generally validated flood-prediction system.
+
+The results should be preserved without changing the original weights, thresholds, or validation outcomes simply to produce a more favourable comparison.
+
+## 9.14 Documentation and Reproducibility
+
+Phase 9 source code, validation scripts, and supporting documentation should remain tracked in the repository. Generated analytical outputs under `results/` remain excluded from Git according to the project policy.
+
+The principal Phase 9 documentation includes:
+
+```text
+Docs/phase9_final_conclusions.md
+Docs/phase9_model_strengths_and_limitations.md
+Docs/unosat_reference_data.md
+Docs/methodology.md
+Docs/datasets.md
+```
+
+The Phase 9 validation scripts are maintained under:
+
+```text
+src/validation/
+```
+
+The UNOSAT reference preparation and evaluation workflow should be reproduced using the corresponding tracked scripts and the required source datasets. Exact commands should be taken from the current scripts and project documentation so that this methodology does not introduce commands that have not been verified against the repository.
+
+## 9.15 Phase 9 Completion Status
+
+Phase 9 is complete. The project has documented the internal spatial diagnostics, sensitivity analysis, uncertainty assessment, independent UNOSAT reference preparation, and event-specific external validation.
+
+The final documentation records the model's strengths, limitations, reproducibility requirements, and priorities for future development. Generated analytical outputs under `results/` remain excluded from Git.
+
+The principal conclusion is that the current model is an exploratory, AHP-weighted MCDA framework for relative flood-susceptibility mapping and spatial decision support. The UNOSAT comparison did not support the expected positive relationship between susceptibility ranking and observed flood extent for the evaluated event. The model must not be presented as a calibrated flood-probability model or a generally validated flood-prediction system.
+
+**Phase 9 status: Complete.**
+
+## 9.16 Transition to Phase 10
+
+Phase 10 will develop transparent GeoAI interpretation and decision-support capabilities built on the existing spatial analysis. These capabilities must preserve the distinction between relative susceptibility, observed inundation, and predictive flood modelling, while communicating uncertainty and the limitations identified during Phase 9.

@@ -1163,3 +1163,43 @@ The repository does **not** contain:
 
 Anyone reproducing the project can download the datasets from their original sources and follow the documented preprocessing workflow.
 
+---
+
+## External Validation Reference: UNOSAT Flood Extent
+
+**Dataset name:** Satellite-detected flood extent for Nairobi and Kiambu counties
+**Publisher:** United Nations Satellite Centre (UNOSAT), hosted by UNITAR
+**Product attribution:** Product 3833 - Flood impact analysis in Nairobi and Kiambu County, Kenya, as of 1 May 2024
+**Official product page:** https://unosat.org/products/3833
+**Event code:** `FL20240426KEN`
+**Observation date:** 1 May 2024
+**Sensor:** Pleiades
+**Source layer:** `PL_20240501_FloodExtent_Nairobi_Kiambu.shp`
+**Original CRS:** EPSG:4326
+**Local source directory:** `data/raw/external_validation/_static_unosat_filesystem_3834_FL20240426KEN_SHP/FL20240426KEN_SHP/`
+
+### Role in this project
+
+This dataset is an independent, event-specific reference used to evaluate the flood-susceptibility model. It is not one of the five factors used to calculate the AHP-weighted MCDA susceptibility surface.
+
+### Attribution note
+
+The evaluated layer is attributed to UNOSAT Product 3833 based on its layer name, event metadata, and geographic coverage. The local archive directory contains the label 3834; this is retained as a filesystem detail and does not override the layer-level attribution.
+
+### Reference limitations
+
+- The source represents satellite-detected flood extent for a particular observation period, not a complete inventory of all flood events.
+- The source material is preliminary, with confidence listed as "To be evaluated"; it should not be described as field-validated.
+- The observed footprint is limited to the area that could be evaluated from the reference data. Unobserved areas must not be treated as confirmed non-flood areas.
+- Observed inundation and static flood susceptibility are different concepts. A mismatch for one event does not, by itself, establish that every part of the susceptibility model is invalid.
+- The source observation is from 2024, while model inputs include data from other dates, including 2021. This temporal mismatch must be considered when interpreting validation results.
+
+### Locally generated validation outputs
+
+The aligned reference raster and derived evaluation results are stored under `results/`, which is excluded from Git by the project's `.gitignore`.
+
+The aligned raster uses EPSG:32737 and the project grid of 1603 columns by 1019 rows at approximately 30.8655 m resolution. The recorded evaluation domain contains 228,194 observed cells: 19,201 classified as flood and 208,993 classified as non-flood. These counts describe the prepared reference raster and do not imply complete coverage of the county.
+
+### Reproducibility
+
+The original source data are kept under `data/raw/`. Preparation, alignment, rasterization, and validation procedures are documented in `Docs/unosat_reference_data.md` and the corresponding project scripts. Generated files under `results/` are not included in the Git repository.
