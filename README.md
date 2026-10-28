@@ -925,7 +925,7 @@ The most defensible current description is:
 
 # Phase 10: GeoAI Interpretation and Decision Support
 
-**Status: Planned — not yet started.**
+**Status: In progress — initial project audit and interpretation design.**
 
 Phase 10 will build on the analytical outputs and limitations documented in Phase 9.
 
