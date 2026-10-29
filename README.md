@@ -814,6 +814,7 @@ Phase 9 distinguishes four different dimensions of model evaluation.
 
 The distinction is important because a model can be computationally consistent and spatially coherent without accurately representing observed flood occurrence.
 
+
 ## What the current model can support
 
 The current model can be used as an exploratory relative susceptibility mapping and spatial-analysis framework. Its outputs can support investigation of how the selected factor assumptions translate into spatial patterns.
