@@ -926,112 +926,147 @@ The most defensible current description is:
 
 # Phase 10: GeoAI Interpretation and Decision Support
 
-**Status: In progress — initial project audit and interpretation design.**
+**Status: Deterministic interpreter implemented and integration-tested.**
 
-Phase 10 will build on the analytical outputs and limitations documented in Phase 9.
+## 10.1 Overview
 
-The objective is to develop an interpretable layer that helps users understand the model's spatial outputs, explore factor contributions, and formulate spatial questions.
+Phase 10 develops a deterministic interpretation layer for the flood susceptibility model. Its purpose is to explain the stored MCDA susceptibility result for a selected raster cell using the five model factors and their authoritative AHP weights.
 
-Potential development activities include:
+The interpreter reads and validates existing model outputs. It does not regenerate the flood susceptibility model, alter the AHP weights, or modify the Phase 8 and Phase 9 analytical results.
 
-- Explaining susceptibility scores in plain language.
-- Interpreting high-scoring locations without treating scores as flood probabilities.
-- Exploring the contributions of the five selected factors.
-- Separating physical susceptibility from population exposure.
-- Supporting natural-language spatial queries.
-- Generating structured, evidence-based explanations.
-- Exploring QGIS-compatible or GeoJSON outputs.
-- Building toward an interactive spatial decision-support interface.
-- Communicating uncertainty and validation limitations in user-facing outputs.
+The implementation focuses on transparent numerical evidence, reproducibility, input validation, and traceable explanations.
 
-Any future GeoAI interface must accurately communicate the limitations established during Phase 9. It should not present the current model as a validated flood predictor.
+## 10.2 Implemented Components
 
-Phase 9 synthesis and documentation are complete. Phase 10 is the current development milestone and is ready to begin.
+The deterministic interpreter is implemented in `src/interpreter/`.
+
+| Component | Module | Responsibility |
+|---|---|---|
+| Input validation | `input_loader.py` | Loads and validates model factors, susceptibility, grid properties, masks, and AHP metadata. |
+| Cell selection | `cell_selector.py` | Selects a valid raster cell and determines its map coordinates. |
+| Factor evidence | `factor_evidence.py` | Extracts the five factor scores for the selected cell. |
+| Weighted contributions | `weighted_contributions.py` | Calculates each factor's weighted contribution using the authoritative AHP weights. |
+| Score verification | `score_verification.py` | Reconstructs the susceptibility score and compares it with the stored result. |
+| Explanation generation | `explanation_generator.py` | Produces a deterministic explanation from validated factor evidence and score verification. |
+
+## 10.3 Interpretation Workflow
+
+The interpreter follows this sequence:
+
+1. Load the existing model inputs.
+2. Validate raster dimensions, CRS, resolution, NoData values, factor ranges, valid-cell masks, and AHP metadata.
+3. Select a valid raster cell.
+4. Extract the five factor scores for that cell.
+5. Calculate the weighted contribution of each factor.
+6. Reconstruct the susceptibility score.
+7. Compare the reconstructed score with the stored susceptibility value.
+8. Generate a deterministic explanation from the validated evidence.
+
+The workflow rejects invalid inputs and prevents unsupported interpretations from being presented as verified results.
+
+## 10.4 Model Factors and Interpretation
+
+The interpreter uses the following five factors:
+
+- Elevation
+- Slope
+- Distance to rivers
+- Land cover
+- Population
+
+Population is treated as an exposure-related factor rather than a direct physical flood-susceptibility indicator. This distinction is maintained in the explanation output.
+
+The interpreter uses the authoritative AHP weights established during the earlier analytical phases. It does not independently estimate or modify those weights.
+
+## 10.5 Numerical Verification and Safeguards
+
+The implementation includes safeguards for:
+
+- Raster grid and metadata consistency.
+- Missing, invalid, non-finite, and out-of-range factor values.
+- Invalid raster-cell coordinates and NoData cells.
+- Consistency between selected-cell evidence and model inputs.
+- Correct calculation of weighted factor contributions.
+- Reconstruction of the stored susceptibility score.
+- Verification tolerance of `1e-5`.
+- Withholding contribution rankings and dominant-factor claims when score verification fails.
+
+A failed verification does not become a successful explanation. The implementation retains the distinction between numerical evidence and verified interpretation.
+
+## 10.6 Testing and Validation
+
+Phase 10 includes dedicated unit tests for the six interpreter components and an integration test module.
+
+The integration tests cover:
+
+1. Successful execution of the complete interpreter workflow.
+2. Reconstruction of the stored susceptibility score from weighted contributions.
+3. Rejection of an invalid raster cell.
+4. Withholding contribution rankings when verification fails.
+5. Reproducibility of repeated deterministic explanations.
+
+**Recorded regression result:** 92 tests passed, with zero failures and zero errors.
+
+The integration tests use controlled synthetic raster arrays to test component orchestration and numerical safeguards. Production input loading is tested separately through the input-loader unit tests. The integration result should therefore not be interpreted as a full validation of every production raster or as evidence of predictive accuracy.
+
+A non-blocking NumPy deprecation warning was recorded in `input_loader.py` concerning array shape assignment. It remains a maintenance item.
+
+## 10.7 Scientific Interpretation and Limitations
+
+The susceptibility output is a relative MCDA index. It is not a calibrated flood probability, a flood forecast, or a hydraulic simulation.
+
+The interpreter explains the model's stored numerical results; it does not establish that those results accurately predict future flood events.
+
+Phase 9 validation against the UNOSAT May 2024 reference data identified important limitations, including the temporal mismatch between the 2021 model inputs and the 2024 reference event. The validation results did not establish strong predictive performance.
+
+These findings remain part of the project's scientific limitations and are not changed by the implementation of Phase 10.
+
+## 10.8 Scope and Future Development
+
+The completed Phase 10 implementation establishes a deterministic interpretation foundation.
+
+Natural-language interaction, conversational GIS queries, interactive user interfaces, and additional decision-support features remain future development work. They should build on the validated deterministic interpreter rather than replace its numerical safeguards.
+
+## 10.9 Phase 10 Completion Summary
+
+The six interpreter components, their dedicated unit tests, the integration test module, and the Phase 10 technical documentation have been implemented.
+
+The recorded full regression suite passed with 92 tests.
+
+Phase 10's deterministic interpretation, integration testing, documentation, and repository verification are complete. Phase 10.10 is officially complete.
 
 ---
-
-# Technologies
-
-## Programming and development
-
-- Python
-- Visual Studio Code
-- Git
-- GitHub
-- Python virtual environments
-
-## GIS and spatial analysis
-
-- QGIS
-- WhiteboxTools
-
-## Python geospatial libraries
-
-- GeoPandas
-- Rasterio
-- Shapely
-- PyProj
-- Fiona
-
-## Scientific and data-processing libraries
-
-- NumPy
-- Pandas
-- SciPy
-- scikit-learn
-
-The specific libraries used by each script are defined by its implementation and the project dependency configuration.
-
----
-
-# Development Environment
-
-The project has been developed in a dedicated Python virtual environment.
-
-```text
-Python 3.12.10
-```
-
-Recorded core library versions include:
-
-```text
-GeoPandas 1.1.3
-Rasterio 1.5.0
-Shapely 2.1.2
-PyProj 3.7.2
-Fiona 1.10.1
-NumPy 2.5.0
-Pandas 3.0.3
-```
-
-The installed environment and `requirements.txt` should be checked when reproducing the project because dependency versions can affect geospatial processing behaviour.
-
-The virtual environment is not committed to Git.
-
----
-
 # Repository Structure
 
-The repository is organized around source code, documentation, validation scripts, configuration, and analytical data directories.
+The repository is organized around source code, technical documentation, automated tests, configuration, and analytical data directories.
 
-The following is a representative structure; exact filenames and subdirectories may evolve as development continues.
+The following structure highlights the principal project components. Individual files and subdirectories may evolve as development continues.
 
 ```text
 GeoAI-flood-risk-agent/
 |
 |-- README.md
 |-- requirements.txt
+|-- .gitignore
 |
 |-- Docs/
 |   |-- methodology.md
 |   |-- datasets.md
+|   |-- environment.md
+|   |-- decisions.md
+|   |-- troubleshooting.md
+|   |-- phase9_final_conclusions.md
 |   |-- phase9_model_strengths_and_limitations.md
-|   |-- phase9_final_conclusions.md
 |   |-- unosat_reference_data.md
-|
-|-- docs/
-|   |-- phase9_final_conclusions.md
-|   |-- unosat_reference_data.md
+|   |
+|   |-- phase10_interpreter_design.md
+|   |-- phase10_input_validation.md
+|   |-- phase10_cell_selection.md
+|   |-- phase10_factor_evidence.md
+|   |-- phase10_weighted_contributions.md
+|   |-- phase10_score_verification.md
+|   |-- phase10_deterministic_explanation.md
+|   |-- phase10_integration_testing.md
 |
 |-- src/
 |   |-- config.py
@@ -1040,6 +1075,15 @@ GeoAI-flood-risk-agent/
 |   |-- data_loader.py
 |   |-- data_loader_osm.py
 |   |-- geoai_interpreter.py
+|   |
+|   |-- interpreter/
+|   |   |-- __init__.py
+|   |   |-- input_loader.py
+|   |   |-- cell_selector.py
+|   |   |-- factor_evidence.py
+|   |   |-- weighted_contributions.py
+|   |   |-- score_verification.py
+|   |   |-- explanation_generator.py
 |   |
 |   |-- flood_factors/
 |   |   |-- align_standardized_factors.py
@@ -1057,6 +1101,15 @@ GeoAI-flood-risk-agent/
 |   |-- utils/
 |       |-- normalization.py
 |
+|-- tests/
+|   |-- test_input_loader.py
+|   |-- test_cell_selector.py
+|   |-- test_factor_evidence.py
+|   |-- test_weighted_contributions.py
+|   |-- test_score_verification.py
+|   |-- test_explanation_generator.py
+|   |-- test_interpreter_integration.py
+|
 |-- data/
 |   |-- raw/
 |   |-- processed/
@@ -1066,20 +1119,78 @@ GeoAI-flood-risk-agent/
 |       |-- mcda/
 |
 |-- results/
-|   |-- phase9_validation/
 |
 |-- .venv/
 ```
 
-This tree is illustrative rather than a guarantee that every listed file exists in precisely that location. The actual repository and local directory structure remain authoritative.
+This is a representative structure, not a guarantee that every listed file or directory exists in precisely that location. The local repository remains authoritative.
 
-Generated datasets, analytical rasters, temporary files, and the Python virtual environment are excluded from routine source/documentation commits unless there is a specific reason to version a particular artifact.
+The `Docs/` directory contains the project's technical and analytical documentation. The `src/interpreter/` directory contains the six deterministic interpretation components, while `tests/` contains their dedicated unit tests and the integration test module.
 
----
+Generated datasets, analytical rasters, temporary files, and the Python virtual environment are excluded from routine source and documentation commits unless there is a specific reason to version an artifact.
 
 # Analytical Data Flow
 
-The core analytical flow is:
+The project separates data preparation, spatial analysis, susceptibility modelling, validation, and deterministic interpretation.
+
+The main analytical flow is:
+
+```text
+Raw and Prepared Inputs
+        |
+        v
+Input Validation
+        |
+        v
+Terrain and Hydrological Processing
+        |
+        v
+Flood-Conditioning Factors
+        |
+        v
+Factor Standardization
+        |
+        v
+Spatial Alignment
+        |
+        v
+AHP Weighting and Consistency Check
+        |
+        v
+MCDA Susceptibility Surface
+        |
+        v
+Classification and Validation
+        |
+        v
+Phase 9 Spatial Diagnostics
+        |
+        v
+Sensitivity and Uncertainty Assessment
+        |
+        v
+UNOSAT External Validation
+        |
+        v
+Scientific Interpretation and Documentation
+        |
+        v
+Phase 10 Deterministic Interpretation
+        |
+        v
+Selected-Cell Factor Evidence
+        |
+        v
+Weighted Contribution Calculation
+        |
+        v
+Susceptibility Score Reconstruction
+        |
+        v
+Deterministic Explanation
+```
+
+The analytical data flow is supported by the following principal output directories:
 
 ```text
 data/analysis/
@@ -1095,21 +1206,15 @@ data/analysis/
         |   MCDA-ready spatial factors
         |
         |-- mcda/
-        |       |
-        |       |-- flood_susceptibility.tif
-        |       |
-        |       |-- flood_susceptibility_classified.tif
-        |
-        v
-Phase 9 diagnostics and external validation
-        |
-        v
-Scientific synthesis and documentation
+                |
+                |-- flood_susceptibility.tif
+                |
+                |-- flood_susceptibility_classified.tif
 ```
 
-The project separates raw data, standardized factors, aligned factors, MCDA outputs, and validation products to make the workflow easier to inspect and reproduce.
+Phase 10 reads existing model outputs and interprets the evidence associated with a selected valid raster cell. It does not regenerate the susceptibility surface or modify the earlier analytical results.
 
----
+The project separates raw data, standardized factors, aligned factors, MCDA outputs, validation products, and interpretation logic to make the workflow easier to inspect and reproduce.
 
 # Getting Started
 
@@ -1203,6 +1308,12 @@ External Validation
        |
        v
 Scientific Interpretation
+       |
+       v
+Phase 10 Deterministic Interpretation
+       |
+       v
+Integration and Regression Testing
 ```
 
 ## Reproducing Phase 7
@@ -1251,15 +1362,42 @@ The continuous and classified rasters can then be opened in QGIS for visual insp
 
 ## Reproducing Phase 9
 
-Phase 9 includes multiple diagnostic and validation scripts under the project's validation directory.
+Phase 9 includes spatial diagnostics, sensitivity analysis, external validation, and statistical evaluation.
 
-The UNOSAT workflow uses dedicated scripts for reference-data inspection, preparation, rasterization diagnostics, spatial comparison, area-normalized analysis, and statistical evaluation.
+Its scripts are maintained under the project's validation directory. The UNOSAT workflow requires the relevant reference data, prepared observation domain, and upstream analytical outputs.
 
-The exact execution sequence should follow the existing script dependencies and project documentation. Validation scripts should be run only when their required input data and upstream outputs are available.
+The exact execution sequence should follow the existing script dependencies and Phase 9 documentation. Validation scripts should be run only when their required inputs and upstream outputs are available.
 
-**Important:** Reproducing the core MCDA calculation is not the same as reproducing the external validation. The latter also requires the relevant reference data and the prepared observation domain.
+**Important:** Reproducing the core MCDA calculation is not the same as reproducing the external validation. The latter also requires the relevant reference data and prepared observation domain.
 
----
+## Testing Phase 10
+
+Phase 10 provides a deterministic interpretation layer through six components in `src/interpreter/`.
+
+Activate the project virtual environment:
+
+```powershell
+.venv\Scripts\Activate.ps1
+```
+
+Run the dedicated integration tests:
+
+```powershell
+python -m unittest tests.test_interpreter_integration -v
+```
+
+Run the complete regression test suite:
+
+```powershell
+python -m unittest discover -s tests -v
+```
+
+The recorded regression result for the completed Phase 10.9 integration testing was 92 tests passed, with zero failures and zero errors.
+
+The integration tests use controlled synthetic raster arrays to validate component orchestration, numerical reconstruction, invalid-cell handling, failed-verification behaviour, and deterministic output.
+
+They do not constitute a full production-raster validation or demonstrate predictive accuracy against observed flood events. Production input loading is tested separately by the input-loader unit tests.
+
 
 # Data and Reproducibility Policy
 
@@ -1439,15 +1577,19 @@ Phase 6   Factor Standardization            COMPLETED
 Phase 7   Spatial Alignment                 COMPLETED
 Phase 8   MCDA Susceptibility Modelling     COMPLETED
 Phase 9   Diagnostics and External
-          Validation                        ANALYSIS COMPLETED
+          Validation                        COMPLETED
 Phase 9   Final Documentation and Handoff   COMPLETED
-Phase 10  GeoAI Decision Support            IN PROGRESS
+Phase 10  Deterministic Interpretation      IMPLEMENTED
+Phase 10  Integration Testing               COMPLETED
+Phase 10  Documentation and Repository
+          Verification                      IN PROGRESS
 
-CURRENT MILESTONE:
-Phase 10 - GeoAI Interpretation and Decision Support.
+CURRENT STATUS:
+Phase 10.10 - Documentation and repository verification COMPLETED.
 
-NEXT MILESTONE:
-Implement and test the Phase 10 GeoAI interpretation and decision-support capabilities.
+PHASE 10 STATUS:
+Deterministic interpretation, integration testing, documentation,
+and repository verification are complete.
 ```
 
-**Scientific qualification:** The current MCDA scores are relative susceptibility indices, not calibrated flood probabilities. The evaluated UNOSAT comparison did not demonstrate the expected positive relationship between higher susceptibility scores and observed flooding. This limitation remains part of the project's documented evidence and guides future development.
+**Scientific qualification:** The current MCDA scores are relative susceptibility indices, not calibrated flood probabilities. The evaluated UNOSAT comparison did not demonstrate the expected positive relationship between higher susceptibility scores and observed flooding. The temporal mismatch between the 2021 model inputs and the May 2024 reference data is also an important limitation. These findings remain part of the project's documented evidence and guide future development.
