@@ -947,13 +947,30 @@ The most defensible current description is:
 
 **Status: Deterministic interpreter implemented and integration-tested.**
 
-## 10.1 Overview
+## 10.1 Overview and Scope Confirmation
 
 Phase 10 develops a deterministic interpretation layer for the flood susceptibility model. Its purpose is to explain the stored MCDA susceptibility result for a selected raster cell using the five model factors and their authoritative AHP weights.
 
 The interpreter reads and validates existing model outputs. It does not regenerate the flood susceptibility model, alter the AHP weights, or modify the Phase 8 and Phase 9 analytical results.
 
 The implementation focuses on transparent numerical evidence, reproducibility, input validation, and traceable explanations.
+
+### Phase 10 implementation breakdown
+
+| Subphase | Activity | Recorded status |
+|---|---|---|
+| 10.1 | Project audit and scope confirmation | Completed |
+| 10.2 | Deterministic interpreter design | Completed |
+| 10.3 | Read and validate model inputs | Completed |
+| 10.4 | Raster-cell selection | Completed |
+| 10.5 | Five-factor evidence extraction | Completed |
+| 10.6 | Weighted contribution calculation | Completed |
+| 10.7 | Susceptibility-score reconstruction and verification | Completed |
+| 10.8 | Deterministic explanation generation | Completed |
+| 10.9 | Integration testing and validation | Completed |
+| 10.10 | Documentation and repository integration | Completed |
+
+The numbered subphases above describe the implementation sequence. The following sections provide the technical explanation of the completed components and safeguards.
 
 ## 10.2 Implemented Components
 
@@ -1059,19 +1076,21 @@ The completed Phase 10 implementation establishes a deterministic interpretation
 
 Natural-language interaction, conversational GIS queries, interactive user interfaces, and additional decision-support features remain future development work. They should build on the validated deterministic interpreter rather than replace its numerical safeguards.
 
-## 10.9 Documentation and Repository Integration
+## 10.9 Integration Testing and Validation
 
-Phase 10 documentation records the deterministic interpreter design, input validation, cell selection, factor evidence, weighted contributions, score verification, explanation generation, and integration testing.
+Phase 10 integration testing verifies that the deterministic interpreter components work together, that the weighted contributions reconstruct the stored susceptibility score within the configured tolerance, and that invalid cells or failed verification do not produce unsupported contribution rankings.
 
-The README, technical documentation, source modules, and tests describe the same deterministic interpretation scope. Repository structure shown below is representative; the live repository remains authoritative for the exact tracked file inventory.
+The last recorded full regression suite passed with 92 tests, with zero failures and zero errors. The integration tests use controlled synthetic raster arrays and do not replace end-to-end testing with production rasters. This result is a recorded project result and has not been rerun as part of this README update.
 
-## 10.10 Phase 10 Completion Summary
+## 10.10 Documentation and Repository Integration
 
-The six interpreter components, their dedicated unit tests, the integration test module, and the Phase 10 technical documentation have been implemented.
+The Phase 10 technical documentation records the interpreter design, input validation, cell selection, factor evidence, weighted contributions, score verification, deterministic explanation generation, and integration testing.
 
-The last recorded full regression suite passed with 92 tests. The synthetic integration tests verify component orchestration and numerical safeguards, but do not replace end-to-end testing with production rasters.
+The README and technical documentation describe the same completed deterministic interpretation scope. The repository structure shown below is representative; the live repository remains authoritative for the exact tracked file inventory.
 
-Phase 10's deterministic interpretation, integration testing, and documentation are complete. The next proposed stage is Phase 11: Production Raster Integration and End-to-End Validation.
+### Phase 10 completion summary
+
+The six interpreter components, their dedicated unit tests, the integration test module, and the Phase 10 technical documentation have been implemented. The next proposed stage is Phase 11: Production Raster Integration and End-to-End Validation.
 
 ---
 # Technologies
