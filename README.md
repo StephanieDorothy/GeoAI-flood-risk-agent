@@ -114,10 +114,13 @@ Spatial Diagnostics and External Validation
 Scientific Interpretation
         |
         v
-Future GeoAI Interpretation
+Deterministic GeoAI-Oriented Interpretation
         |
         v
-Spatial Decision Support
+Production Integration and Validation
+        |
+        v
+Future User-Facing Spatial Decision Support
 ```
 
 The project is developed incrementally so that each stage can be tested, interpreted, documented, and improved independently.
@@ -173,13 +176,15 @@ A projected coordinate system supports distance calculations, raster processing,
 
 # Project Status
 
-## Current milestone: Phase 10 - GeoAI Interpretation and Decision Support
+## Current project status: Phases 1–10 completed
 
-Phases 1–8 established the core geospatial processing and MCDA modelling workflow.
+Phases 1–8 established the core geospatial processing and AHP-weighted MCDA modelling workflow.
 
-Phase 9 extended the project beyond computational correctness to examine spatial behaviour, factor influence, robustness, uncertainty, and external validation.
+Phase 9 completed the spatial diagnostics, sensitivity and robustness analysis, uncertainty assessment, UNOSAT external comparison, statistical evaluation, scientific interpretation, and documentation.
 
-Phase 9 analytical work, scientific synthesis, external validation, and documentation are complete. The Phase 9 documentation has been committed to GitHub. The current milestone is Phase 10: GeoAI Interpretation and Decision Support.
+Phase 10 completed the deterministic interpretation layer, component and integration testing, and technical documentation. The current documented implementation therefore reaches the end of Phase 10.
+
+The next proposed development stage is **Phase 11: Production Raster Integration and End-to-End Validation**. It has not started; its purpose is to test the deterministic interpreter against the project's actual production raster inputs before a user-facing interface is developed.
 
 ### Completed phases
 
@@ -191,6 +196,8 @@ Phase 9 analytical work, scientific synthesis, external validation, and document
 - Phase 6 — Factor Standardization
 - Phase 7 — Spatial Alignment and MCDA Preparation
 - Phase 8 — MCDA Flood-Susceptibility Modelling
+- Phase 9 — Spatial Diagnostics, Sensitivity, Uncertainty, External Validation, and Scientific Synthesis
+- Phase 10 — Deterministic GeoAI Interpretation, Integration Testing, and Documentation
 
 ### Phase 9 analytical activities completed
 
@@ -222,8 +229,9 @@ Phase 9 analytical work, scientific synthesis, external validation, and document
 | 6 | Factor standardization | Completed |
 | 7 | Spatial alignment | Completed |
 | 8 | MCDA susceptibility modelling | Completed |
-| 9 | Spatial assessment, sensitivity, uncertainty, external validation, and synthesis | Final documentation and handoff |
-| 10 | GeoAI interpretation and decision support | Not yet started |
+| 9 | Spatial diagnostics, sensitivity, uncertainty, external validation, and synthesis | Completed |
+| 10 | Deterministic GeoAI interpretation, testing, and documentation | Completed |
+| 11 | Production raster integration and end-to-end validation | Proposed — not started |
 
 **Important:** The current model is a relative susceptibility framework. The UNOSAT comparison did not demonstrate the expected positive relationship between higher susceptibility scores and observed flooding in the evaluated May 2024 reference sample. The model is not presented as a calibrated or validated, generalizable flood-prediction system.
 
@@ -274,10 +282,19 @@ Scientific Synthesis and Documentation
         |
         v
 PHASE 10
-GeoAI Interpretation and Decision Support
+Deterministic GeoAI Interpretation
+        |
+        v
+PHASE 11 (PROPOSED)
+Production Raster Integration and
+End-to-End Validation
+        |
+        v
+FUTURE EXTENSION
+User-Facing Spatial Decision-Support Interface
 ```
 
-Phase 10 will build on the documented evidence and limitations established during Phase 9.
+Phases 1–10 are documented as complete. Phase 11 is the proposed next development stage and will first test the deterministic interpreter with actual production raster inputs. A user-facing interface should follow only after this integration has been tested.
 
 ---
 
@@ -734,6 +751,8 @@ Their observed flood rate was approximately 6.38%, compared with an overall obse
 
 The combined Very Low, Low, and Moderate classes contained approximately 51.13% of the observed flood cells while representing approximately 35.50% of the observed validation domain.
 
+The observed flood rate in the combined High and Very High classes (approximately 6.38%) was about 0.76 times the overall observed-domain flood rate (approximately 8.41%). This area-normalized enrichment ratio is below 1 and does not indicate concentration of observed flooding in the higher susceptibility classes.
+
 The area-normalized analysis therefore did not show the expected concentration of observed flooding in the combined High and Very High classes.
 
 Differences in observation coverage alone did not explain the mismatch.
@@ -974,6 +993,19 @@ The interpreter uses the following five factors:
 - Land cover
 - Population
 
+The authoritative AHP weights used by the interpreter are:
+
+| Factor | Weight |
+|---|---:|
+| Elevation | 0.1868744589 |
+| Slope | 0.1868744589 |
+| Distance to rivers | 0.4352900433 |
+| Land cover | 0.1285887446 |
+| Population | 0.0623722944 |
+| **Total** | **1.0000000001 (rounding)** |
+
+The reported AHP consistency ratio is approximately 0.02695, below the commonly used 0.10 screening threshold. This indicates acceptable consistency of the pairwise comparison matrix; it does not establish empirical validity of the weights or predictive performance.
+
 Population is treated as an exposure-related factor rather than a direct physical flood-susceptibility indicator. This distinction is maintained in the explanation output.
 
 The interpreter uses the authoritative AHP weights established during the earlier analytical phases. It does not independently estimate or modify those weights.
@@ -1005,7 +1037,7 @@ The integration tests cover:
 4. Withholding contribution rankings when verification fails.
 5. Reproducibility of repeated deterministic explanations.
 
-**Recorded regression result:** 92 tests passed, with zero failures and zero errors.
+**Recorded regression result:** 92 tests passed, with zero failures and zero errors. This is the last recorded result and has not been rerun as part of this README update.
 
 The integration tests use controlled synthetic raster arrays to test component orchestration and numerical safeguards. Production input loading is tested separately through the input-loader unit tests. The integration result should therefore not be interpreted as a full validation of every production raster or as evidence of predictive accuracy.
 
@@ -1027,15 +1059,62 @@ The completed Phase 10 implementation establishes a deterministic interpretation
 
 Natural-language interaction, conversational GIS queries, interactive user interfaces, and additional decision-support features remain future development work. They should build on the validated deterministic interpreter rather than replace its numerical safeguards.
 
-## 10.9 Phase 10 Completion Summary
+## 10.9 Documentation and Repository Integration
+
+Phase 10 documentation records the deterministic interpreter design, input validation, cell selection, factor evidence, weighted contributions, score verification, explanation generation, and integration testing.
+
+The README, technical documentation, source modules, and tests describe the same deterministic interpretation scope. Repository structure shown below is representative; the live repository remains authoritative for the exact tracked file inventory.
+
+## 10.10 Phase 10 Completion Summary
 
 The six interpreter components, their dedicated unit tests, the integration test module, and the Phase 10 technical documentation have been implemented.
 
-The recorded full regression suite passed with 92 tests.
+The last recorded full regression suite passed with 92 tests. The synthetic integration tests verify component orchestration and numerical safeguards, but do not replace end-to-end testing with production rasters.
 
-Phase 10's deterministic interpretation, integration testing, documentation, and repository verification are complete. Phase 10.10 is officially complete.
+Phase 10's deterministic interpretation, integration testing, and documentation are complete. The next proposed stage is Phase 11: Production Raster Integration and End-to-End Validation.
 
 ---
+# Technologies
+
+The project uses the following principal technologies and libraries across its geospatial workflow:
+
+| Technology | Role in the project |
+|---|---|
+| Python | Main programming and analytical environment |
+| GeoPandas | Vector data processing |
+| Rasterio | Raster input, output, alignment, and analysis |
+| NumPy and Pandas | Numerical arrays and tabular data handling |
+| Shapely and PyProj | Geometry operations and coordinate transformations |
+| Fiona | Geospatial vector data access |
+| WhiteboxTools | Terrain and hydrological processing |
+| QGIS | GIS inspection and visual verification |
+| Git and GitHub | Version control and project documentation |
+| Python `unittest` | Automated unit and integration testing |
+
+The installed versions should be taken from the project's `requirements.txt` and the active environment rather than inferred from this summary.
+
+# Development Environment
+
+The documented development workflow uses Python in a Windows environment with PowerShell and a project-local virtual environment named `.venv`.
+
+Create and activate the environment from the repository root:
+
+```powershell
+python -m venv .venv
+.\\.venv\\Scripts\\Activate.ps1
+```
+
+Install the project's declared dependencies with:
+
+```powershell
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+Python and package versions can change as the project evolves. The `requirements.txt` file and the environment used for a particular test run are the authoritative records of dependencies.
+
+---
+
 # Repository Structure
 
 The repository is organized around source code, technical documentation, automated tests, configuration, and analytical data directories.
@@ -1118,16 +1197,14 @@ GeoAI-flood-risk-agent/
 |       |-- aligned/
 |       |-- mcda/
 |
-|-- results/
-|
-|-- .venv/
+|-- (generated results and local virtual environment are not part of the tracked source tree)
 ```
 
 This is a representative structure, not a guarantee that every listed file or directory exists in precisely that location. The local repository remains authoritative.
 
 The `Docs/` directory contains the project's technical and analytical documentation. The `src/interpreter/` directory contains the six deterministic interpretation components, while `tests/` contains their dedicated unit tests and the integration test module.
 
-Generated datasets, analytical rasters, temporary files, and the Python virtual environment are excluded from routine source and documentation commits unless there is a specific reason to version an artifact.
+Generated datasets, analytical rasters, temporary files, and the Python virtual environment are local or generated resources and are excluded from routine source and documentation commits unless there is a specific reason to version an artifact. In particular, `results/` and `.venv/` should not be presented as tracked repository directories.
 
 # Analytical Data Flow
 
@@ -1212,7 +1289,7 @@ data/analysis/
                 |-- flood_susceptibility_classified.tif
 ```
 
-Phase 10 reads existing model outputs and interprets the evidence associated with a selected valid raster cell. It does not regenerate the susceptibility surface or modify the earlier analytical results.
+Phase 10 reads existing model outputs and interprets the evidence associated with a selected valid raster cell. It does not regenerate the susceptibility surface or modify the earlier analytical results. Phase 11 is intended to connect this deterministic interpreter to the actual production rasters and verify the complete data-to-explanation path.
 
 The project separates raw data, standardized factors, aligned factors, MCDA outputs, validation products, and interpretation logic to make the workflow easier to inspect and reproduce.
 
@@ -1392,7 +1469,7 @@ Run the complete regression test suite:
 python -m unittest discover -s tests -v
 ```
 
-The recorded regression result for the completed Phase 10.9 integration testing was 92 tests passed, with zero failures and zero errors.
+The last recorded full regression result was 92 tests passed, with zero failures and zero errors. This is a recorded project result and has not been rerun as part of this README update.
 
 The integration tests use controlled synthetic raster arrays to validate component orchestration, numerical reconstruction, invalid-cell handling, failed-verification behaviour, and deterministic output.
 
@@ -1463,9 +1540,23 @@ The project reports these distinctions explicitly.
 
 # Future Research Directions
 
-The next development stage is Phase 10, which focuses on GeoAI interpretation and spatial decision support.
+Phases 1–10 are complete. The proposed next development stage is Phase 11: Production Raster Integration and End-to-End Validation. This phase will test the deterministic interpreter with actual project rasters before any user-facing application is treated as a completed capability.
 
-Beyond Phase 10, possible research directions include:
+## Proposed next development phase: Phase 11
+
+The initial Phase 11 objectives are:
+
+1. Inspect the production raster paths, metadata, masks, and factor inputs used by the existing interpreter.
+2. Connect the deterministic interpreter to the actual production factor and susceptibility rasters without changing the stored model or its AHP weights.
+3. Run end-to-end interpretation for selected valid raster cells and verify reconstructed scores against stored susceptibility values.
+4. Test NoData cells, invalid coordinates, raster boundaries, missing inputs, and other relevant failure cases.
+5. Record the results, limitations, and any required fixes before considering a user-facing interface.
+
+**Phase 11 has not started.** These are planned objectives, not completed capabilities. The first implementation session should begin with a production-input audit and an integration design.
+
+A later interface phase may investigate a Streamlit or equivalent user-facing experience, but natural-language/LLM interaction, conversational GIS queries, and an interactive application are not claimed as implemented in the current repository.
+
+## Additional research directions:
 
 - Obtaining independent reference observations for additional flood events.
 - Investigating the causes of the observed mismatch between susceptibility scores and the May 2024 flood reference.
@@ -1579,17 +1670,24 @@ Phase 8   MCDA Susceptibility Modelling     COMPLETED
 Phase 9   Diagnostics and External
           Validation                        COMPLETED
 Phase 9   Final Documentation and Handoff   COMPLETED
-Phase 10  Deterministic Interpretation      IMPLEMENTED
+Phase 10  Deterministic Interpretation      COMPLETED
 Phase 10  Integration Testing               COMPLETED
-Phase 10  Documentation and Repository
-          Verification                      IN PROGRESS
+Phase 10  Documentation and Integration      COMPLETED
+
+Phase 11  Production Raster Integration      PROPOSED — NOT STARTED
+          and End-to-End Validation
 
 CURRENT STATUS:
-Phase 10.10 - Documentation and repository verification COMPLETED.
+Phases 1–10 are complete.
+The next proposed development stage is Phase 11.
 
 PHASE 10 STATUS:
-Deterministic interpretation, integration testing, documentation,
-and repository verification are complete.
+Deterministic interpretation, regression testing, and technical
+documentation are complete.
+
+PHASE 11 OBJECTIVE:
+Validate the deterministic interpreter against actual production
+raster inputs before developing a user-facing interface.
 ```
 
 **Scientific qualification:** The current MCDA scores are relative susceptibility indices, not calibrated flood probabilities. The evaluated UNOSAT comparison did not demonstrate the expected positive relationship between higher susceptibility scores and observed flooding. The temporal mismatch between the 2021 model inputs and the May 2024 reference data is also an important limitation. These findings remain part of the project's documented evidence and guide future development.
