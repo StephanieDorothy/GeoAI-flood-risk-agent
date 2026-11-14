@@ -184,7 +184,7 @@ Phase 9 completed the spatial diagnostics, sensitivity and robustness analysis, 
 
 Phase 10 completed the deterministic interpretation layer, component and integration testing, and technical documentation. The current documented implementation therefore reaches the end of Phase 10.
 
-The current development stage is **Phase 11: Production Raster Integration and End-to-End Validation**. Phase 11 Sessions 1 and 2 are complete. Session 1 audited the production rasters and validated the input loader. Session 2 completed real-cell factor extraction, weighted-contribution calculation, score reconstruction, deterministic explanation, regression tests, and production-data rejection checks. Phase 11 remains in progress; further production integration and end-to-end validation work is still required.
+The current development stage is **Phase 11: Production Raster Integration and End-to-End Validation**. Phase 11 Sessions 1 and 2 are complete. Session 1 audited the production rasters and validated the input loader. Session 2 completed real-cell factor extraction, weighted-contribution calculation, score reconstruction, deterministic explanation, 81 passing regression unit tests, and five passing production-data rejection checks. Phase 11 remains in progress; further production integration and end-to-end validation work is still required.
 
 ### Completed phases
 
