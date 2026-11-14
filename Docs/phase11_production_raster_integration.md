@@ -163,3 +163,143 @@ The existing MCDA model, factor weights, and stored susceptibility raster must r
 ## 10. Scientific scope
 
 This phase validates production-data integration and deterministic computational consistency. It does not resolve the Phase 9 external-validation limitations, calibrate flood probabilities, establish causal relationships, or demonstrate generalizable predictive performance. The existing UNOSAT comparison findings and the temporal mismatch between the 2021 model inputs and May 2024 reference data remain important limitations.
+
+
+---
+
+# Phase 11 — Session 2: Real-Cell Interpretation and Production Rejection Testing
+
+**Session date:** 14 November 2026  
+**Status:** Session 2 completed; Phase 11 remains in progress.
+
+## 1. Objective
+
+The objective was to trace one selected cell from the actual production rasters through factor-evidence extraction, weighted-contribution calculation, numerical score verification, and deterministic explanation generation. The session also tested regression behaviour and safe rejection of invalid production-data locations.
+
+The work was read-only. The MCDA model, AHP weights, factor rasters, and stored susceptibility raster were not modified.
+
+## 2. Selected production cell
+
+The same reproducible valid cell selected in Session 1 was used:
+
+| Property | Value |
+|---|---:|
+| Row | 509 |
+| Column | 801 |
+| CRS | EPSG:32737 |
+| Cell-centre X | 264350.95249378704 m |
+| Cell-centre Y | 9855972.965717278 m |
+| Stored susceptibility score | 0.846152126789093 |
+
+## 3. Extracted factor evidence
+
+All five standardized factor scores were successfully extracted from the production rasters:
+
+| Factor | Standardized score |
+|---|---:|
+| Elevation | 0.65120870 |
+| Slope | 0.93330878 |
+| Distance to rivers | 0.95277900 |
+| Land cover | 1.00000000 |
+| Population | 0.10777754 |
+
+**Result: Factor evidence extraction PASS.**
+
+These are standardized factor scores, not raw elevation, slope, distance, population, or original land-cover category measurements.
+
+## 4. Weighted contributions
+
+The existing AHP weights were applied without modification:
+
+| Factor | Factor score | AHP weight | Weighted contribution |
+|---|---:|---:|---:|
+| Elevation | 0.65120870 | 0.18687446 | 0.12169427 |
+| Slope | 0.93330878 | 0.18687446 | 0.17441157 |
+| Distance to rivers | 0.95277900 | 0.43529004 | 0.41473521 |
+| Land cover | 1.00000000 | 0.12858874 | 0.12858874 |
+| Population | 0.10777754 | 0.06237229 | 0.00672233 |
+
+**Result: Weighted contribution calculation PASS.**
+
+Distance to rivers produced the largest weighted contribution for this cell. Population is correctly identified as an exposure-related factor and should not be interpreted as a physical flood-generating process.
+
+## 5. Stored-score reconstruction
+
+The five weighted contributions reconstructed the stored susceptibility score:
+
+| Verification item | Result |
+|---|---:|
+| Stored score | 0.846152126789093 |
+| Reconstructed score | 0.846152126789093 |
+| Absolute difference | 0.000000000000 |
+| Accepted tolerance | 0.000010000000 |
+| Verification | PASS |
+
+The reconstruction confirms numerical consistency for this selected cell. It does not establish predictive accuracy, causation, or flood probability calibration.
+
+## 6. Deterministic explanation
+
+The explanation generator returned the selected cell's location, verification details, factor evidence, contribution ranking, interpretation, and scientific limitations.
+
+Contribution ranking for this cell:
+
+1. Distance to rivers — 0.41473521
+2. Slope — 0.17441157
+3. Land cover — 0.12858874
+4. Elevation — 0.12169427
+5. Population — 0.00672233
+
+The explanation explicitly states that the score is a relative MCDA susceptibility index, not a calibrated flood probability or dynamic forecast. It also preserves the Phase 9 limitation: the UNOSAT May 2024 event comparison showed weak and negative agreement with the susceptibility ranking, with a temporal mismatch between the 2021 model inputs and 2024 reference data.
+
+**Result: Deterministic explanation generation PASS.**
+
+## 7. Automated regression tests
+
+The following five unit-test modules were executed:
+
+- `tests.test_cell_selector`
+- `tests.test_factor_evidence`
+- `tests.test_weighted_contributions`
+- `tests.test_score_verification`
+- `tests.test_explanation_generator`
+
+**Result: 81 tests passed; 0 failures; 0 errors.**
+
+Coverage includes valid selection, invalid indices, NoData masks, invalid types, missing or unexpected factors, invalid score and weight ranges, non-finite values, reconstruction tolerance, inconsistent verification states, deterministic ranking, and scientific limitations.
+
+## 8. Real production-data rejection tests
+
+The production rasters were loaded and the selector was tested against five invalid locations:
+
+| Rejection case | Result |
+|---|---|
+| Negative row | PASS |
+| Row beyond raster bounds | PASS |
+| Negative column | PASS |
+| Column beyond raster bounds | PASS |
+| NoData cell at row 0, column 0 | PASS |
+
+**Result: 5/5 production-data rejection checks passed.**
+
+The invalid cell at row 0, column 0 was rejected because it lies outside the common valid-data footprint.
+
+## 9. Session 2 completion assessment
+
+**Session 2 objective: ACHIEVED.**
+
+Completed:
+
+- Extracted all five factor scores from the real production rasters for the selected cell.
+- Calculated the five weighted contributions using the existing AHP weights.
+- Reconstructed the stored susceptibility score with zero reported absolute difference.
+- Generated and reviewed the deterministic explanation.
+- Passed all 81 regression unit tests across the five interpreter components.
+- Passed all five real production-data rejection checks.
+
+No model weights, factor rasters, or susceptibility outputs were changed.
+
+## 10. Scope and next work
+
+Phase 11 remains in progress. This session validates one selected production cell and several real-data rejection cases; it does not by itself establish exhaustive end-to-end coverage across the full raster or predictive validity.
+
+Further Phase 11 work should broaden production integration and validation, including relevant missing-input and additional edge-case behaviour, before any user-facing interface is considered complete. The scientific limitations documented in Phase 9 remain unchanged.
