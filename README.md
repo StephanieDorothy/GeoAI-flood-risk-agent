@@ -184,7 +184,7 @@ Phase 9 completed the spatial diagnostics, sensitivity and robustness analysis, 
 
 Phase 10 completed the deterministic interpretation layer, component and integration testing, and technical documentation. The current documented implementation therefore reaches the end of Phase 10.
 
-The current development stage is **Phase 11: Production Raster Integration and End-to-End Validation**. Phase 11 Session 1 has completed the production raster audit and readiness assessment. The existing interpreter input loader passed against the actual production rasters, and one valid production cell was selected. Cell-level factor extraction, weighted-contribution verification, deterministic explanation, and edge-case testing remain in progress.
+The current development stage is **Phase 11: Production Raster Integration and End-to-End Validation**. Phase 11 Sessions 1 and 2 are complete. Session 1 audited the production rasters and validated the input loader. Session 2 completed real-cell factor extraction, weighted-contribution calculation, score reconstruction, deterministic explanation, regression tests, and production-data rejection checks. Phase 11 remains in progress; further production integration and end-to-end validation work is still required.
 
 ### Completed phases
 
@@ -231,7 +231,7 @@ The current development stage is **Phase 11: Production Raster Integration and E
 | 8 | MCDA susceptibility modelling | Completed |
 | 9 | Spatial diagnostics, sensitivity, uncertainty, external validation, and synthesis | Completed |
 | 10 | Deterministic GeoAI interpretation, testing, and documentation | Completed |
-| 11 | Production raster integration and end-to-end validation | In progress — Session 1 completed |
+| 11 | Production raster integration and end-to-end validation | In progress — Sessions 1 and 2 completed |
 
 **Important:** The current model is a relative susceptibility framework. The UNOSAT comparison did not demonstrate the expected positive relationship between higher susceptibility scores and observed flooding in the evaluated May 2024 reference sample. The model is not presented as a calibrated or validated, generalizable flood-prediction system.
 
@@ -285,7 +285,7 @@ PHASE 10
 Deterministic GeoAI Interpretation
         |
         v
-PHASE 11 (PROPOSED)
+PHASE 11 (IN PROGRESS)
 Production Raster Integration and
 End-to-End Validation
         |
@@ -1559,7 +1559,7 @@ The project reports these distinctions explicitly.
 
 # Future Research Directions
 
-Phases 1–10 are complete. Phase 11 — Production Raster Integration and End-to-End Validation — is now in progress. Session 1 completed the production raster audit, common-mask and factor-range checks, real-data input-loader validation, and first valid-cell selection. The remaining Phase 11 work is to verify cell-level factor evidence, weighted contributions, deterministic explanations, and real-data edge cases before any user-facing application is treated as a completed capability.
+Phases 1–10 are complete. Phase 11 — Production Raster Integration and End-to-End Validation — is in progress. Sessions 1 and 2 have completed the production raster audit, real-data input-loader validation, selected-cell factor evidence, weighted contributions, score reconstruction, deterministic explanation, regression testing, and production-data rejection checks. Further Phase 11 work remains before any user-facing application is treated as a completed capability.
 
 ## Proposed next development phase: Phase 11
 
@@ -1571,7 +1571,7 @@ The initial Phase 11 objectives are:
 4. Test NoData cells, invalid coordinates, raster boundaries, missing inputs, and other relevant failure cases.
 5. Record the results, limitations, and any required fixes before considering a user-facing interface.
 
-**Phase 11 is in progress.** Session 1 has completed the production-input audit and initial production-readiness checks. The remaining objectives below are still planned work and must not be presented as completed capabilities.
+**Phase 11 is in progress.** Sessions 1 and 2 have completed the production-input audit and one-cell end-to-end interpretation and validation. Remaining Phase 11 objectives are still planned work and must not be presented as completed capabilities.
 
 A later interface phase may investigate a Streamlit or equivalent user-facing experience, but natural-language/LLM interaction, conversational GIS queries, and an interactive application are not claimed as implemented in the current repository.
 
@@ -1693,20 +1693,19 @@ Phase 10  Deterministic Interpretation      COMPLETED
 Phase 10  Integration Testing               COMPLETED
 Phase 10  Documentation and Integration      COMPLETED
 
-Phase 11  Production Raster Integration      IN PROGRESS — SESSION 1 COMPLETE
+Phase 11  Production Raster Integration      IN PROGRESS — SESSIONS 1–2 COMPLETE
           and End-to-End Validation
 
 CURRENT STATUS:
 Phases 1–10 are complete.
-Phase 11 is in progress; Session 1 is complete.
+Phase 11 is in progress; Sessions 1 and 2 are complete.
 
 PHASE 10 STATUS:
 Deterministic interpretation, regression testing, and technical
 documentation are complete.
 
 PHASE 11 OBJECTIVE:
-Continue validating the deterministic interpreter against actual production
-raster inputs before developing a user-facing interface.
+Continue production-data integration, broader end-to-end validation, and edge-case coverage before developing a user-facing interface.
 ```
 
 **Scientific qualification:** The current MCDA scores are relative susceptibility indices, not calibrated flood probabilities. The evaluated UNOSAT comparison did not demonstrate the expected positive relationship between higher susceptibility scores and observed flooding. The temporal mismatch between the 2021 model inputs and the May 2024 reference data is also an important limitation. These findings remain part of the project's documented evidence and guide future development.
