@@ -303,3 +303,110 @@ No model weights, factor rasters, or susceptibility outputs were changed.
 Phase 11 remains in progress. This session validates one selected production cell and several real-data rejection cases; it does not by itself establish exhaustive end-to-end coverage across the full raster or predictive validity.
 
 Further Phase 11 work should broaden production integration and validation, including relevant missing-input and additional edge-case behaviour, before any user-facing interface is considered complete. The scientific limitations documented in Phase 9 remain unchanged.
+
+
+---
+
+# Phase 11 — Session 3: Multi-Cell Production Integration and Regression Validation
+
+**Session date:** 19 November 2026  
+**Status:** Session 3 completed; Phase 11 remains in progress.
+
+## 1. Objective
+
+The objective was to extend production-data interpretation beyond the single cell examined in Session 2, exercise the complete deterministic interpreter on low, median, and high susceptibility-score cells, and run the existing regression suite.
+
+The work used the existing production rasters and interpreter modules. No factor raster, AHP weight, MCDA output, or model configuration was changed.
+
+## 2. Repeatable multi-cell production test
+
+A dedicated test module was added:
+
+- `tests/test_phase11_multiple_real_cells.py`
+
+The test loads and validates the production model inputs once, identifies valid cells from the common data mask, and selects three unique cells nearest to the 10th, 50th, and 90th percentiles of the stored susceptibility-score distribution.
+
+Each selected cell is passed through the complete workflow:
+
+1. Production raster cell selection.
+2. Extraction of five factor scores.
+3. Calculation of five AHP-weighted contributions.
+4. Reconstruction and verification of the stored susceptibility score.
+5. Deterministic explanation generation.
+
+The test also checks that each explanation contains five factor-evidence entries, five contribution rankings, a dominant factor, and scientific limitations.
+
+## 3. Production-cell results
+
+The production footprint contained **553,860 valid cells**.
+
+| Score range | Selected row | Selected column | Stored score | Reconstructed score | Absolute difference |
+|---|---:|---:|---:|---:|---:|
+| Low — P10 | 504 | 253 | 0.65325296 | 0.65325296 | 0.000000000000 |
+| Median — P50 | 611 | 936 | 0.78351247 | 0.78351247 | 0.000000000000 |
+| High — P90 | 435 | 1371 | 0.87177277 | 0.87177277 | 0.000000000000 |
+
+**Result: 3/3 complete production-cell workflows passed.**
+
+For all three selected cells:
+
+- Five factor scores were extracted.
+- Five weighted contributions were calculated.
+- The reconstructed score matched the stored score at the reported precision.
+- Score verification returned PASS.
+- The deterministic explanation contained all five factor-evidence and contribution-ranking entries.
+- `distance_to_rivers` was the dominant weighted contribution.
+
+The selected cells represent three points in the model's score distribution. They are not a spatially exhaustive sample and do not establish predictive accuracy.
+
+## 4. Regression validation
+
+The following seven existing test modules were run together:
+
+- `tests.test_cell_selector`
+- `tests.test_factor_evidence`
+- `tests.test_weighted_contributions`
+- `tests.test_score_verification`
+- `tests.test_explanation_generator`
+- `tests.test_input_loader`
+- `tests.test_interpreter_integration`
+
+**Result: 92 tests passed; 0 failures; 0 errors.**
+
+The dedicated production integration test was then run separately.
+
+**Result: 1 test passed, covering all three production cells.**
+
+The regression suite covers component-level validation, invalid inputs and cells, numerical reconstruction, deterministic explanation behaviour, failed-verification safeguards, production input validation, and synthetic end-to-end integration.
+
+## 5. Warning deferred for follow-up
+
+The test runs continued to emit a non-fatal NumPy 2.5 deprecation warning associated with the raster-reading path in `src/interpreter/input_loader.py`. It did not cause either test run to fail.
+
+Investigation and any justified compatibility correction are intentionally deferred to the next work session. No warning suppression or unverified code change was made during Session 3.
+
+## 6. Scientific scope and limitations
+
+These tests establish that the deterministic interpreter can process the selected real production cells and numerically reconstruct their stored susceptibility scores. They do not demonstrate that the susceptibility model accurately predicts observed flooding.
+
+The susceptibility output remains a relative MCDA index, not a calibrated flood probability or dynamic forecast. Population remains an exposure-related factor rather than a physical flood-generating process. The Phase 9 external-validation findings and temporal mismatch between 2021 model inputs and the May 2024 UNOSAT reference remain unchanged.
+
+## 7. Session 3 completion assessment
+
+**Session 3 objective: ACHIEVED.**
+
+Completed:
+
+- Added a repeatable three-cell production integration test.
+- Passed the complete interpreter workflow for low, median, and high score-range cells.
+- Reconstructed all three stored susceptibility scores with zero reported absolute difference.
+- Passed all 92 existing regression tests.
+- Re-ran the dedicated production integration test successfully.
+- Preserved the existing model outputs and scientific limitations.
+
+Deferred:
+
+- Investigating the NumPy 2.5 deprecation warning.
+- Any compatibility change, if justified by that investigation.
+
+Phase 11 remains in progress pending the remaining review, documentation, and integration decisions. A successful computational validation must not be presented as evidence of predictive flood accuracy.
