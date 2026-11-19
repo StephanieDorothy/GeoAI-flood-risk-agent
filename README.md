@@ -30,18 +30,19 @@ The project deliberately distinguishes between building a technically reproducib
 18. [Phase 9: Scientific Interpretation](#phase-9-scientific-interpretation)
 19. [Model Strengths and Limitations](#model-strengths-and-limitations)
 20. [Phase 10: GeoAI Interpretation and Decision Support](#phase-10-geoai-interpretation-and-decision-support)
-21. [Technologies](#technologies)
+21. [Phase 11: Production Raster Integration and Validation](#phase-11-production-raster-integration-and-validation)
+22. [Technologies](#technologies)
 22. [Development Environment](#development-environment)
-23. [Repository Structure](#repository-structure)
-24. [Analytical Data Flow](#analytical-data-flow)
-25. [Getting Started](#getting-started)
-26. [Reproducing the Core Workflow](#reproducing-the-core-workflow)
-27. [Data and Reproducibility Policy](#data-and-reproducibility-policy)
-28. [Validation Philosophy](#validation-philosophy)
-29. [Future Research Directions](#future-research-directions)
-30. [Project Development Philosophy](#project-development-philosophy)
-31. [Author](#author)
-32. [License](#license)
+24. [Repository Structure](#repository-structure)
+25. [Analytical Data Flow](#analytical-data-flow)
+26. [Getting Started](#getting-started)
+27. [Reproducing the Core Workflow](#reproducing-the-core-workflow)
+28. [Data and Reproducibility Policy](#data-and-reproducibility-policy)
+29. [Validation Philosophy](#validation-philosophy)
+30. [Future Research Directions](#future-research-directions)
+31. [Project Development Philosophy](#project-development-philosophy)
+32. [Author](#author)
+33. [License](#license)
 
 ---
 
@@ -1093,6 +1094,43 @@ The README and technical documentation describe the same completed deterministic
 The six interpreter components, their dedicated unit tests, the integration test module, and the Phase 10 technical documentation have been implemented. The next proposed stage is Phase 11: Production Raster Integration and End-to-End Validation.
 
 ---
+# Phase 11: Production Raster Integration and Validation
+
+Phase 11 connects the deterministic interpreter to the actual production factor and susceptibility rasters and tests the complete data-to-explanation workflow.
+
+### Completed sessions
+
+**Session 1 — Production raster audit**
+- Audited five factor-score rasters and the stored susceptibility output.
+- Confirmed common CRS, dimensions, resolution, bounds, data type, NoData value, and valid-data mask.
+- Confirmed 553,860 common valid cells and zero mask mismatch.
+- Passed production input-loader validation and score reconstruction.
+
+**Session 2 — Real-cell interpretation**
+- Ran the complete interpreter for production cell row 509, column 801.
+- Extracted five factor scores, calculated weighted contributions, reconstructed the stored score, and generated a deterministic explanation.
+- Passed 81 component regression tests and five production-data rejection checks.
+
+**Session 3 — Multi-cell production validation**
+- Added `tests/test_phase11_multiple_real_cells.py`.
+- Passed complete interpretation for unique low P10, median P50, and high P90 production cells.
+- Reconstructed all three stored scores with zero reported absolute difference.
+- Passed 92 regression tests and the dedicated three-cell production integration test.
+
+Run the dedicated production-data integration test from the repository root:
+
+```powershell
+python -m unittest tests.test_phase11_multiple_real_cells -v
+```
+
+### Current Phase 11 status
+
+Sessions 1–3 are complete. The NumPy 2.5 deprecation warning observed during raster reading is recorded for investigation in the next work session. Phase 11 remains in progress; successful computational validation does not establish predictive flood accuracy.
+
+Detailed session evidence is recorded in [the Phase 11 production integration report](Docs/phase11_production_raster_integration.md).
+
+---
+
 # Technologies
 
 The project uses the following principal technologies and libraries across its geospatial workflow:
@@ -1165,6 +1203,7 @@ GeoAI-flood-risk-agent/
 |   |-- phase10_score_verification.md
 |   |-- phase10_deterministic_explanation.md
 |   |-- phase10_integration_testing.md
+   |-- phase11_production_raster_integration.md
 |
 |-- src/
 |   |-- config.py
@@ -1207,6 +1246,7 @@ GeoAI-flood-risk-agent/
 |   |-- test_score_verification.py
 |   |-- test_explanation_generator.py
 |   |-- test_interpreter_integration.py
+   |-- test_phase11_multiple_real_cells.py
 |
 |-- data/
 |   |-- raw/
@@ -1559,7 +1599,7 @@ The project reports these distinctions explicitly.
 
 # Future Research Directions
 
-Phases 1–10 are complete. Phase 11 — Production Raster Integration and End-to-End Validation — is in progress. Sessions 1 and 2 have completed the production raster audit, real-data input-loader validation, selected-cell factor evidence, weighted contributions, score reconstruction, deterministic explanation, regression testing, and production-data rejection checks. Further Phase 11 work remains before any user-facing application is treated as a completed capability.
+Phases 1–10 are complete. Phase 11 — Production Raster Integration and End-to-End Validation — is in progress. Sessions 1–3 have completed the production raster audit, real-data input-loader validation, single-cell and multi-cell interpretation, weighted contribution reconstruction, deterministic explanation, regression testing, and production-data rejection checks. The NumPy 2.5 deprecation warning remains scheduled for investigation. Further Phase 11 work remains before any user-facing application is treated as a completed capability.
 
 ## Proposed next development phase: Phase 11
 
@@ -1571,7 +1611,7 @@ The initial Phase 11 objectives are:
 4. Test NoData cells, invalid coordinates, raster boundaries, missing inputs, and other relevant failure cases.
 5. Record the results, limitations, and any required fixes before considering a user-facing interface.
 
-**Phase 11 is in progress.** Sessions 1 and 2 have completed the production-input audit and one-cell end-to-end interpretation and validation. Remaining Phase 11 objectives are still planned work and must not be presented as completed capabilities.
+**Phase 11 is in progress.** Sessions 1–3 have completed the production-input audit, single-cell interpretation, three-cell production integration test, and regression validation. The NumPy 2.5 deprecation warning is deferred for investigation. Remaining Phase 11 objectives are still planned work and must not be presented as completed capabilities.
 
 A later interface phase may investigate a Streamlit or equivalent user-facing experience, but natural-language/LLM interaction, conversational GIS queries, and an interactive application are not claimed as implemented in the current repository.
 
@@ -1693,19 +1733,19 @@ Phase 10  Deterministic Interpretation      COMPLETED
 Phase 10  Integration Testing               COMPLETED
 Phase 10  Documentation and Integration      COMPLETED
 
-Phase 11  Production Raster Integration      IN PROGRESS — SESSIONS 1–2 COMPLETE
+Phase 11  Production Raster Integration      IN PROGRESS — SESSIONS 1–3 COMPLETE
           and End-to-End Validation
 
 CURRENT STATUS:
 Phases 1–10 are complete.
-Phase 11 is in progress; Sessions 1 and 2 are complete.
+Phase 11 is in progress; Sessions 1–3 are complete.
 
 PHASE 10 STATUS:
 Deterministic interpretation, regression testing, and technical
 documentation are complete.
 
 PHASE 11 OBJECTIVE:
-Continue production-data integration, broader end-to-end validation, and edge-case coverage before developing a user-facing interface.
+Continue remaining production-data integration and edge-case review. Investigate the deferred NumPy 2.5 deprecation warning before beginning the next lesson objectives or considering a user-facing interface.
 ```
 
 **Scientific qualification:** The current MCDA scores are relative susceptibility indices, not calibrated flood probabilities. The evaluated UNOSAT comparison did not demonstrate the expected positive relationship between higher susceptibility scores and observed flooding. The temporal mismatch between the 2021 model inputs and the May 2024 reference data is also an important limitation. These findings remain part of the project's documented evidence and guide future development.
