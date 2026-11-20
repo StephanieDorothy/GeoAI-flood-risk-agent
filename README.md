@@ -185,7 +185,7 @@ Phase 9 completed the spatial diagnostics, sensitivity and robustness analysis, 
 
 Phase 10 completed the deterministic interpretation layer, component and integration testing, and technical documentation. The current documented implementation therefore reaches the end of Phase 10.
 
-The current development stage is **Phase 11: Production Raster Integration and End-to-End Validation**. Phase 11 Sessions 1 and 2 are complete. Session 1 audited the production rasters and validated the input loader. Session 2 completed real-cell factor extraction, weighted-contribution calculation, score reconstruction, deterministic explanation, 81 passing regression unit tests, and five passing production-data rejection checks. Phase 11 remains in progress; further production integration and end-to-end validation work is still required.
+The current development stage is **Phase 11: Production Raster Integration and End-to-End Validation**. Sessions 1–4 are complete. These sessions covered production-raster auditing, real-cell interpretation, three-cell production integration, regression testing, and production-data rejection checks. Session 4 investigated the NumPy 2.5 deprecation warning, upgraded Rasterio from 1.5.0 to 1.5.2, and verified raster reading and all 93 regression tests with deprecation warnings treated as errors. Phase 11 remains in progress; additional production-data failure cases and end-to-end review are still required.
 
 ### Completed phases
 
@@ -1055,11 +1055,11 @@ The integration tests cover:
 4. Withholding contribution rankings when verification fails.
 5. Reproducibility of repeated deterministic explanations.
 
-**Recorded regression result:** 92 tests passed, with zero failures and zero errors. This is the last recorded result and has not been rerun as part of this README update.
+**Most recent regression result:** 93 tests passed, with zero failures and zero errors, across eight interpreter and production-integration test modules. The run treated `DeprecationWarning` as an error. It included the dedicated production integration test covering three real raster cells.
 
-The integration tests use controlled synthetic raster arrays to test component orchestration and numerical safeguards. Production input loading is tested separately through the input-loader unit tests. The integration result should therefore not be interpreted as a full validation of every production raster or as evidence of predictive accuracy.
+The tests exercise component behaviour, synthetic integration, production input loading, and selected real production-cell workflows. They do not constitute exhaustive validation of every raster cell or demonstrate predictive accuracy.
 
-A non-blocking NumPy deprecation warning was recorded in `input_loader.py` concerning array shape assignment. It remains a maintenance item.
+The NumPy 2.5 deprecation warning associated with Rasterio raster reading was resolved by upgrading Rasterio to 1.5.2. The production raster read and regression suite both passed with deprecation warnings treated as errors.
 
 ## 10.7 Scientific Interpretation and Limitations
 
@@ -1125,7 +1125,7 @@ python -m unittest tests.test_phase11_multiple_real_cells -v
 
 ### Current Phase 11 status
 
-Sessions 1–3 are complete. The NumPy 2.5 deprecation warning observed during raster reading is recorded for investigation in the next work session. Phase 11 remains in progress; successful computational validation does not establish predictive flood accuracy.
+Sessions 1–4 are complete. Session 4 resolved the NumPy 2.5 raster-reading deprecation warning by upgrading Rasterio to 1.5.2. The production raster read and 93-test regression suite passed with deprecation warnings treated as errors. Phase 11 remains in progress; successful computational validation does not establish predictive flood accuracy.
 
 Detailed session evidence is recorded in [the Phase 11 production integration report](Docs/phase11_production_raster_integration.md).
 
@@ -1528,7 +1528,7 @@ Run the complete regression test suite:
 python -m unittest discover -s tests -v
 ```
 
-The last recorded full regression result was 92 tests passed, with zero failures and zero errors. This is a recorded project result and has not been rerun as part of this README update.
+The most recent full regression result was 93 tests passed, with zero failures and zero errors. The suite was run with deprecation warnings treated as errors and included the production multi-cell integration test.
 
 The integration tests use controlled synthetic raster arrays to validate component orchestration, numerical reconstruction, invalid-cell handling, failed-verification behaviour, and deterministic output.
 
@@ -1599,7 +1599,7 @@ The project reports these distinctions explicitly.
 
 # Future Research Directions
 
-Phases 1–10 are complete. Phase 11 — Production Raster Integration and End-to-End Validation — is in progress. Sessions 1–3 have completed the production raster audit, real-data input-loader validation, single-cell and multi-cell interpretation, weighted contribution reconstruction, deterministic explanation, regression testing, and production-data rejection checks. The NumPy 2.5 deprecation warning remains scheduled for investigation. Further Phase 11 work remains before any user-facing application is treated as a completed capability.
+Phases 1–10 are complete. Phase 11 — Production Raster Integration and End-to-End Validation — is in progress. Sessions 1–4 have completed the production raster audit, real-data input-loader validation, single-cell and multi-cell interpretation, weighted contribution reconstruction, deterministic explanation, regression testing, production-data rejection checks, and the Rasterio compatibility correction. Rasterio 1.5.2 resolved the NumPy 2.5 raster-reading deprecation warning; the 93-test regression suite passed with deprecation warnings treated as errors. Further Phase 11 work remains before any user-facing application is treated as a completed capability.
 
 ## Proposed next development phase: Phase 11
 
@@ -1611,7 +1611,7 @@ The initial Phase 11 objectives are:
 4. Test NoData cells, invalid coordinates, raster boundaries, missing inputs, and other relevant failure cases.
 5. Record the results, limitations, and any required fixes before considering a user-facing interface.
 
-**Phase 11 is in progress.** Sessions 1–3 have completed the production-input audit, single-cell interpretation, three-cell production integration test, and regression validation. The NumPy 2.5 deprecation warning is deferred for investigation. Remaining Phase 11 objectives are still planned work and must not be presented as completed capabilities.
+**Phase 11 is in progress.** Sessions 1–4 have completed the production-input audit, single-cell interpretation, three-cell production integration test, regression validation, and Rasterio compatibility correction. Rasterio 1.5.2 resolved the NumPy 2.5 raster-reading deprecation warning. Remaining Phase 11 objectives are still planned work and must not be presented as completed capabilities.
 
 A later interface phase may investigate a Streamlit or equivalent user-facing experience, but natural-language/LLM interaction, conversational GIS queries, and an interactive application are not claimed as implemented in the current repository.
 
@@ -1733,19 +1733,19 @@ Phase 10  Deterministic Interpretation      COMPLETED
 Phase 10  Integration Testing               COMPLETED
 Phase 10  Documentation and Integration      COMPLETED
 
-Phase 11  Production Raster Integration      IN PROGRESS — SESSIONS 1–3 COMPLETE
+Phase 11  Production Raster Integration      IN PROGRESS — SESSIONS 1–4 COMPLETE
           and End-to-End Validation
 
 CURRENT STATUS:
 Phases 1–10 are complete.
-Phase 11 is in progress; Sessions 1–3 are complete.
+Phase 11 is in progress; Sessions 1–4 are complete.
 
 PHASE 10 STATUS:
 Deterministic interpretation, regression testing, and technical
 documentation are complete.
 
 PHASE 11 OBJECTIVE:
-Continue remaining production-data integration and edge-case review. Investigate the deferred NumPy 2.5 deprecation warning before beginning the next lesson objectives or considering a user-facing interface.
+Continue remaining production-data integration and edge-case review. The NumPy 2.5 deprecation warning has been resolved through Rasterio 1.5.2; the next work should focus on remaining missing-input and failure-case validation before considering a user-facing interface.
 ```
 
 **Scientific qualification:** The current MCDA scores are relative susceptibility indices, not calibrated flood probabilities. The evaluated UNOSAT comparison did not demonstrate the expected positive relationship between higher susceptibility scores and observed flooding. The temporal mismatch between the 2021 model inputs and the May 2024 reference data is also an important limitation. These findings remain part of the project's documented evidence and guide future development.
