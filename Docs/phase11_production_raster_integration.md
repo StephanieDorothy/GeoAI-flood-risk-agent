@@ -1,8 +1,8 @@
 # Phase 11 — Production Raster Integration and End-to-End Validation
 
-**Project:** GeoAI Flood Risk Decision Agent  
-**Study area:** Nairobi County, Kenya  
-**Session:** 1 — Production raster audit and readiness assessment  
+**Project:** GeoAI Flood Risk Decision Agent
+**Study area:** Nairobi County, Kenya
+**Session:** 1 — Production raster audit and readiness assessment
 **Status:** Session 1 completed; Phase 11 remains in progress.
 
 ## 1. Session objective
@@ -169,7 +169,7 @@ This phase validates production-data integration and deterministic computational
 
 # Phase 11 — Session 2: Real-Cell Interpretation and Production Rejection Testing
 
-**Session date:** 14 November 2026  
+**Session date:** 14 November 2026
 **Status:** Session 2 completed; Phase 11 remains in progress.
 
 ## 1. Objective
@@ -309,7 +309,7 @@ Further Phase 11 work should broaden production integration and validation, incl
 
 # Phase 11 — Session 3: Multi-Cell Production Integration and Regression Validation
 
-**Session date:** 19 November 2026  
+**Session date:** 19 November 2026
 **Status:** Session 3 completed; Phase 11 remains in progress.
 
 ## 1. Objective
@@ -410,3 +410,173 @@ Deferred:
 - Any compatibility change, if justified by that investigation.
 
 Phase 11 remains in progress pending the remaining review, documentation, and integration decisions. A successful computational validation must not be presented as evidence of predictive flood accuracy.
+
+
+$session4 = @'
+
+---
+
+# Phase 11 — Session 4: NumPy Compatibility Investigation and Rasterio Upgrade
+
+**Session date:** 20 November 2026
+**Status:** Session 4 completed; Phase 11 remains in progress.
+
+## 1. Objective
+
+Investigate and resolve the NumPy 2.5 deprecation warning observed during Session 3, verify the compatibility correction, and establish a reproducible dependency configuration.
+
+The investigation was intended to correct the underlying compatibility issue rather than suppress the warning or modify the interpreter's raster-processing logic.
+
+## 2. Warning reproduction and diagnosis
+
+The warning was reproduced by treating deprecation warnings as errors during raster reading.
+
+The traceback identified the source as Rasterio's compiled raster-reading implementation:
+
+`DatasetReaderBase.read`
+
+The reported operation involved assigning a new shape to a NumPy array. This behaviour is deprecated in NumPy 2.5.
+
+Inspection of `src/interpreter/input_loader.py` found that the project used the ordinary Rasterio `dataset.read(1)` operation. No explicit array-shape mutation in the project code was identified as the cause.
+
+The evidence therefore pointed to a Rasterio and NumPy compatibility issue rather than a defect in the project's input-loader implementation.
+
+## 3. Dependency correction
+
+The environment before the correction included:
+
+| Package | Previous version |
+|---|---:|
+| Python | 3.12.10 |
+| NumPy | 2.5.0 |
+| Rasterio | 1.5.0 |
+| GDAL | 3.12.1 |
+
+Rasterio was upgraded without downgrading NumPy:
+
+```powershell
+python -m pip install --upgrade rasterio==1.5.2
+```
+
+The resulting environment reported:
+
+| Package | Verified version |
+|---|---:|
+| Python | 3.12.10 |
+| NumPy | 2.5.0 |
+| Rasterio | 1.5.2 |
+| GDAL | 3.12.2 |
+
+The project dependency declaration was updated from `rasterio==1.5.0` to `rasterio==1.5.2`.
+
+The existing 26 dependency entries were retained. The dependency snapshot `requirements_before_rasterio_upgrade.txt` was preserved separately and was not included in the intended source commit.
+
+The original committed requirements file was UTF-16 encoded. The local requirements file was converted to UTF-8 so that it uses a conventional plain-text encoding.
+
+A normalized text comparison confirmed that the only dependency-version change was:
+
+```diff
+-rasterio==1.5.0
++rasterio==1.5.2
+```
+
+## 4. Compatibility verification
+
+The production raster-reading operation was repeated with deprecation warnings treated as errors.
+
+The raster was read successfully with:
+
+- Dimensions: 1603 × 1019
+- Array shape: (1019, 1603)
+- Data type: float32
+- Rasterio version: 1.5.2
+
+The previously observed NumPy deprecation warning did not recur.
+
+**Result: Raster-reading compatibility verification PASS.**
+
+## 5. Regression testing
+
+The following eight test modules were executed with deprecation warnings treated as errors:
+
+- `tests.test_cell_selector`
+- `tests.test_factor_evidence`
+- `tests.test_weighted_contributions`
+- `tests.test_score_verification`
+- `tests.test_explanation_generator`
+- `tests.test_input_loader`
+- `tests.test_interpreter_integration`
+- `tests.test_phase11_multiple_real_cells`
+
+Command:
+
+```powershell
+python -W error::DeprecationWarning -m unittest `
+    tests.test_cell_selector `
+    tests.test_factor_evidence `
+    tests.test_weighted_contributions `
+    tests.test_score_verification `
+    tests.test_explanation_generator `
+    tests.test_input_loader `
+    tests.test_interpreter_integration `
+    tests.test_phase11_multiple_real_cells -v
+```
+
+**Result: 93 tests passed; 0 failures; 0 errors.**
+
+The dedicated production integration test again validated three real cells representing low, median, and high susceptibility-score ranges. All three completed the interpretation workflow and reconstructed their stored scores with zero reported absolute difference.
+
+No deprecation warning was raised during the regression run.
+
+## 6. Dependency integrity
+
+The installed Rasterio version was checked against the updated dependency declaration.
+
+The package integrity check was executed:
+
+```powershell
+python -m pip check
+```
+
+**Result: No broken requirements found.**
+
+The requirements-file comparison also confirmed that all 26 dependency entries were retained and only the Rasterio version changed.
+
+## 7. Session 4 completion assessment
+
+**Session 4 objective: ACHIEVED.**
+
+Completed:
+
+- Reproduced the NumPy 2.5 deprecation warning.
+- Identified Rasterio's raster-reading implementation as the source.
+- Confirmed that the project code did not explicitly perform the reported shape mutation.
+- Upgraded Rasterio from 1.5.0 to 1.5.2.
+- Retained NumPy 2.5.0.
+- Verified production raster reading with deprecation warnings treated as errors.
+- Passed all 93 regression tests with deprecation warnings treated as errors.
+- Confirmed that the three real production-cell workflows still pass.
+- Confirmed that `pip check` reports no broken requirements.
+- Updated the dependency pin and corrected the requirements file encoding.
+
+No model weights, factor rasters, susceptibility outputs, or analytical results were changed.
+
+## 8. Remaining Phase 11 work
+
+Phase 11 remains in progress. Resolving the dependency warning and passing the current regression suite do not complete all production-integration objectives.
+
+Remaining work includes reviewing additional production-data failure cases, assessing missing-input behaviour, and deciding whether further end-to-end validation is needed before developing a user-facing interface.
+
+The scientific limitations recorded in Phase 9 remain unchanged. Computational consistency must not be presented as proof of predictive flood accuracy.
+
+'@
+
+$docPath = ".\Docs\phase11_production_raster_integration.md"
+[System.IO.File]::AppendAllText(
+    (Resolve-Path $docPath),
+    $session4,
+    [System.Text.UTF8Encoding]::new($false)
+)
+
+Write-Host "`n===== VERIFY SESSION 4 DOCUMENTATION ====="
+Select-String -Path $docPath -Pattern "Session 4|93 tests passed|Rasterio 1.5.2"
