@@ -569,14 +569,91 @@ Remaining work includes reviewing additional production-data failure cases, asse
 
 The scientific limitations recorded in Phase 9 remain unchanged. Computational consistency must not be presented as proof of predictive flood accuracy.
 
-'@
 
-$docPath = ".\Docs\phase11_production_raster_integration.md"
-[System.IO.File]::AppendAllText(
-    (Resolve-Path $docPath),
-    $session4,
-    [System.Text.UTF8Encoding]::new($false)
-)
+## 9. Session 5 - Production-data failure-case validation
 
-Write-Host "`n===== VERIFY SESSION 4 DOCUMENTATION ====="
-Select-String -Path $docPath -Pattern "Session 4|93 tests passed|Rasterio 1.5.2"
+**Date:** 24 November 2026
+
+### 9.1 Objective
+
+Expand the production input-loader test suite to verify that invalid, incomplete, inconsistent, or unreadable raster inputs are rejected safely. Confirm that the interpreter regression suite remains stable and document the resulting test coverage.
+
+No production raster, susceptibility output, AHP weight, or analytical result was modified during this session.
+
+### 9.2 Input-loader failure-case tests
+
+The input-loader test module now contains 31 tests.
+
+The expanded tests cover:
+
+- Missing factor rasters and missing susceptibility output.
+- Rasters without a CRS or required NoData metadata.
+- Incorrect NoData values.
+- Multiband rasters and unsupported data types.
+- Unreadable raster inputs.
+- Grid inconsistencies and absence of common valid cells.
+- Factor and susceptibility values outside the permitted range.
+- Non-finite valid factor values and empty valid selections.
+- Susceptibility reconstruction mismatches.
+- Missing, malformed, inconsistent, negative, or non-finite AHP weight metadata and calculated values.
+- Invalid consistency-ratio metadata and consistency ratios exceeding the accepted threshold.
+- Missing or incorrect model and weighting-method metadata.
+
+**Result: 31 input-loader tests passed.**
+
+### 9.3 Input-loader coverage
+
+Coverage.py was used to measure statement and branch coverage for `src/interpreter/input_loader.py`.
+
+| Measurement | Result |
+|---|---:|
+| Statements | 178 |
+| Missed statements | 29 |
+| Branches | 70 |
+| Partial branches | 2 |
+| Coverage | 86% |
+
+The 86% figure applies to the input-loader module only; it is not a whole-project coverage result.
+
+The remaining uncovered paths include non-finite susceptibility output validation and portions of the command-line reporting and execution path. These are documented coverage gaps, not evidence that the production loader has passed every possible execution path.
+
+### 9.4 Complete interpreter regression suite
+
+The complete Phase 11 interpreter suite was executed with Python deprecation warnings treated as errors.
+
+**Result: 118 tests passed.**
+
+The tested modules included cell selection, factor evidence, weighted contributions, score verification, deterministic explanation generation, input loading, interpreter integration, and multiple real production cells.
+
+### 9.5 Multi-cell production validation
+
+Three real cells from the production susceptibility raster were tested.
+
+| Production cell | Row | Column | Stored score | Reconstructed score | Absolute difference |
+|---|---:|---:|---:|---:|---:|
+| Low - P10 | 504 | 253 | 0.65325296 | 0.65325296 | 0.000000000000 |
+| Median - P50 | 611 | 936 | 0.78351247 | 0.78351247 | 0.000000000000 |
+| High - P90 | 435 | 1371 | 0.87177277 | 0.87177277 | 0.000000000000 |
+
+All three production-cell workflows passed score reconstruction verification. The dominant weighted contribution in each selected cell was `distance_to_rivers`.
+
+These results demonstrate computational consistency between the production factor scores, AHP weights, and stored susceptibility values. They do not independently establish predictive flood accuracy.
+
+### 9.6 Session 5 completion assessment
+
+**Session 5 objective: ACHIEVED.**
+
+Completed:
+
+- Expanded the input-loader test module to 31 tests.
+- Tested additional missing-input, raster-metadata, grid, value-range, reconstruction, and AHP failure cases.
+- Measured 86% statement and branch coverage for the input-loader module.
+- Passed all 118 interpreter regression tests with deprecation warnings treated as errors.
+- Reconfirmed successful interpretation and score reconstruction for the P10, P50, and P90 production cells.
+- Confirmed that no production analytical data or model weights were changed.
+
+### 9.7 Remaining Phase 11 work and scientific limitations
+
+Phase 11 remains in progress. Session 5 strengthens the evidence that the production input loader rejects a broad range of invalid inputs safely. The remaining uncovered code paths and any additional end-to-end integration requirements should be reviewed before the phase is closed.
+
+The model remains a relative MCDA flood susceptibility index, not a calibrated flood probability or operational flood forecast. Successful software tests and exact score reconstruction demonstrate computational consistency, not independent predictive validity. The temporal mismatch and limitations of the UNOSAT reference comparison documented in earlier phases remain applicable.
