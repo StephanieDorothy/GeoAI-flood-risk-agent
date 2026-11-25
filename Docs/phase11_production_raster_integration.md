@@ -657,3 +657,83 @@ Completed:
 Phase 11 remains in progress. Session 5 strengthens the evidence that the production input loader rejects a broad range of invalid inputs safely. The remaining uncovered code paths and any additional end-to-end integration requirements should be reviewed before the phase is closed.
 
 The model remains a relative MCDA flood susceptibility index, not a calibrated flood probability or operational flood forecast. Successful software tests and exact score reconstruction demonstrate computational consistency, not independent predictive validity. The temporal mismatch and limitations of the UNOSAT reference comparison documented in earlier phases remain applicable.
+
+## 10. Session 6 — CLI validation and failure propagation
+
+**Date:** 25 November 2026
+
+### 10.1 Objective
+
+Verify that the input-loader command-line interface reports successful production validation, propagates loader failures without displaying a false success report, and remains compatible with the installed Rasterio/NumPy environment.
+
+### 10.2 CLI tests
+
+A dedicated test module, `tests/test_input_loader_cli.py`, was added with two tests:
+
+- `test_main_prints_complete_success_report` verifies that the CLI prints its validation heading and complete success report when the loader succeeds.
+- `test_main_propagates_loader_failure_without_success_report` verifies that a loader failure propagates and does not produce a misleading success report.
+
+**Result: 2 CLI tests passed.**
+
+### 10.3 Complete interpreter regression suite
+
+The complete interpreter test suite was executed with Python deprecation warnings treated as errors.
+
+**Result: 120 tests passed.**
+
+The suite covered input loading, CLI reporting and failure propagation, cell selection, factor evidence, weighted contributions, score verification, deterministic explanation generation, integration workflows, and real production-cell validation.
+
+### 10.4 Real production CLI smoke test
+
+The input loader was then run against the configured production rasters using:
+
+```powershell
+python -W error::DeprecationWarning -m src.interpreter.input_loader
+```
+
+The command completed successfully and reported:
+
+| Validation item | Result |
+|---|---|
+| CRS | EPSG:32737 |
+| Raster dimensions | 1603 × 1019 |
+| Resolution | 30.86551681907227 × 30.86551681907227 metres |
+| NoData | -9999.0 |
+| Factor rasters | All five passed |
+| Common valid cells | 553,860 |
+| Spatial alignment | PASS |
+| Factor score ranges | PASS |
+| Output mask agreement | PASS |
+| AHP metadata agreement | PASS |
+| Susceptibility reconstruction | PASS |
+| Maximum reconstruction error | 0.000000000000 |
+
+No deprecation warning was raised, and the command explicitly confirmed that no model files were modified.
+
+### 10.5 Input-loader maintenance
+
+The valid-data mask already excludes non-finite values. The subsequent finite-value check on values selected by that same mask was therefore redundant and unreachable. The redundant check was removed while preserving the output-mask comparison, the susceptibility range validation, and the reconstruction checks.
+
+The CLI heading and module description were clarified to identify the Phase 11 interpreter input-validation command.
+
+### 10.6 Session 6 completion assessment
+
+**Session 6 objective: ACHIEVED.**
+
+Completed:
+
+- Added two dedicated CLI success and failure-propagation tests.
+- Passed the complete 120-test interpreter regression suite with deprecation warnings treated as errors.
+- Ran the CLI against the real production rasters successfully.
+- Confirmed all five factors, spatial alignment, masks, AHP metadata, and susceptibility reconstruction passed.
+- Confirmed a maximum reconstruction error of zero at the reported precision.
+- Confirmed no model rasters, AHP weights, or analytical outputs were modified.
+
+### 10.7 Scientific scope and remaining Phase 11 work
+
+Session 6 strengthens software-level and production-data input validation. It does not establish that the susceptibility model predicts observed flood occurrence accurately.
+
+The model remains a relative MCDA flood-susceptibility index, not a calibrated flood probability or operational flood forecast. Computational validation and exact score reconstruction are evidence of implementation consistency, not independent predictive validity. The temporal mismatch and limitations of the UNOSAT reference comparison documented in Phase 9 remain applicable.
+
+Phase 11 remains in progress. Further integration review and a clear completion assessment are required before a user-facing decision-support interface is treated as complete.
+
