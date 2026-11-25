@@ -1,16 +1,13 @@
-import unittest
+﻿import unittest
 
 import numpy as np
 
 from src.interpreter.input_loader import load_model_inputs
-from src.interpreter.cell_selector import select_raster_cell
-from src.interpreter.factor_evidence import extract_factor_evidence
-from src.interpreter.weighted_contributions import calculate_weighted_contributions
-from src.interpreter.score_verification import verify_susceptibility_score
-from src.interpreter.explanation_generator import generate_deterministic_explanation
+from src.interpreter.workflow import run_interpreter_workflow
 
 
 class TestPhase11MultipleRealCells(unittest.TestCase):
+    """Validate the reusable workflow against real production rasters."""
 
     @classmethod
     def setUpClass(cls):
@@ -33,13 +30,13 @@ class TestPhase11MultipleRealCells(unittest.TestCase):
         ]
 
     def test_complete_interpreter_on_three_production_cells(self):
-        """Test the complete workflow on three unique real cells."""
+        """Test the shared workflow on three unique real cells."""
 
         selected_cells = set()
         passed_count = 0
 
-        print("\nPHASE 11 — MULTI-CELL PRODUCTION VALIDATION")
-        print("=" * 65)
+        print("\nPHASE 11 — MULTI-CELL PRODUCTION WORKFLOW VALIDATION")
+        print("=" * 70)
         print(f"Valid production cells: {len(self.scores):,}")
 
         for label, percentile in self.percentiles:
@@ -76,17 +73,27 @@ class TestPhase11MultipleRealCells(unittest.TestCase):
                 row = int(self.rows[selected_index])
                 column = int(self.columns[selected_index])
 
-                # Stage 1: Select the production raster cell.
-                selection = select_raster_cell(
+                # Run the same reusable workflow intended for the application.
+                result = run_interpreter_workflow(
                     self.inputs,
                     row,
                     column,
                 )
 
-                # Stage 2: Extract the five factor scores.
-                evidence = extract_factor_evidence(
-                    self.inputs,
-                    selection,
+                selection = result["selection"]
+                evidence = result["evidence"]
+                contributions = result["contributions"]
+                verification = result["verification"]
+                explanation = result["explanation"]
+
+                self.assertEqual(
+                    selection.row,
+                    row,
+                )
+
+                self.assertEqual(
+                    selection.column,
+                    column,
                 )
 
                 self.assertEqual(
@@ -95,20 +102,9 @@ class TestPhase11MultipleRealCells(unittest.TestCase):
                     "Exactly five factor scores must be extracted.",
                 )
 
-                # Stage 3: Calculate weighted contributions.
-                contributions = calculate_weighted_contributions(
-                    self.inputs,
-                    evidence,
-                )
-
                 self.assertEqual(
                     len(contributions.factor_contributions),
                     5,
-                )
-
-                # Stage 4: Verify the reconstructed score.
-                verification = verify_susceptibility_score(
-                    contributions,
                 )
 
                 self.assertTrue(
@@ -120,12 +116,6 @@ class TestPhase11MultipleRealCells(unittest.TestCase):
                     verification.absolute_difference,
                     0.0,
                     places=7,
-                )
-
-                # Stage 5: Generate the deterministic explanation.
-                explanation = generate_deterministic_explanation(
-                    contributions,
-                    verification,
                 )
 
                 self.assertEqual(
@@ -157,11 +147,13 @@ class TestPhase11MultipleRealCells(unittest.TestCase):
                 # Count this cell only after all assertions pass.
                 passed_count += 1
 
-                print("\n" + "-" * 65)
+                print("\n" + "-" * 70)
                 print(f"TEST: {label}")
                 print(f"Target percentile: P{percentile}")
                 print(f"Target index: {target:.8f}")
-                print(f"Selected cell: row={row}, column={column}")
+                print(
+                    f"Selected cell: row={row}, column={column}"
+                )
                 print(
                     "Stored score: "
                     f"{verification.stored_score:.8f}"
@@ -196,9 +188,9 @@ class TestPhase11MultipleRealCells(unittest.TestCase):
         )
 
         if passed_count == 3:
-            print("\n" + "=" * 65)
-            print("ALL THREE PRODUCTION CELLS PASSED")
-            print("=" * 65)
+            print("\n" + "=" * 70)
+            print("ALL THREE PRODUCTION WORKFLOWS PASSED")
+            print("=" * 70)
 
 
 if __name__ == "__main__":

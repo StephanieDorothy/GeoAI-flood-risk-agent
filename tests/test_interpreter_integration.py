@@ -1,5 +1,4 @@
-
-"""End-to-end integration tests for the Phase 10 interpreter."""
+﻿"""End-to-end integration tests for the deterministic interpreter workflow."""
 
 import unittest
 from pathlib import Path
@@ -12,23 +11,12 @@ from src.flood_factors.mcda_flood_susceptibility import (
     FACTOR_ORDER,
     calculate_ahp_weights,
 )
-
 from src.interpreter.input_loader import ModelInputs
-from src.interpreter.cell_selector import select_raster_cell
-from src.interpreter.factor_evidence import extract_factor_evidence
-from src.interpreter.weighted_contributions import (
-    calculate_weighted_contributions,
-)
-from src.interpreter.score_verification import (
-    verify_susceptibility_score,
-)
-from src.interpreter.explanation_generator import (
-    generate_deterministic_explanation,
-)
+from src.interpreter.workflow import run_interpreter_workflow
 
 
 class TestInterpreterIntegration(unittest.TestCase):
-    """Test the complete deterministic interpretation workflow."""
+    """Test the complete reusable deterministic workflow."""
 
     def setUp(self):
         self.height = 3
@@ -108,53 +96,16 @@ class TestInterpreterIntegration(unittest.TestCase):
             max_reconstruction_error=0.0,
         )
 
-    def run_interpreter_workflow(
-        self,
-        model_inputs,
-        row=1,
-        column=2,
-    ):
-        """Execute all six Phase 10 interpreter components."""
-
-        selection = select_raster_cell(
-            model_inputs,
-            row,
-            column,
-        )
-
-        evidence = extract_factor_evidence(
-            model_inputs,
-            selection,
-        )
-
-        contributions = calculate_weighted_contributions(
-            model_inputs,
-            evidence,
-        )
-
-        verification = verify_susceptibility_score(
-            contributions,
-        )
-
-        explanation = generate_deterministic_explanation(
-            contributions,
-            verification,
-        )
-
-        return {
-            "selection": selection,
-            "evidence": evidence,
-            "contributions": contributions,
-            "verification": verification,
-            "explanation": explanation,
-        }
-
     def test_complete_workflow_passes(self):
-        """All six components should work together successfully."""
+        """All interpreter components should work together successfully."""
 
         inputs = self.create_model_inputs()
 
-        result = self.run_interpreter_workflow(inputs)
+        result = run_interpreter_workflow(
+            inputs,
+            row=1,
+            column=2,
+        )
 
         self.assertTrue(
             result["verification"].verification_passed
@@ -202,7 +153,11 @@ class TestInterpreterIntegration(unittest.TestCase):
 
         inputs = self.create_model_inputs()
 
-        result = self.run_interpreter_workflow(inputs)
+        result = run_interpreter_workflow(
+            inputs,
+            row=1,
+            column=2,
+        )
 
         contribution_sum = sum(
             result["contributions"]
@@ -227,7 +182,7 @@ class TestInterpreterIntegration(unittest.TestCase):
         inputs = self.create_model_inputs()
 
         with self.assertRaises(ValueError):
-            self.run_interpreter_workflow(
+            run_interpreter_workflow(
                 inputs,
                 row=self.height,
                 column=0,
@@ -240,7 +195,11 @@ class TestInterpreterIntegration(unittest.TestCase):
             stored_score=0.70,
         )
 
-        result = self.run_interpreter_workflow(inputs)
+        result = run_interpreter_workflow(
+            inputs,
+            row=1,
+            column=2,
+        )
 
         self.assertFalse(
             result["verification"].verification_passed
@@ -266,13 +225,32 @@ class TestInterpreterIntegration(unittest.TestCase):
 
         inputs = self.create_model_inputs()
 
-        first_result = self.run_interpreter_workflow(inputs)
-        second_result = self.run_interpreter_workflow(inputs)
+        first_result = run_interpreter_workflow(
+            inputs,
+            row=1,
+            column=2,
+        )
+
+        second_result = run_interpreter_workflow(
+            inputs,
+            row=1,
+            column=2,
+        )
 
         self.assertEqual(
             first_result["explanation"],
             second_result["explanation"],
         )
+
+    def test_invalid_model_inputs_are_rejected(self):
+        """The workflow must reject objects that are not ModelInputs."""
+
+        with self.assertRaises(TypeError):
+            run_interpreter_workflow(
+                object(),
+                row=1,
+                column=2,
+            )
 
 
 if __name__ == "__main__":
