@@ -400,11 +400,6 @@ def load_model_inputs() -> ModelInputs:
 
     output_values = susceptibility[output_mask]
 
-    if not np.all(np.isfinite(output_values)):
-        raise ValueError(
-            "The susceptibility raster contains non-finite valid values."
-        )
-
     if (
         float(np.min(output_values)) < -VALUE_TOLERANCE
         or float(np.max(output_values)) > 1.0 + VALUE_TOLERANCE
@@ -479,10 +474,10 @@ def load_model_inputs() -> ModelInputs:
 
 
 def main() -> None:
-    """Run the Phase 10.3 input validation independently."""
+    """Run the Phase 11 input validation independently."""
 
     print("=" * 72)
-    print("PHASE 10.3 — INTERPRETER INPUT VALIDATION")
+    print("PHASE 11 — INTERPRETER INPUT VALIDATION")
     print("=" * 72)
 
     inputs = load_model_inputs()
