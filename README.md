@@ -232,7 +232,7 @@ The current development stage is **Phase 11: Production Raster Integration and E
 | 8 | MCDA susceptibility modelling | Completed |
 | 9 | Spatial diagnostics, sensitivity, uncertainty, external validation, and synthesis | Completed |
 | 10 | Deterministic GeoAI interpretation, testing, and documentation | Completed |
-| 11 | Production raster integration and end-to-end validation | In progress — Sessions 1 and 2 completed |
+| 11 | Production raster integration and end-to-end validation | In progress — Sessions 1-6 completed |
 
 **Important:** The current model is a relative susceptibility framework. The UNOSAT comparison did not demonstrate the expected positive relationship between higher susceptibility scores and observed flooding in the evaluated May 2024 reference sample. The model is not presented as a calibrated or validated, generalizable flood-prediction system.
 
