@@ -1619,7 +1619,54 @@ The initial Phase 11 objectives are:
 
 **Phase 11 is in progress.** Sessions 1-6 have completed the production-input audit, single-cell interpretation, three-cell production integration test, regression validation, Rasterio compatibility correction, expanded input-loader failure-case testing, CLI success/failure tests, and real-data CLI validation. The complete interpreter suite passed 120 tests with deprecation warnings treated as errors. The 86% input-loader coverage figure was measured during Session 5 and applies only to that module. Remaining Phase 11 objectives are still planned work and must not be presented as completed capabilities.
 
-A later interface phase may investigate a Streamlit or equivalent user-facing experience, but natural-language/LLM interaction, conversational GIS queries, and an interactive application are not claimed as implemented in the current repository.
+## Proposed future application direction: Streamlit-based decision-support interface
+
+After Phase 11 has been completed, reviewed, and formally closed, the preferred initial approach for the user-facing application is to evaluate **Streamlit** as the presentation and interaction layer.
+
+Streamlit is proposed because it allows the project to develop an interactive Python-based application while keeping the existing geospatial processing and deterministic interpretation logic in reusable Python modules. The final framework choice will be confirmed during application planning after requirements, usability, performance, and deployment needs are assessed.
+
+### Intended user experience
+
+The future application may allow a user to:
+
+1. View an interactive map of Nairobi County and the available relative flood-susceptibility surface.
+2. Select a location on the map or provide geographic coordinates.
+3. Identify the corresponding raster cell and check that it is valid for interpretation.
+4. Request an interpretation using the existing reusable workflow.
+5. View the stored susceptibility score and its relative classification, where the required classified output is available.
+6. Inspect the five factor scores and their weighted contributions.
+7. Read a deterministic explanation showing how the selected cell's score is composed.
+8. Review relevant data-quality information, scientific limitations, and uncertainty qualifications.
+
+The application must communicate that the current MCDA output is a **relative susceptibility index**, not a calibrated flood probability, real-time forecast, or complete measure of flood risk. Population remains an exposure-related factor and must not be presented as a physical flood-generating mechanism.
+
+### Proposed application architecture
+
+The interface should remain separate from the analytical engine:
+
+- **Streamlit (proposed):** user interface, controls, map interaction, and presentation of results.
+- **Folium or PyDeck (to be evaluated):** interactive geospatial map presentation.
+- **Rasterio and GeoPandas:** access to and handling of raster and vector data.
+- **Existing deterministic interpreter:** validated input data, cell selection, factor evidence, weighted contributions, score verification, and explanation generation.
+- **Reusable workflow entry point:** `run_interpreter_workflow(model_inputs, row, column)` in `src/interpreter/workflow.py`, which coordinates the interpretation components for a selected raster cell.
+
+The interface should call the reusable workflow rather than duplicate or reimplement its analytical logic. Production model inputs should be loaded and validated through the established input-loading process, then reused for requests where appropriate. The application must not silently alter the production rasters, model weights, or scientific assumptions.
+
+### Planned implementation and acceptance work
+
+The future application work should include:
+
+1. Confirming user requirements, intended users, and the decisions the application is designed to support.
+2. Designing the interface and map interaction around clear, understandable spatial workflows.
+3. Connecting location selection to raster-cell selection and the reusable interpreter.
+4. Presenting scores, factor evidence, weighted contributions, and explanations consistently.
+5. Handling invalid coordinates, NoData cells, unavailable datasets, and failed score verification safely.
+6. Testing the complete user journey, numerical consistency, performance, and usability.
+7. Documenting installation, data requirements, limitations, and responsible interpretation.
+8. Evaluating deployment options and preparing a demonstrable application.
+9. Capturing screenshots, demonstrations, technical documentation, and other portfolio evidence.
+
+**Status:** This is a proposed future direction, not a currently implemented application or a formally numbered project phase. Streamlit is the preferred initial option for evaluation, not a dependency of the current interpreter. Application development should begin only after Phase 11 acceptance and documentation are complete.
 
 ## Additional research directions:
 
