@@ -840,3 +840,46 @@ Implementation and test changes were committed and pushed:
 The local `main` branch and `origin/main` were synchronized after the push.
 
 Session 7 is complete. Phase 11 still requires its final documentation review and formal acceptance assessment.
+
+
+---
+
+## 12. Phase 11 Final Acceptance and Closure
+
+**Acceptance date:** 27 November 2026
+**Status:** Phase 11 accepted and completed.
+
+### 12.1 Acceptance assessment
+
+Phase 11 — Production Raster Integration and End-to-End Validation — has met its documented objectives. The evidence from Sessions 1–7 supports closure of this phase.
+
+| Acceptance area | Evidence | Assessment |
+|---|---|---|
+| Production raster integration | Five factor rasters and the stored susceptibility raster validated on the common EPSG:32737 grid | PASS |
+| Production input validation | 553,860 common valid cells; spatial alignment, masks, metadata, and score reconstruction checks passed | PASS |
+| Input failure handling | 31 input-loader tests passed; 86% coverage measured for the input-loader module only | PASS |
+| CLI behaviour | Success reporting and loader-failure propagation tested; production CLI smoke test passed | PASS |
+| Rasterio/NumPy compatibility | Rasterio 1.5.2 resolved the observed NumPy 2.5 raster-reading deprecation warning | PASS |
+| Reusable interpretation workflow | Shared workflow coordinates cell selection, evidence extraction, contribution calculation, score verification, and explanation generation | PASS |
+| Synthetic integration | Six workflow integration tests passed | PASS |
+| Production multi-cell integration | P10, P50, and P90 cells passed with zero reported reconstruction difference | PASS |
+| Regression testing | Complete interpreter suite: 121 tests passed with deprecation warnings treated as errors | PASS |
+| Documentation and version control | Sessions 1–7 documented; implementation and report commits pushed to the main branch | PASS |
+
+### 12.2 Scope and integrity
+
+No production susceptibility raster, factor raster, AHP weight, or analytical result was changed during Phase 11. The work focused on production input validation, reusable interpretation, integration, failure handling, regression testing, and documentation.
+
+The 86% coverage result applies only to `src/interpreter/input_loader.py`; it is not whole-project coverage.
+
+### 12.3 Scientific qualification
+
+Phase 11 acceptance establishes software and computational integration consistency. It does not establish predictive flood accuracy, calibrated flood probability, or operational forecasting capability.
+
+The project remains a relative MCDA flood-susceptibility decision-support framework. The limitations and findings from the Phase 9 UNOSAT comparison, including the temporal mismatch and the absence of the expected positive relationship in the evaluated reference sample, remain applicable. Population remains an exposure-related factor rather than a physical flood-generating mechanism.
+
+### 12.4 Handoff to future development
+
+Phase 11 is complete. The next proposed stage is planning and development of a user-facing spatial decision-support application. Streamlit remains a candidate presentation layer, with map technology and deployment choices to be evaluated during that future stage.
+
+Application development is not part of Phase 11 and has not yet been implemented.
