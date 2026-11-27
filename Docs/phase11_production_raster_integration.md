@@ -412,7 +412,6 @@ Deferred:
 Phase 11 remains in progress pending the remaining review, documentation, and integration decisions. A successful computational validation must not be presented as evidence of predictive flood accuracy.
 
 
-$session4 = @'
 
 ---
 
@@ -737,3 +736,107 @@ The model remains a relative MCDA flood-susceptibility index, not a calibrated f
 
 Phase 11 remains in progress. Further integration review and a clear completion assessment are required before a user-facing decision-support interface is treated as complete.
 
+---
+
+## 11. Session 7 - Reusable Interpreter Workflow
+
+**Session date:** 26 November 2026
+**Status:** Session 7 completed, tested, committed, and pushed; Phase 11 remains in progress pending final documentation review and acceptance.
+
+## 1. Objective
+
+Create a reusable production orchestration function that connects the existing interpreter components into one consistent workflow.
+
+The objective was to make the interpretation pipeline reusable by future application code without duplicating analytical logic or reloading production rasters for every location request.
+
+## 2. Implementation
+
+Added:
+
+`src/interpreter/workflow.py`
+
+The module exposes:
+
+`run_interpreter_workflow(model_inputs, row, column)`
+
+It accepts an already loaded and validated `ModelInputs` object and coordinates the following steps:
+
+1. Select the requested raster cell.
+2. Extract the five factor scores for that cell.
+3. Calculate the weighted factor contributions.
+4. Verify that the contributions reconstruct the stored susceptibility score.
+5. Generate the deterministic explanation using the verification result.
+
+The function returns a dictionary containing:
+
+- `selection`
+- `evidence`
+- `contributions`
+- `verification`
+- `explanation`
+
+Production input loading remains outside the workflow. A calling application can therefore load and validate the model inputs once and reuse them for multiple location requests.
+
+The existing analytical component modules remain independent. No production raster, susceptibility output, AHP weight, or analytical result was modified.
+
+## 3. Integration and regression testing
+
+Updated the synthetic integration tests and production multi-cell test to use the shared workflow.
+
+The synthetic integration tests cover:
+
+- Successful completion of the complete workflow.
+- Reconstruction of the susceptibility score from weighted contributions.
+- Invalid cell selection stopping the workflow.
+- Failed verification withholding the normal ranking.
+- Deterministic explanations across repeated runs.
+- Rejection of invalid model inputs.
+
+The production multi-cell test exercised the workflow against three valid cells:
+
+| Percentile | Row | Column | Stored score | Reconstructed score |
+|---|---:|---:|---:|---:|
+| P10 | 504 | 253 | 0.65325296 | 0.65325296 |
+| P50 | 611 | 936 | 0.78351247 | 0.78351247 |
+| P90 | 435 | 1371 | 0.87177277 | 0.87177277 |
+
+All three production cells passed score verification with a maximum reconstruction difference of `0.000000000000`. The dominant factor was `distance_to_rivers` in all three cases.
+
+## 4. Test results
+
+The following checks passed:
+
+- Synthetic integration tests: **6 passed**.
+- Production multi-cell integration test: **1 passed**.
+- Complete interpreter regression suite: **121 tests passed**.
+- Regression suite executed with deprecation warnings treated as errors.
+
+The complete test command was:
+
+`python -W error::DeprecationWarning -m unittest discover -s tests -v`
+
+Final regression result: **121 tests, OK**.
+
+## 5. Architectural outcome
+
+The interpreter now has a shared orchestration entry point. Future application code can call the workflow rather than independently coordinating the individual interpretation modules.
+
+This establishes a reusable boundary between the geospatial interpretation engine and a future presentation layer. It does not mean that a user-facing application has already been implemented.
+
+The proposed Streamlit direction remains a future application consideration and is outside the implementation scope of this session.
+
+## 6. Scientific interpretation and limitations
+
+The workflow verifies computational consistency between the factor contributions and the existing susceptibility score. It does not establish predictive accuracy or calibrated flood probability.
+
+The model remains a relative flood-susceptibility decision-support index. It is not an operational flood forecast. The previously documented temporal, reference-data, and validation limitations remain applicable.
+
+## 7. Version control
+
+Implementation and test changes were committed and pushed:
+
+`44ccfe9 feat(phase11): add reusable interpreter workflow`
+
+The local `main` branch and `origin/main` were synchronized after the push.
+
+Session 7 is complete. Phase 11 still requires its final documentation review and formal acceptance assessment.
