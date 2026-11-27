@@ -287,16 +287,34 @@ PHASE 10
 Deterministic GeoAI Interpretation
         |
         v
-PHASE 11 (IN PROGRESS)
+PHASE 11 (COMPLETED)
 Production Raster Integration and
 End-to-End Validation
         |
         v
-FUTURE EXTENSION
-User-Facing Spatial Decision-Support Interface
+PHASE 12 (PROPOSED)
+Application Requirements and UX Design
+        |
+        v
+PHASE 13 (PROPOSED)
+User-Facing Decision-Support Application
+(Streamlit candidate + interactive mapping)
+        |
+        v
+PHASE 14 (PROPOSED)
+End-to-End Testing, Quality and Usability
+        |
+        v
+PHASE 15 (PROPOSED)
+Deployment and Reproducible Delivery
+        |
+        v
+PHASE 16 (PROPOSED)
+Documentation, Demonstration and
+Professional Portfolio Finalization
 ```
 
-Phases 1–10 are documented as complete. Phase 11 is the proposed next development stage and will first test the deterministic interpreter with actual production raster inputs. A user-facing interface should follow only after this integration has been tested.
+Phases 1–11 are complete. The proposed next stages are Phases 12–16, which take the project from application requirements and interface design through implementation, end-to-end testing, deployment, and professional portfolio finalization. These are forward-looking planning phases, not completed capabilities; their scope and acceptance criteria will be confirmed at each phase gate.
 
 ---
 
@@ -1618,11 +1636,13 @@ Sessions 1–7 completed the production raster audit, real-cell interpretation, 
 
 The 86% coverage figure applies only to `src/interpreter/input_loader.py`. Phase 11 acceptance demonstrates computational and software integration consistency, not predictive flood accuracy. The model remains a relative susceptibility index, not a calibrated flood probability or operational forecast. Full acceptance evidence is available in the [Phase 11 production integration report](Docs/phase11_production_raster_integration.md).
 
-## Proposed future application direction: Streamlit-based decision-support interface
+## Proposed future development roadmap: Phases 12–16
 
-After Phase 11 has been completed, reviewed, and formally closed, the preferred initial approach for the user-facing application is to evaluate **Streamlit** as the presentation and interaction layer.
+Phase 11 is complete. The remaining work is organized into five proposed phases so that development proceeds from a clearly defined user need to a tested, deployed, documented, and professionally presented application.
 
-Streamlit is proposed because it allows the project to develop an interactive Python-based application while keeping the existing geospatial processing and deterministic interpretation logic in reusable Python modules. The final framework choice will be confirmed during application planning after requirements, usability, performance, and deployment needs are assessed.
+**Streamlit is the preferred initial framework to evaluate**, not an irrevocable technology decision. It is a practical candidate for a Python-based interface that can call the existing geospatial and deterministic interpretation modules. The final framework and mapping library choices will be confirmed in Phase 12 after requirements, usability, performance, and deployment needs are assessed.
+
+The phases below are the agreed planning compass for project completion. They are proposed future work and must only be marked complete when their deliverables and acceptance checks have actually been met.
 
 ### Intended user experience
 
@@ -1651,21 +1671,104 @@ The interface should remain separate from the analytical engine:
 
 The interface should call the reusable workflow rather than duplicate or reimplement its analytical logic. Production model inputs should be loaded and validated through the established input-loading process, then reused for requests where appropriate. The application must not silently alter the production rasters, model weights, or scientific assumptions.
 
-### Planned implementation and acceptance work
+### Phase 12 — Application Requirements and UX Design
 
-The future application work should include:
+**Purpose:** Define exactly who the application serves, what decisions it supports, and what a successful first release must do before writing interface code.
 
-1. Confirming user requirements, intended users, and the decisions the application is designed to support.
-2. Designing the interface and map interaction around clear, understandable spatial workflows.
-3. Connecting location selection to raster-cell selection and the reusable interpreter.
-4. Presenting scores, factor evidence, weighted contributions, and explanations consistently.
-5. Handling invalid coordinates, NoData cells, unavailable datasets, and failed score verification safely.
-6. Testing the complete user journey, numerical consistency, performance, and usability.
-7. Documenting installation, data requirements, limitations, and responsible interpretation.
-8. Evaluating deployment options and preparing a demonstrable application.
-9. Capturing screenshots, demonstrations, technical documentation, and other portfolio evidence.
+Planned work:
+- Identify intended users and practical use cases for Nairobi County spatial decision support.
+- Define the first-release scope and explicitly exclude unsupported claims such as real-time flood forecasting or calibrated flood probability.
+- Map the user journey: open the map, select a location or enter coordinates, validate the location, request interpretation, and understand the result.
+- Evaluate Streamlit for the interface and Folium or PyDeck for interactive mapping.
+- Define the application architecture, data-loading approach, interface layout, and acceptance criteria.
 
-**Status:** This is a proposed future direction, not a currently implemented application or a formally numbered project phase. Streamlit is the preferred initial option for evaluation, not a dependency of the current interpreter. Application development should begin only after Phase 11 acceptance and documentation are complete.
+**Phase 12 deliverables:** documented user requirements, user journey, interface sketch or wireframe, selected technology decisions with rationale, and a scoped implementation plan.
+
+**Acceptance gate:** The first-release requirements and architecture are clear enough to implement without duplicating or changing the analytical engine.
+
+### Phase 13 — User-Facing Spatial Decision-Support Application
+
+**Purpose:** Build the first working application on top of the completed geospatial engine.
+
+Planned work:
+- Create the application interface and interactive Nairobi County map.
+- Allow users to select a map location or provide geographic coordinates.
+- Transform and validate the selected location against the model grid, identify its raster cell, and handle invalid or NoData locations.
+- Load and validate production model inputs through the established input-loading process, then reuse them for multiple requests where appropriate.
+- Call `run_interpreter_workflow(model_inputs, row, column)` for each valid selection; do not reimplement the analytical calculations in the interface.
+- Present the relative susceptibility score and available class, five factor scores, weighted contributions, and deterministic explanation.
+- Display data-quality information and clear scientific limitations alongside the result.
+
+**Phase 13 deliverable:** a working local application that connects the map interaction to the real production interpreter.
+
+**Acceptance gate:** A user can select a valid location and receive a consistent, verified interpretation; invalid selections fail safely and transparently.
+
+### Phase 14 — End-to-End Testing, Quality and Usability
+
+**Purpose:** Verify that the complete user-facing experience behaves correctly, not just that individual Python modules pass tests.
+
+Planned work:
+- Test the full journey from map selection or coordinate entry through to the displayed explanation.
+- Test coordinate transformations, raster-cell selection, boundaries, NoData cells, invalid inputs, missing data, and failed score verification.
+- Confirm that application results agree with the existing interpreter and stored susceptibility values.
+- Check that the interface communicates errors, data limitations, and uncertainty clearly.
+- Assess performance, usability, and understandable presentation with representative test scenarios.
+- Fix issues found and rerun the relevant automated and end-to-end tests.
+
+**Phase 14 deliverable:** a tested application with documented test results and resolved release-blocking issues.
+
+**Acceptance gate:** The end-to-end user journey is reliable, numerical outputs remain consistent with the interpreter, and known limitations are visible to users.
+
+### Phase 15 — Deployment and Reproducible Delivery
+
+**Purpose:** Make the application accessible in a controlled, repeatable way.
+
+Planned work:
+- Evaluate an appropriate deployment target based on data size, access requirements, cost, and maintenance.
+- Prepare reproducible environment and dependency instructions.
+- Define how required geospatial data are supplied, stored, and accessed, respecting data licensing and repository size.
+- Configure deployment settings safely and avoid committing secrets or private credentials.
+- Deploy the application if a suitable and sustainable option is available.
+- Run a post-deployment smoke test and document any operational constraints.
+
+**Phase 15 deliverable:** a reproducible deployment package and, where feasible, an accessible working demonstration.
+
+**Acceptance gate:** Another person can follow the setup or access instructions and use the application without undocumented local assumptions.
+
+### Phase 16 — Documentation, Demonstration and Professional Portfolio Finalization
+
+**Purpose:** Turn the completed technical work into a clear, credible professional project that can be evaluated by GIS, geospatial analysis, and GeoAI audiences.
+
+Planned work:
+- Finalize the README with the project purpose, architecture, workflow, technologies, setup, usage, results, and limitations.
+- Document the application architecture and how it calls the reusable interpreter.
+- Prepare concise user instructions and technical/reproducibility documentation.
+- Capture clear application screenshots and prepare a short demonstration where useful.
+- Review repository organization, commit history, licensing/data acknowledgements, and release materials.
+- Prepare a portfolio case study describing the problem, methods, implementation, validation evidence, limitations, and lessons learned.
+- Prepare concise project evidence suitable for GitHub and professional profiles.
+
+**Phase 16 deliverable:** a polished, reproducible GitHub project with professional documentation and demonstrable portfolio evidence.
+
+**Acceptance gate:** A technical reviewer can understand the problem, inspect the methods and evidence, run or view the application, and distinguish demonstrated capabilities from limitations.
+
+### Essential completion path and optional enhancements
+
+**Essential for the first complete project release:** Phases 12–16 above — requirements and design, working application, end-to-end testing, reproducible deployment or demonstration, and professional documentation/portfolio presentation.
+
+**Optional future research and enhancements — not blockers for the first release:**
+- Add independent flood reference observations from additional events.
+- Investigate the mismatch observed in the May 2024 UNOSAT comparison.
+- Evaluate alternative factor representations and defensible weighting strategies.
+- Incorporate suitable dynamic information such as rainfall, antecedent wetness, river discharge, or drainage characteristics, if reliable data are available.
+- Further separate physical susceptibility, hazard, exposure, and overall risk.
+- Explore more comprehensive uncertainty analysis and probability calibration only if suitable observations and independent evaluation support it.
+
+These enhancements should be considered as separately scoped research work. They must not delay the first complete application release or be presented as implemented capabilities.
+
+**Scientific guardrail for every future phase:** The current MCDA output remains a relative susceptibility index, not a calibrated flood probability, real-time forecast, or complete measure of flood risk. Population remains an exposure-related factor, not a physical flood-generating mechanism. The negative or inconclusive findings from the existing UNOSAT comparison must remain visible and must not be tuned away to make the application appear more predictive.
+
+**Roadmap status:** Phases 1–11 are complete. Phases 12–16 are proposed and not yet started. We will work through them sequentially, review each phase against its acceptance gate, and update this roadmap only when evidence supports a status change.
 
 ## Additional research directions:
 
