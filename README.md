@@ -177,7 +177,7 @@ A projected coordinate system supports distance calculations, raster processing,
 
 # Project Status
 
-## Current project status: Phases 1–10 completed; Phase 11 in progress
+## Current project status: Phases 1–11 completed
 
 Phases 1–8 established the core geospatial processing and AHP-weighted MCDA modelling workflow.
 
@@ -185,7 +185,7 @@ Phase 9 completed the spatial diagnostics, sensitivity and robustness analysis, 
 
 Phase 10 completed the deterministic interpretation layer, component and integration testing, and technical documentation. The current documented implementation therefore reaches the end of Phase 10.
 
-The current development stage is **Phase 11: Production Raster Integration and End-to-End Validation**. Sessions 1-6 are complete. These sessions covered production-raster auditing, real-cell interpretation, multi-cell production integration, regression testing, production-data rejection checks, expanded input-loader failure-case validation, CLI success/failure testing, and a real-data CLI smoke test. Session 4 resolved the NumPy 2.5 raster-reading deprecation warning by upgrading Rasterio to 1.5.2. Session 5 expanded the input-loader test module to 31 tests and measured 86% module coverage. Session 6 added two CLI tests; the complete interpreter suite passed 120 tests with deprecation warnings treated as errors. The production CLI also passed against all five factor rasters and the stored susceptibility output, with 553,860 common valid cells and zero reported reconstruction error. Phase 11 remains in progress; further production integration review is required.
+Phase 11 — Production Raster Integration and End-to-End Validation — is complete. Sessions 1–7 established and tested production-raster loading, single-cell and multi-cell interpretation, input failure handling, CLI success/failure behaviour, Rasterio/NumPy compatibility, and a reusable interpreter workflow. The final interpreter regression suite passed 121 tests with deprecation warnings treated as errors. The production CLI passed against the five factor rasters and stored susceptibility output, with 553,860 common valid cells and zero reported reconstruction error. The P10, P50, and P90 production-cell workflows also passed score reconstruction. The input-loader module achieved 86% coverage; this is module-specific, not whole-project coverage. Phase 11 acceptance is documented in the [production integration report](Docs/phase11_production_raster_integration.md).
 
 ### Completed phases
 
@@ -199,6 +199,7 @@ The current development stage is **Phase 11: Production Raster Integration and E
 - Phase 8 — MCDA Flood-Susceptibility Modelling
 - Phase 9 — Spatial Diagnostics, Sensitivity, Uncertainty, External Validation, and Scientific Synthesis
 - Phase 10 — Deterministic GeoAI Interpretation, Integration Testing, and Documentation
+- Phase 11 — Production Raster Integration, Reusable Workflow, End-to-End Validation, and Documentation
 
 ### Phase 9 analytical activities completed
 
@@ -232,7 +233,7 @@ The current development stage is **Phase 11: Production Raster Integration and E
 | 8 | MCDA susceptibility modelling | Completed |
 | 9 | Spatial diagnostics, sensitivity, uncertainty, external validation, and synthesis | Completed |
 | 10 | Deterministic GeoAI interpretation, testing, and documentation | Completed |
-| 11 | Production raster integration and end-to-end validation | In progress — Sessions 1-6 completed |
+| 11 | Production raster integration and end-to-end validation | Completed — Sessions 1-7 accepted |
 
 **Important:** The current model is a relative susceptibility framework. The UNOSAT comparison did not demonstrate the expected positive relationship between higher susceptibility scores and observed flooding in the evaluated May 2024 reference sample. The model is not presented as a calibrated or validated, generalizable flood-prediction system.
 
@@ -1129,9 +1130,11 @@ python -m unittest tests.test_phase11_multiple_real_cells -v
 
 **Session 6 — CLI validation:** Added two CLI tests for successful reporting and loader-failure propagation. The complete interpreter suite passed 120 tests with deprecation warnings treated as errors. The production CLI passed against the five factor rasters and stored susceptibility output: 553,860 common valid cells, all validation checks passed, and maximum reconstruction error was 0.000000000000. No model files were modified.
 
-### Current Phase 11 status
+**Session 7 — Reusable interpreter workflow:** Added `src/interpreter/workflow.py` with `run_interpreter_workflow(model_inputs, row, column)`, coordinating cell selection, factor evidence, weighted contributions, score verification, and deterministic explanation. Updated synthetic integration and production multi-cell tests to use this shared entry point. Six synthetic workflow tests and the production P10/P50/P90 test passed. The complete interpreter regression suite passed 121 tests with deprecation warnings treated as errors. Production input loading remains outside the reusable workflow, allowing validated model inputs to be reused across requests. No production analytical outputs or AHP weights were modified.
 
-Sessions 1-6 are complete. The interpreter's production input-validation command and regression suite pass. Phase 11 remains in progress; successful computational validation does not establish predictive flood accuracy.
+### Phase 11 completion status
+
+**Phase 11 is complete and accepted.** Sessions 1–7 completed production-raster integration, failure handling, CLI validation, reusable workflow implementation, production multi-cell validation, regression testing, and documentation. The complete interpreter suite passed 121 tests with deprecation warnings treated as errors. Successful computational validation does not establish predictive flood accuracy.
 
 Detailed session evidence is recorded in [the Phase 11 production integration report](Docs/phase11_production_raster_integration.md).
 
@@ -1605,19 +1608,15 @@ The project reports these distinctions explicitly.
 
 # Future Research Directions
 
-Phases 1-10 are complete. Phase 11 - Production Raster Integration and End-to-End Validation - is in progress. Sessions 1-6 have completed the production raster audit, real-data input-loader validation, single-cell and multi-cell interpretation, weighted contribution reconstruction, deterministic explanation, regression testing, production-data rejection checks, Rasterio compatibility correction, expanded production-input failure-case testing, and CLI validation. Rasterio 1.5.2 resolved the NumPy 2.5 raster-reading deprecation warning. The complete interpreter suite passed 120 tests with deprecation warnings treated as errors. The input-loader module achieved 86% coverage during Session 5; this figure is module-specific. The production CLI passed against the configured rasters with zero reported reconstruction error. Further Phase 11 work remains before any user-facing application is treated as a completed capability.
+Phases 1–11 are complete. Phase 11 integrated the production factor and susceptibility rasters, strengthened input and CLI failure handling, resolved the observed Rasterio/NumPy compatibility warning, and introduced a reusable interpretation workflow. The complete interpreter suite passed 121 tests with deprecation warnings treated as errors. The input-loader module achieved 86% coverage; this figure is module-specific. The production CLI and P10/P50/P90 production-cell workflows passed with zero reported reconstruction difference. Phase 11 closure is recorded in the [production integration report](Docs/phase11_production_raster_integration.md). No user-facing application has been implemented yet.
 
-## Proposed next development phase: Phase 11
+## Phase 11 completion record
 
-The initial Phase 11 objectives are:
+Phase 11 — Production Raster Integration and End-to-End Validation — is complete. Its objectives were to validate the production raster inputs, connect the deterministic interpreter to real production data, verify score reconstruction at selected cells, exercise relevant failure paths, and document the integration evidence.
 
-1. Inspect the production raster paths, metadata, masks, and factor inputs used by the existing interpreter.
-2. Connect the deterministic interpreter to the actual production factor and susceptibility rasters without changing the stored model or its AHP weights.
-3. Run end-to-end interpretation for selected valid raster cells and verify reconstructed scores against stored susceptibility values.
-4. Test NoData cells, invalid coordinates, raster boundaries, missing inputs, and other relevant failure cases.
-5. Record the results, limitations, and any required fixes before considering a user-facing interface.
+Sessions 1–7 completed the production raster audit, real-cell interpretation, P10/P50/P90 production validation, input-loader failure-case testing, Rasterio/NumPy compatibility correction, CLI success/failure validation, and reusable workflow integration. The complete interpreter suite passed **121 tests** with deprecation warnings treated as errors. The production CLI passed with 553,860 common valid cells and zero reported reconstruction error. The reusable workflow passed six synthetic integration tests and the production multi-cell test.
 
-**Phase 11 is in progress.** Sessions 1-6 have completed the production-input audit, single-cell interpretation, three-cell production integration test, regression validation, Rasterio compatibility correction, expanded input-loader failure-case testing, CLI success/failure tests, and real-data CLI validation. The complete interpreter suite passed 120 tests with deprecation warnings treated as errors. The 86% input-loader coverage figure was measured during Session 5 and applies only to that module. Remaining Phase 11 objectives are still planned work and must not be presented as completed capabilities.
+The 86% coverage figure applies only to `src/interpreter/input_loader.py`. Phase 11 acceptance demonstrates computational and software integration consistency, not predictive flood accuracy. The model remains a relative susceptibility index, not a calibrated flood probability or operational forecast. Full acceptance evidence is available in the [Phase 11 production integration report](Docs/phase11_production_raster_integration.md).
 
 ## Proposed future application direction: Streamlit-based decision-support interface
 
@@ -1786,19 +1785,19 @@ Phase 10  Deterministic Interpretation      COMPLETED
 Phase 10  Integration Testing               COMPLETED
 Phase 10  Documentation and Integration      COMPLETED
 
-Phase 11  Production Raster Integration      IN PROGRESS - SESSIONS 1-6 COMPLETE
+Phase 11  Production Raster Integration      COMPLETED - SESSIONS 1-7 ACCEPTED
           and End-to-End Validation
 
 CURRENT STATUS:
-Phases 1–10 are complete.
-Phase 11 is in progress; Sessions 1-6 are complete.
+Phases 1–11 are complete.
+Phase 11 acceptance is documented in Docs/phase11_production_raster_integration.md.
 
 PHASE 10 STATUS:
 Deterministic interpretation, regression testing, and technical
 documentation are complete.
 
-PHASE 11 OBJECTIVE:
-Continue production-data integration review and assess any remaining end-to-end validation needs. Sessions 1-6 have expanded failure-case coverage, added CLI success/failure tests, and passed the complete 120-test interpreter suite. The production CLI also passed against the configured rasters. Further work should address any remaining integration risks before considering a user-facing interface.
+PHASE 11 ACCEPTANCE:
+Sessions 1–7 completed. The reusable workflow, production CLI, production multi-cell checks, and complete 121-test interpreter regression suite passed. No production analytical outputs or AHP weights were modified. A user-facing application remains future work.
 ```
 
 **Scientific qualification:** The current MCDA scores are relative susceptibility indices, not calibrated flood probabilities. The evaluated UNOSAT comparison did not demonstrate the expected positive relationship between higher susceptibility scores and observed flooding. The temporal mismatch between the 2021 model inputs and the May 2024 reference data is also an important limitation. These findings remain part of the project's documented evidence and guide future development.
